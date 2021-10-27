@@ -1,0 +1,997 @@
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('fonts/Ubuntu-Italic.woff2') format('woff2'),
+        url('fonts/Ubuntu-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('fonts/Ubuntu-Bold.woff2') format('woff2'),
+        url('fonts/Ubuntu-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('fonts/Ubuntu-Regular.woff2') format('woff2'),
+        url('fonts/Ubuntu-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --multiplier: 1;
+    --scrollbar-width: 19px;
+    --max-width: 1160px;
+    --z-index-base: 0;
+
+    /* <- primary font vars */
+    --font-family-primary: 'Ubuntu', sans-serif;
+    --font-family-secondary: 'Ubuntu', sans-serif;
+    --font-family-tertiary: 'Ubuntu', sans-serif;
+    --font-family-quaternary: 'Ubuntu', sans-serif;
+
+    --font-weight-regular: normal;
+    --font-weight-semibold: calc(500 * var(--multiplier));
+    --font-weight-bold: bold;
+
+    --font-style-regular: normal;
+    --font-style-italic: italic;
+
+    --font-size-primary: 1.125rem;
+    --font-size-secondary: calc(var(--font-size-primary) * 0.75);
+    --font-size-tertiary: calc(var(--font-size-primary) * 0.5);
+    --font-size-quaternary: calc(var(--font-size-primary) * 1.5);
+
+    --line-height: calc(1.75rem * var(--multiplier));
+    /* primary font vars -> */
+
+    /* <- primary color vars */
+    --color-dark-primary: #000;
+    --color-dark-secondary: #9aa7b0;
+
+    --color-light-primary: #fff;
+    --color-light-secondary: #fff;
+
+    --color-incorrect: #ff8282;
+    --color-correct: #a0d49b;
+
+    --color-normal: #0073ff;
+    --color-active: #015fd1;
+    --color-hover: #348dfa;
+    --color-disabled: #bebebe;
+
+    --color-bg-primary: transparent;
+    --color-bg-secondary: #e8ede7;
+    --color-bg-tertiary: transparent;
+    /* primary color vars -> */
+
+    /* <- secondary color vars */
+    --color-font-dark-primary: var(--color-dark-primary);
+    --color-font-dark-secondary: var(--color-dark-secondary);
+
+    --color-font-light-primary: var(--color-light-primary);
+    --color-font-light-secondary: var(--color-light-secondary);
+    /* secondary color vars -> */
+
+    /* <- primary spacing vars */
+    --spacing-lvl_0: 0;
+    --spacing-lvl_1: calc(3rem * var(--multiplier));
+    --spacing_lvl_2: calc(2.5rem * var(--multiplier));
+    --spacing_lvl_3: calc(1.5rem * var(--multiplier));
+    /* primary spacing vars -> */
+
+    /* <- border settings */
+    --border-style-primary: solid;
+    --border-width-primary: 0;
+    --border-color-primary: transparent;
+    --border-radius-primary: 0;
+
+    --border-style-secondary: solid;
+    --border-width-secondary: 2px;
+    --border-color-secondary: transparent;
+    --border-radius-secondary: 0;
+    /* border settings -> */
+
+    /* Elements settings */
+
+    /* <- test settings */
+    /* grid */
+    --test-grid-template-columns: 1fr;
+    --test-grid-template-rows: auto;
+    --test-grid-template-areas: 'instruction' 'commonQuestion'
+        'questionsContainer' 'feedbackContainer' 'buttonsContainer';
+    --test-row-gap: var(--spacing-lvl_1);
+    --test-column-gap: 0;
+    --test-justify-items: stretch;
+    --test-align-items: start;
+    --test-justify-content: start;
+    --test-align-content: start;
+
+    /* font */
+    --test-color: var(--color-font-dark-primary);
+    --test-font-family: var(--font-family-primary);
+    --test-font-size: var(--font-size-primary);
+    --test-font-weight: var(--font-weight-regular);
+    --test-font-style: var(--font-style-regular);
+
+    /* background */
+    --test-background: transparent;
+
+    /* padding/margin */
+    --test-padding: 0 0 0 100px;
+    --test-margin: 0 auto;
+
+    /* border */
+    --test-border-style: var(--border-style-primary);
+    --test-border-width: var(--border-width-primary);
+    --test-border-color: var(--border-color-primary);
+    --test-border-radius: var(--border-radius-secondary);
+
+    /* width */
+    --test-max-width: var(--max-width);
+    --test-best-width: clamp(18.75rem, 50rem, 100%);
+
+    /* test settings ->*/
+
+    /* <- test instruction settings */
+    --test-instruction-grid-template-columns: 1fr;
+    --test-instruction-grid-template-rows: auto;
+    --test-instruction-row-gap: var(--spacing_lvl_3);
+    --test-instruction-column-gap: 0;
+    --test-instruction-justify-items: start;
+    --test-instruction-align-items: start;
+    --test-instruction-justify-content: start;
+    --test-instruction-align-content: start;
+
+    /* font */
+    --test-instruction-color: var(--color-font-dark-primary);
+    --test-instruction-font-family: var(--font-family-primary);
+    --test-instruction-font-size: var(--font-size-primary);
+    --test-instruction-font-weight: var(--font-weight-regular);
+    --test-instruction-font-style: var(--font-style-regular);
+
+    /* background */
+    --test-instruction-background: var(--color-bg-primary);
+
+    /* padding */
+    --test-instruction-padding: 0;
+
+    /* border */
+    --test-instruction-border-style: var(--border-style-primary);
+    --test-instruction-border-width: var(--border-width-primary);
+    --test-instruction-border-color: var(--border-color-primary);
+    --test-instruction-border-radius: var(--border-radius-primary);
+    /* test instruction settings ->*/
+
+    /* <- test commonQuestion settings */
+    --commonQuestion-grid-template-columns: 1fr;
+    --commonQuestion-grid-template-rows: auto;
+    --commonQuestion-row-gap: var(--spacing_lvl_3);
+    --commonQuestion-column-gap: 0;
+    --commonQuestion-justify-items: start;
+    --commonQuestion-align-items: start;
+    --commonQuestion-justify-content: start;
+    --commonQuestion-align-content: start;
+
+    /* font */
+    --commonQuestion-color: var(--color-font-dark-primary);
+    --commonQuestion-font-family: var(--font-family-primary);
+    --commonQuestion-font-size: var(--font-size-primary);
+    --commonQuestion-font-weight: var(--font-weight-bold);
+    --commonQuestion-font-style: var(--font-style-regular);
+
+    /* background */
+    --commonQuestion-background: var(--color-bg-primary);
+
+    /* padding */
+    --commonQuestion-padding: 0;
+
+    /* border */
+    --commonQuestion-border-style: var(--border-style-primary);
+    --commonQuestion-border-width: var(--border-width-primary);
+    --commonQuestion-border-color: var(--border-color-primary);
+    --commonQuestion-border-radius: var(--border-radius-primary);
+    /* test commonQuestion settings ->*/
+
+    /* <- test questionsContainer settings */
+    --questionsContainer-grid-template-columns: 1fr;
+    --questionsContainer-grid-template-rows: auto;
+    --questionsContainer-row-gap: var(--spacing-lvl_1);
+    --questionsContainer-column-gap: 0;
+    --questionsContainer-justify-items: stretch;
+    --questionsContainer-align-items: start;
+    --questionsContainer-justify-content: start;
+    --questionsContainer-align-content: start;
+
+    /* font */
+    --questionsContainer-color: var(--color-font-dark-primary);
+    --questionsContainer-font-family: var(--font-family-primary);
+    --questionsContainer-font-size: var(--font-size-primary);
+    --questionsContainer-font-weight: var(--font-weight-regular);
+    --questionsContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --questionsContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --questionsContainer-padding: 0;
+
+    /* border */
+    --questionsContainer-border-style: var(--border-style-primary);
+    --questionsContainer-border-width: var(--border-width-primary);
+    --questionsContainer-border-color: var(--border-color-primary);
+    --questionsContainer-border-radius: var(--border-radius-primary);
+    /* test questionsContainer settings ->*/
+
+    /* <- test feedbackContainer settings */
+    --feedbackContainer-grid-template-columns: 1fr;
+    --feedbackContainer-grid-template-rows: auto;
+    --feedbackContainer-row-gap: var(--spacing_lvl_3);
+    --feedbackContainer-column-gap: 0;
+    --feedbackContainer-justify-items: stretch;
+    --feedbackContainer-align-items: start;
+    --feedbackContainer-justify-content: start;
+    --feedbackContainer-align-content: start;
+
+    /* font */
+    --feedbackContainer-color: var(--color-font-dark-primary);
+    --feedbackContainer-font-family: var(--font-family-primary);
+    --feedbackContainer-font-size: var(--font-size-primary);
+    --feedbackContainer-font-weight: var(--font-weight-regular);
+    --feedbackContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --feedbackContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --feedbackContainer-padding: var(--spacing_lvl_0);
+
+    /* border */
+    --feedbackContainer-border-style: var(--border-style-secondary);
+    --feedbackContainer-border-width: 0;
+    --feedbackContainer-border-color: var(--border-color-primary);
+    --feedbackContainer-border-radius: var(--border-radius-secondary);
+    /* test feedbackContainer settings ->*/
+
+    /* <- test buttonsContainer settings */
+    --test-buttonsContainer-grid-template-columns: 1fr;
+    --test-buttonsContainer-grid-template-rows: auto;
+    --test-buttonsContainer-row-gap: var(--spacing_lvl_2);
+    --test-buttonsContainer-column-gap: var(--spacing_lvl_2);
+    --test-buttonsContainer-justify-items: start;
+    --test-buttonsContainer-align-items: start;
+    --test-buttonsContainer-justify-content: start;
+    --test-buttonsContainer-align-content: start;
+    --test-buttonsContainer-width: 100%;
+
+    /* font */
+    --test-buttonsContainer-color: var(--color-font-dark-primary);
+    --test-buttonsContainer-font-family: var(--font-family-primary);
+    --test-buttonsContainer-font-size: var(--font-size-primary);
+    --test-buttonsContainer-font-weight: var(--font-weight-regular);
+    --test-buttonsContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --test-buttonsContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --test-buttonsContainer-padding: 0;
+
+    /* border */
+    --test-buttonsContainer-border-style: var(--border-style-primary);
+    --test-buttonsContainer-border-width: var(--border-width-primary);
+    --test-buttonsContainer-border-color: var(--border-color-primary);
+    --test-buttonsContainer-border-radius: var(--border-radius-primary);
+    /* test buttonsContainer settings ->*/
+
+    /* <- questionContainer settings */
+    --questionContainer-grid-template-columns: 1fr;
+    --questionContainer-grid-template-rows: auto;
+    --questionContainer-grid-template-areas: 'subHeader' 'question'
+        'answersContainer' 'questionFeedback' 'buttonsContainer';
+    --questionContainer-row-gap: var(--spacing_lvl_2);
+    --questionContainer-column-gap: 0;
+    --questionContainer-justify-items: stretch;
+    --questionContainer-align-items: start;
+    --questionContainer-justify-content: start;
+    --questionContainer-align-content: start;
+
+    /* font */
+    --questionContainer-color: var(--color-font-dark-primary);
+    --questionContainer-font-family: var(--font-family-primary);
+    --questionContainer-font-size: var(--font-size-primary);
+    --questionContainer-font-weight: var(--font-weight-regular);
+    --questionContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --questionContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --questionContainer-padding: 0;
+
+    /* border */
+    --questionContainer-border-style: var(--border-style-primary);
+    --questionContainer-border-width: var(--border-width-primary);
+    --questionContainer-border-color: var(--border-color-primary);
+    --questionContainer-border-radius: var(--border-radius-primary);
+    /* questionContainer settings ->*/
+
+    /* <- questionContainer subHeader settings */
+    --subHeader-grid-template-columns: repeat(2, max-content);
+    --subHeader-grid-template-rows: auto;
+    --subHeader-grid-template-areas: 'counter correctnessMarker';
+    --subHeader-subHeader-row-gap: 0;
+    --subHeader-column-gap: var(--spacing_lvl_3);
+    --subHeader-justify-items: start;
+    --subHeader-align-items: start;
+    --subHeader-justify-content: start;
+    --subHeader-align-content: start;
+
+    /* font */
+    --subHeader-color: #000;
+    --subHeader-font-family: var(--font-family-primary);
+    --subHeader-font-size: var(--font-size-secondary);
+    --subHeader-font-weight: var(--font-weight-regular);
+    --subHeader-font-style: var(--font-style-regular);
+
+    /* background */
+    --subHeader-background: var(--color-bg-primary);
+
+    /* padding */
+    --subHeader-padding: 0;
+
+    /* border */
+    --subHeader-border-style: var(--border-style-primary);
+    --subHeader-border-width: var(--border-width-primary);
+    --subHeader-border-color: var(--border-color-primary);
+    --subHeader-border-radius: var(--border-radius-primary);
+    /*transform*/
+    --subHeader-transform: translateY(0);
+
+    /* questionContainer subHeader settings ->*/
+
+    /* <- questionContainer question settings */
+    --question-grid-template-columns: 1fr;
+    --question-grid-template-rows: auto;
+    --question-row-gap: var(--spacing_lvl_3);
+    --question-column-gap: var(--spacing_lvl_3);
+    --question-justify-items: stretch;
+    --question-align-items: start;
+    --question-justify-content: start;
+    --question-align-content: start;
+
+    /* font */
+    --question-color: var(--color-font-dark-primary);
+    --question-font-family: var(--font-family-primary);
+    --question-font-size: var(--font-size-primary);
+    --question-font-weight: var(--font-weight-regular);
+    --question-font-style: var(--font-style-regular);
+
+    /* background */
+    --question-background: var(--color-bg-primary);
+
+    /* padding */
+    --question-padding: 0;
+
+    /* border */
+    --question-border-style: var(--border-style-primary);
+    --question-border-width: var(--border-width-primary);
+    --question-border-color: var(--border-color-primary);
+    --question-border-radius: var(--border-radius-primary);
+    /* questionContainer question settings ->*/
+
+    /* <- questionContainer question story settings */
+    --story-grid-template-columns: 1fr;
+    --story-grid-template-rows: auto;
+    --story-row-gap: var(--spacing_lvl_3);
+    --story-column-gap: 0;
+    --story-justify-items: start;
+    --story-align-items: start;
+    --story-justify-content: start;
+    --story-align-content: start;
+
+    /* font */
+    --story-color: var(--color-font-dark-primary);
+    --story-font-family: var(--font-family-primary);
+    --story-font-size: var(--font-size-primary);
+    --story-font-weight: var(--font-weight-regular);
+    --story-font-style: var(--font-style-regular);
+
+    /* background */
+    --story-background: var(--color-bg-primary);
+
+    /* padding */
+    --story-padding: 0;
+
+    /* border */
+    --story-border-style: var(--border-style-primary);
+    --story-border-width: var(--border-width-primary);
+    --story-border-color: var(--border-color-primary);
+    --story-border-radius: var(--border-radius-primary);
+    /* questionContainer question story settings ->*/
+
+    /* <- questionContainer question questionText settings */
+    --questionText-grid-template-columns: 1fr;
+    --questionText-grid-template-rows: auto;
+    --questionText-row-gap: var(--spacing_lvl_3);
+    --questionText-column-gap: 0;
+    --questionText-justify-items: start;
+    --questionText-align-items: start;
+    --questionText-justify-content: start;
+    --questionText-align-content: start;
+
+    /* font */
+    --questionText-color: var(--color-font-dark-primary);
+    --questionText-font-family: var(--font-family-primary);
+    --questionText-font-size: var(--font-size-primary);
+    --questionText-font-weight: var(--font-weight-bold);
+    --questionText-font-style: var(--font-style-regular);
+
+    /* background */
+    --questionText-background: var(--color-bg-primary);
+
+    /* padding */
+    --questionText-padding: 0;
+
+    /* border */
+    --questionText-border-style: var(--border-style-primary);
+    --questionText-border-width: var(--border-width-primary);
+    --questionText-border-color: var(--border-color-primary);
+    --questionText-border-radius: var(--border-radius-primary);
+    /* questionContainer question grid questionText settings ->*/
+
+    /* <- questionContainer question instruction settings */
+    /* font */
+    --question-instruction-color: var(--color-font-dark-secondary);
+    --question-instruction-font-family: var(--font-family-primary);
+    --question-instruction-font-size: var(--font-size-primary);
+    --question-instruction-font-weight: var(--font-weight-regular);
+    --question-instruction-font-style: var(--font-style-italic);
+
+    /* background */
+    --question-instruction-background: var(--color-bg-primary);
+
+    /* padding */
+    --question-instruction-padding: 0;
+
+    /* border */
+    --question-instruction-border-style: var(--border-style-primary);
+    --question-instruction-border-width: var(--border-width-primary);
+    --question-instruction-border-color: var(--border-color-primary);
+    --question-instruction-border-radius: var(--border-radius-primary);
+    /* questionContainer question instruction settings ->*/
+
+    /* <- questionContainer answersContainer settings */
+    --answersContainer-grid-template-columns: 1fr;
+    --answersContainerImage-grid-template-columns: repeat(
+        auto-fill,
+        var(--image-width)
+    );
+
+    --answersContainer-grid-template-columns: 1fr;
+    --answersContainer-grid-template-rows: auto;
+    --answersContainer-row-gap: var(--spacing_lvl_3);
+    --answersContainer-column-gap: var(--spacing_lvl_3);
+    --answersContainer-justify-items: stretch;
+    --answersContainer-align-items: start;
+    --answersContainer-justify-content: start;
+    --answersContainer-align-content: start;
+
+    /* font */
+    --answersContainer-color: var(--color-font-dark-primary);
+    --answersContainer-font-family: var(--font-family-primary);
+    --answersContainer-font-size: var(--font-size-primary);
+    --answersContainer-font-weight: var(--font-weight-regular);
+    --answersContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --answersContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --answersContainer-padding: 0;
+
+    /* border */
+    --answersContainer-border-style: var(--border-style-primary);
+    --answersContainer-border-width: var(--border-width-primary);
+    --answersContainer-border-color: var(--border-color-primary);
+    --answersContainer-border-radius: var(--border-radius-primary);
+    /* questionContainer answersContainer settings ->*/
+
+    /* <- questionContainer answersContainer answerContainer settings */
+    --answerContainer-grid-template-columns: 1fr;
+    --answerContainerImage-grid-template-columns: 1fr;
+    --answerContainer-grid-template-rows: auto;
+    --answerContainer-row-gap: var(--spacing_lvl_2);
+    --answerContainer-column-gap: var(--spacing_lvl_2);
+    --answerContainer-justify-items: stretch;
+    --answerContainer-align-items: center;
+    --answerContainer-justify-content: start;
+    --answerContainer-align-content: center;
+
+    /* font */
+    --answerContainer-color: var(--color-font-dark-primary);
+    --answerContainer-font-family: var(--font-family-primary);
+    --answerContainer-font-size: var(--font-size-primary);
+    --answerContainer-font-weight: var(--font-weight-regular);
+    --answerContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --answerContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --answerContainer-padding: 0;
+    --answerContainerImage-padding: 2rem 0 1rem 0;
+
+    /* border */
+    --answerContainer-border-style: var(--border-style-primary);
+    --answerContainer-border-width: var(--border-width-primary);
+    --answerContainer-border-color: var(--border-color-primary);
+    --answerContainer-border-radius: var(--border-radius-primary);
+    /* questionContainer answersContainer answerContainer settings ->*/
+
+    /* <- questionContainer answersContainer answerContainer label settings */
+    --answerContainer-label-grid-template-columns: var(--inputbox-dimension)
+        auto;
+    --answerContainer-labelImage-grid-template-columns: 1fr 8fr 1fr;
+    --answerContainer-label-grid-template-rows: auto;
+    --answerContainer-labelImage-grid-template-rows: repeat(4, 1fr);
+    --answerContainer-label-grid-template-areas: 'inputMarker text';
+    --answerContainer-labelImage-grid-template-areas: '. img .' '. img .'
+        '. img .' 'text text text';
+    --answerContainer-label-row-gap: calc(1rem * var(--multiplier));
+    --answerContainer-label-column-gap: calc(1rem * var(--multiplier));
+    --answerContainer-labelImage-row-gap: 0;
+    --answerContainer-labelImage-column-gap: 0;
+    --answerContainer-label-justify-items: start;
+    --answerContainer-label-align-items: center;
+    --answerContainer-label-justify-content: start;
+    --answerContainer-label-align-content: center;
+
+    /* font */
+    --answerContainer-label-color: var(--color-font-dark-primary);
+    --answerContainer-label-font-family: var(--font-family-primary);
+    --answerContainer-label-font-size: var(--font-size-primary);
+    --answerContainer-label-font-weight: var(--font-weight-regular);
+    --answerContainer-label-font-style: var(--font-style-regular);
+
+    /* background */
+    --answerContainer-label-background: var(--color-bg-primary);
+    --answerContainer-labelImage-background: transparent;
+
+    /* padding */
+    --answerContainer-label-padding: 0;
+    --answerContainer-labelImage-padding: 1rem;
+
+    /* border */
+    --answerContainer-label-border-style: var(--border-style-primary);
+    --answerContainer-label-border-width: var(--border-width-primary);
+    --answerContainer-label-border-color: var(--border-color-primary);
+    --answerContainer-label-border-radius: var(--border-radius-primary);
+    --answerContainer-labelImage-border-radius: 999px;
+    /* questionContainer answersContainer answerContainer label settings ->*/
+
+    /* <- questionContainer answersContainer answerContainer answerFeedback settings */
+    --answerFeedback-grid-template-columns: 1fr;
+    --answerFeedback-grid-template-rows: auto;
+    --answerFeedback-row-gap: var(--spacing_lvl_0);
+    --answerFeedback-column-gap: 0;
+    --answerFeedback-justify-items: stretch;
+    --answerFeedback-align-items: start;
+    --answerFeedback-justify-content: start;
+    --answerFeedback-align-content: start;
+
+    /* font */
+    --answerFeedback-color: var(--color-font-dark-primary);
+    --answerFeedback-font-family: var(--font-family-primary);
+    --answerFeedback-font-size: var(--font-size-primary);
+    --answerFeedback-font-weight: var(--font-weight-regular);
+    --answerFeedback-font-style: var(--font-style-italic);
+
+    /* background */
+    --answerFeedback-background: var(--color-bg-primary);
+
+    /* padding */
+    --answerFeedback-padding: 1rem 0 0
+        calc(
+            var(--answerContainer-label-column-gap) + var(--inputbox-dimension)
+        );
+
+    /* border */
+    --answerFeedback-border-style: var(--border-style-primary);
+    --answerFeedback-border-width: var(--border-width-primary);
+    --answerFeedback-border-color: var(--border-color-primary);
+    --answerFeedback-border-radius: var(--border-radius-primary);
+    /* questionContainer answersContainer answerContainer answerFeedback settings ->*/
+
+    /* <- questionContainer tipsContainer settings */
+    --tipsContainer-grid-template-columns: 1fr;
+    --tipsContainer-grid-template-rows: auto;
+    --tipsContainer-row-gap: var(--spacing_lvl_3);
+    --tipsContainer-column-gap: var(--spacing_lvl_3);
+    --tipsContainer-justify-items: start;
+    --tipsContainer-align-items: start;
+    --tipsContainer-justify-content: start;
+    --tipsContainer-align-content: start;
+
+    /* font */
+    --tipsContainer-color: var(--color-font-dark-primary);
+    --tipsContainer-font-family: var(--font-family-primary);
+    --tipsContainer-font-size: var(--font-size-primary);
+    --tipsContainer-font-weight: var(--font-weight-regular);
+    --tipsContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --tipsContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --tipsContainer-padding: 0;
+
+    /* border */
+    --tipsContainer-border-style: var(--border-style-primary);
+    --tipsContainer-border-width: var(--border-width-primary);
+    --tipsContainer-border-color: var(--border-color-primary);
+    --tipsContainer-border-radius: var(--border-radius-primary);
+    /* questionContainer tipsContainer settings ->*/
+
+    /* <- questionContainer tipsContainer tipText settings */
+    --tipText-grid-template-columns: 1fr;
+    --tipText-grid-template-rows: auto;
+    --tipText-row-gap: var(--spacing_lvl_3);
+    --tipText-column-gap: var(--spacing_lvl_3);
+    --tipText-justify-items: start;
+    --tipText-align-items: start;
+    --tipText-justify-content: start;
+    --tipText-align-content: start;
+
+    /* font */
+    --tipText-color: var(--color-font-dark-primary);
+    --tipText-font-family: var(--font-family-primary);
+    --tipText-font-size: var(--font-size-primary);
+    --tipText-font-weight: var(--font-weight-regular);
+    --tipText-font-style: var(--font-style-regular);
+
+    /* background */
+    --tipText-background: var(--color-bg-primary);
+
+    /* padding */
+    --tipText-padding: 0;
+
+    /* border */
+    --tipText-border-style: var(--border-style-primary);
+    --tipText-border-width: var(--border-width-primary);
+    --tipText-border-color: var(--border-color-primary);
+    --tipText-border-radius: var(--border-radius-primary);
+    /* questionContainer tipsContainer tipText settings ->*/
+
+    /* <- questionContainer questionFeedback settings */
+    --questionFeedback-grid-template-columns: 1fr;
+    --questionFeedback-grid-template-rows: auto;
+    --questionFeedback-row-gap: var(--spacing_lvl_3);
+    --questionFeedback-column-gap: 0;
+    --questionFeedback-justify-items: stretch;
+    --questionFeedback-align-items: start;
+    --questionFeedback-justify-content: start;
+    --questionFeedback-align-content: start;
+
+    /* font */
+    --questionFeedback-color: var(--color-font-dark-primary);
+    --questionFeedback-font-family: var(--font-family-primary);
+    --questionFeedback-font-size: var(--font-size-primary);
+    --questionFeedback-font-weight: var(--font-weight-regular);
+    --questionFeedback-font-style: var(--font-style-regular);
+
+    /* background */
+    --questionFeedback-background: var(--color-bg-primary);
+
+    /* padding */
+    --questionFeedback-padding: var(--spacing_lvl_0);
+
+    /* border */
+    --questionFeedback-border-style: var(--border-style-primary);
+    --questionFeedback-border-width: 0;
+    --questionFeedback-border-color: var(--border-color-primary);
+    --questionFeedback-border-radius: var(--border-radius-secondary);
+    /* questionContainer questionFeedback settings ->*/
+
+    /* <- questionContainer buttonsContainer settings */
+    --questionContainer-buttonsContainer-grid-template-columns: 1fr;
+    --questionContainer-buttonsContainer-grid-template-rows: auto;
+    --questionContainer-buttonsContainer-row-gap: var(--spacing_lvl_2);
+    --questionContainer-buttonsContainer-column-gap: var(--spacing_lvl_2);
+    --questionContainer-buttonsContainer-justify-items: start;
+    --questionContainer-buttonsContainer-align-items: start;
+    --questionContainer-buttonsContainer-justify-content: start;
+    --questionContainer-buttonsContainer-align-content: start;
+
+    /* font */
+    --questionContainer-buttonsContainer-color: var(--color-font-dark-primary);
+    --questionContainer-buttonsContainer-font-family: var(
+        --font-family-primary
+    );
+    --questionContainer-buttonsContainer-font-size: var(--font-size-primary);
+    --questionContainer-buttonsContainer-font-weight: var(
+        --font-weight-regular
+    );
+    --questionContainer-buttonsContainer-font-style: var(--font-style-regular);
+
+    /* background */
+    --questionContainer-buttonsContainer-background: var(--color-bg-primary);
+
+    /* padding */
+    --questionContainer-buttonsContainer-padding: 0;
+
+    /* border */
+    --questionContainer-buttonsContainer-border-style: var(
+        --border-style-primary
+    );
+    --questionContainer-buttonsContainer-border-width: var(
+        --border-width-primary
+    );
+    --questionContainer-buttonsContainer-border-color: var(
+        --border-color-primary
+    );
+    --questionContainer-buttonsContainer-border-radius: var(
+        --border-radius-primary
+    );
+    /* questionContainer buttonsContainer settings ->*/
+
+    /* <- fill-in */
+    --fillin-font-size: var(--font-size-primary);
+    --fillin-font-family: var(--font-family-primary);
+    --fillin-min-width: 100%;
+    --fillin-border-radius: 3px;
+    --fillin-border-style: solid;
+    --fillin-border-width-normal: 1px;
+    --fillin-border-width-focus: 2px;
+    --fillin-border-color-normal: #000;
+    --fillin-border-color-focus: #000;
+    --fillin-box-shadow: none;
+    --fillin-bg-color: transparent;
+    --fillin-padding: 16px;
+    --fillin-padding-focus: calc(var(--fillin-padding) - 1px);
+    /* fill-in ->*/
+
+    /* <- button settings */
+    --button-font-family: var(--font-family-secondary);
+    --button-font-size: var(--font-size-primary);
+    --button-font-weight: var(--font-weight-bold);
+    --button-font-style: var(--font-style-regular);
+    --button-color-normal: #fff;
+    --button-color-active: #fff;
+    --button-color-hover: #fff;
+    --button-color-disabled: #fff;
+    --button-bg-color-normal: var(--color-normal);
+    --button-bg-color-hover: var(--color-hover);
+    --button-bg-color-active: var(--color-active);
+    --button-bg-color-disabled: var(--color-disabled);
+    --button-border-style: solid;
+    --button-border-width-normal: 0;
+    --button-border-color-normal: var(--color-normal);
+    --button-border-width-active: 0;
+    --button-border-color-active: var(--color-active);
+    --button-border-width-hover: 0;
+    --button-border-color-hover: var(--color-hover);
+    --button-border-width-disabled: 0;
+    --button-border-color-disabled: var(--color-disabled);
+    --button-border-radius: 5px;
+    --button-width: minmax(160px, max-content);
+    --button-padding-top: 1.5rem;
+    --button-padding-right: 2rem;
+    --button-padding-bottom: 1.5rem;
+    --button-padding-left: 2rem;
+    --button-padding: var(--button-padding-top) var(--button-padding-right)
+        var(--button-padding-bottom) var(--button-padding-left);
+    --button-text-align: center;
+    --button-text-shadow: none;
+    --button-box-shadow: none;
+    /* button settings -> */
+
+    /* <- mc/mr input settings */
+    --inputbox-border-color: var(--color-dark-primary);
+    --inputbox-border-width: 1px;
+    --inputbox-bg-color: var(--color-light-primary);
+    --inputbox-marker-color: var(--color-dark-primary);
+    --inputbox-dimension: calc(30px * var(--multiplier));
+    --inputbox-dimension-alternative: calc(30px * var(--multiplier));
+    /* mc */
+    --input-box-border-radius-mc: 50%;
+    /* mr */
+    --input-box-border-radius-mr: 1px;
+
+    /* mc/mr input settings -> */
+
+    /* <- sidebar*/
+    --sidebar-grid-template-columns: 1fr 92px;
+    --sidebar-column-gap: 3rem;
+    --sidebar-row-gap: 0;
+    --sidebar-justify-content: space-between;
+    --sidebar-justify-items: center;
+    --sidebar-align-items: center;
+    --sidebar-width: 100%;
+    --sidebar-padding: 3rem 2rem;
+    --sidebar-background: #d6eef2;
+    --sidebar-box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
+    --sidebar-transform: translateY(-100%);
+    --sidebar-transition: transform 500ms linear;
+
+    --sidebar-opened-transform: translateY(0);
+
+    --sidebar-contentContainer-grid-template-columns: repeat(auto-fit, 150px);
+    --sidebar-contentContainer-grid-template-rows: auto;
+    --sidebar-contentContainer-justify-items: center;
+    --sidebar-contentContainer-justify-content: center;
+    --sidebar-contentContainer-column-gap: 6rem;
+    --sidebar-contentContainer-row-gap: 3rem;
+    --sidebar-contentContainer-width: 100%;
+
+    --sidebar-openerContainer-align-self: center;
+    /*sidebar ->*/
+
+    /* <- pool*/
+    --pool-width: 150px;
+    --pool-height: 150px;
+    --pool-grid-template-columns: repeat(7, 1fr);
+    --pool-grid-template-rows: repeat(7, 1fr);
+
+    --pool-char-width: 100%;
+    --pool-char-grid-column: 2 / 7;
+    --pool-char-grid-row: 1 / 6;
+
+    --pool-status-width: 100%;
+    --pool-status-grid-column: 6 / 8;
+    --pool-status-grid-row: 1 / 3;
+
+    --pool-progress-grid-column: 1 / 8;
+    --pool-progress-grid-row: 5 / 7;
+    --pool-progress-grid-template-columns: 1fr;
+    --pool-progress-grid-template-rows: 1fr;
+    --pool-progress-background: rgb(196, 196, 192);
+    --pool-progress-border-radius: 999px;
+    --pool-progress-height: 70%;
+    --pool-progress-align-self: center;
+
+    --pool-progress-divs-grid-column: 1 / 2;
+    --pool-progress-divs-grid-row: 1 / 2;
+    --pool-progress-divs-border-radius: 999px;
+
+    --pool-progress-bar-width: 100%;
+    --pool-progress-bar-height: 100%;
+    --pool-progress-bar-background: linear-gradient(to right, #00cff2, #00d929);
+
+    --pool-progress-value-grid-template-columns: 1fr;
+    --pool-progress-value-font-size: 14px;
+    --pool-progress-value-text-align: center;
+    --pool-progress-value-font-weight: bold;
+    --pool-progress-value-align-items: center;
+    --pool-progress-value-justify-items: center;
+
+    --pool-name-grid-column: 1 / 8;
+    --pool-name-grid-row: 7 / 8;
+    --pool-name-grid-template-columns: 1fr;
+    --pool-name-align-items: center;
+    --pool-name-justify-items: center;
+    --pool-name-white-space: nowrap;
+    --pool-name-font-size: 14px;
+    /* pool ->*/
+
+    --image-width: 180px;
+}
+
+#allrecords .placeholder {
+    position: relative;
+    box-sizing: border-box;
+    margin: 0 auto;
+    width: 100%;
+    background-color: transparent;
+    z-index: calc(var(--z-index-base) + 5);
+}
+
+#allrecords strong {
+    font-weight: var(--font-weight-bold);
+}
+
+#allrecords em {
+    font-style: var(--font-style-italic);
+}
+
+#allrecords .placeholder.conversation {
+    --test-padding: 0;
+}
+
+#allrecords .placeholder ytvideo-unit {
+    display: flex;
+    justify-content: center;
+}
+
+#allrecords .placeholder.longread {
+    position: relative;
+    padding: 0;
+    background-color: transparent;
+    --button-width: 160px;
+    --button-padding: 1rem 2rem;
+    --button-font-weight: bold;
+    --button-border-radius: 5px;
+    --button-border-width: 0;
+    --button-border-style: solid;
+    --button-border-color-normal: var(--color-normal);
+    --button-border-color-hover: var(--color-hover);
+    --button-color-normal: #fff;
+    --button-color-hover: #fff;
+    --button-bg-color-normal: var(--color-normal);
+    --button-bg-color-hover: var(--color-hover);
+    --button-box-shadow-normal: none;
+    --button-box-shadow-hover: none;
+    --button-text-shadow-normal: none;
+    --button-text-shadow-hover: none;
+    --button-transform-normal: none;
+    --button-transform-hover: none;
+    --button-transform-origin: center;
+
+    --longread-justify-items: start;
+    --longread-align-items: start;
+    --longread-justify-content: start;
+    --longread-align-content: start;
+    --longread-min-height: 5rem;
+    --longread-bg-color: transparent;
+}
+
+#allrecords test-unit {
+    width: 100%;
+    position: relative;
+    z-index: calc(var(--z-index-base) + 899);
+}
+
+#allrecords .off {
+    display: none;
+}
+
+@keyframes spinner {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media screen and (max-width: 1920px) {
+    :root {
+        --max-width: 56.88rem;
+    }
+}
+
+@media screen and (max-width: 960px) {
+    :root {
+        --multiplier: 0.9;
+        --max-width: 38.75rem;
+        --test-padding: 2rem 0 0 0;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    :root {
+        --multiplier: 0.8;
+        --test-padding: 0;
+        --max-width: 28.75rem;
+    }
+
+    #allrecords .placeholder {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    :root {
+        --max-width: 18.75rem;
+    }
+
+    #allrecords .placeholder {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }
+}

@@ -1,0 +1,1407 @@
+import { Test } from './components/test.js';
+import { Branching } from './components/branching.js';
+import { Longread } from './components/longread.js';
+import { Sidebar } from './components/sidebar.js';
+import { YTVideo } from './components/ytvideo.js';
+import { scoringFunctions } from './scoringFunctions.js';
+import { statementFunctions } from './statementFunctions.js';
+import { AuxFunctions } from './auxFunctions.js';
+
+export class App {
+    constructor() {}
+
+    static init() {
+        App.checkTestMode();
+        XAPI.getData()
+            .then((data) => (XAPI.data = data))
+            .then(() => {
+                /* ADL.XAPIWrapper.changeConfig(XAPI.data); */
+                App.container = document.querySelector('#allrecords');
+                App.placeholders = document.querySelectorAll('.placeholder');
+
+                App.completedInteractions = new Set();
+                App.currentInteractions = new Set();
+                App.course = {};
+            })
+            .then(() => XAPI.getState(config.id))
+            .then((data) => {
+                App.createCourseObject(data);
+                console.log(
+                    `%cCourse ${App.course.data.nameRus} is launched.`,
+                    'color:blue;font-size:18px;font-weight:bold;'
+                );
+                XAPI.sendStatement(
+                    new Statement(App.course, 'launched').statement
+                );
+            })
+            .then(() => XAPI.getState(`${config.trackId}/globalPools`))
+            .then((data) => {
+                let contextData =
+                    XAPI.data.context?.contextActivities?.grouping?.[0]
+                        ?.definition?.extensions?.[
+                        config.globalMetrics[0].metricExtension
+                    ];
+                if (contextData) {
+                    App.course.data.globalPools.forEach((p) => {
+                        let pool = contextData.filter((d) => d.id === p.id)[0];
+                        p.value.initial = pool.score;
+                    });
+                } else if (
+                    !contextData &&
+                    !('isFake' in data) &&
+                    !('errorId' in data)
+                ) {
+                    App.course.data.globalPools = data.globalPools;
+                }
+
+                App.recalculateGlobalPools();
+                App.setListeners();
+                App.createCourse();
+                App.setSidebar();
+            })
+            .then(() => App.setIntersectionObserver());
+    }
+
+    static setSidebar() {
+        let sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            let sb = document.createElement('sidebar-unit');
+            App.course.sidebar = sb;
+            sb.init(sidebar, { globalPools: App.course.data.globalPools });
+        }
+    }
+
+    static recalculateGlobalPools() {
+        if ('globalPools' in App.course.data) {
+            App.course.data.globalPools.forEach((p) => {
+                if ('scoringFunction' in p && p.scoringFunction !== '') {
+                    scoringFunctions[p.scoringFunction](p);
+                }
+            });
+
+            if ('sidebar' in App.course) {
+                App.course.sidebar.updatePools();
+            }
+        }
+    }
+
+    static processMetric(metric) {
+        if ('statementFunction' in metric) {
+            statementFunctions[metric.statementFunction](metric);
+        }
+    }
+
+    static checkTestMode() {
+        if (window.location.search === '') {
+            console.log(
+                '%cCourse launched in the test mode.',
+                'font-weight:bold; color: red; font-size: 18px;'
+            );
+            App.testMode = true;
+        } else {
+            App.testMode = false;
+        }
+    }
+
+    /* static async getCourseState() {
+        return await XAPI.getState(config.id);
+    } */
+
+    static createCourseObject(state = {}) {
+        console.log(
+            '%cCOURSE STATE',
+            'font-size:18px;font-weight:bold;color:blue;'
+        );
+        console.log(state);
+        if (state?.date) {
+            console.log(
+                `%cResumed from ${state.date[state.date.length - 1]}`,
+                'color:gray;'
+            );
+            Object.assign(App.course, {
+                data: config,
+                startTime: new Date(),
+                result: state.result,
+                passed: state.passed,
+                completed: state.completed,
+                scores: state.scores,
+                score: state.score,
+                pools: state.pools,
+                maxPossibleScore: 0,
+                maxRequiredScore: 0,
+                attempt: state.attempt,
+                state: state,
+            });
+            App.course.attempt++;
+        } else {
+            console.log('%cNewly started', 'color:gray;');
+            Object.assign(App.course, {
+                data: config,
+                startTime: new Date(),
+                result: false,
+                passed: false,
+                completed: false,
+                scores: [],
+                score: 0,
+                pools: config?.pools?.items ? config.pools.items : [],
+                maxPossibleScore: 0,
+                maxRequiredScore: 0,
+                attempt: 0,
+                state: {
+                    completed: false,
+                    passed: false,
+                    result: false,
+                    scores: [],
+                    pools: [],
+                    metricsData: [],
+                    attempt: 0,
+                    date: [],
+                    duration: [],
+                },
+            });
+        }
+
+        if (
+            App.course.data?.pools?.global &&
+            App.course.data.pools.global === true
+        ) {
+            // rewrite local pools data with global data
+            App.getGlobalPools();
+        }
+    }
+
+    static async setState() {
+        let date = new Date();
+
+        App.course.state.date.push(date);
+
+        App.course.state.duration.push(
+            moment
+                .duration(
+                    Math.round((date - App.course.startTime) / 1000),
+                    'seconds'
+                )
+                .toISOString()
+        );
+        App.course.state.id = App.course.data.id;
+        App.course.state.completed = App.course.completed;
+        App.course.state.passed = App.course.passed;
+        App.course.state.result = App.course.result;
+        App.course.state.scores = App.course.scores;
+        App.course.state.score = App.course.score;
+        /*         App.course.state.pools = App.course.pools; */
+        App.course.state.attempt = App.course.attempt;
+        App.course.state.processedScores = App.course.processedScores;
+
+        console.log(
+            '%c...posting course state',
+            'font-size: 18px; color: blue; font-weight: bold;'
+        );
+        console.log(App.course.state);
+        XAPI.postState(App.course.data.id, App.course.state);
+
+        if (App.course.data?.metrics) {
+            console.log(
+                '%c...posting metrics',
+                'font-size: 18px; color: blue; font-weight: bold;'
+            );
+            let currentMetric = config.globalMetrics.filter((metric) =>
+                App.course.data.metrics.includes(metric.id)
+            )[0];
+
+            let statements = [];
+            statements.push(
+                XAPI.sendStatement(
+                    new Statement(App.course, 'calculated', {
+                        metric: currentMetric,
+                    }).statement
+                )
+            );
+
+            return Promise.allSettled(statements);
+        } else {
+            return new Promise((resolve, reject) => resolve());
+        }
+    }
+
+    static async createCourse() {
+        let states = config.interactions.map(async (interaction, index) => {
+            return await XAPI.getState(interaction.id).then((state) => {
+                console.group('STATE FOR: ' + state.id);
+                if ('isFake' in state) {
+                    console.log('%cFake state recieved:', 'color:orange;');
+                } else {
+                    console.log('%cState recieved:', 'color:green;');
+                }
+                console.log(state);
+                console.groupEnd();
+
+                let dbase = {};
+                if (
+                    !state.id.includes('longread') ||
+                    !state.id.includes('ytvideo')
+                ) {
+                    if (db.length > 0) {
+                        dbase = db.filter((i) => i.id === state.id)[0];
+                    }
+                }
+
+                let taskElement = document.createElement(
+                    `${interaction.type}-unit`
+                );
+
+                console.log(
+                    `%c${interaction.id} -> ${state.completed}`,
+                    'color:orange;font-weight:bold;'
+                );
+                taskElement.init(
+                    App.placeholders[index],
+                    interaction,
+                    dbase,
+                    state
+                );
+
+                if (interaction.evaluated) {
+                    App.currentInteractions.add(taskElement);
+                }
+
+                if (interaction.type === 'longread') {
+                    App.observerLongread.observe(taskElement);
+                } else {
+                    App.observer.observe(taskElement);
+                }
+
+                if ('completed' in state && state.completed === true) {
+                    App.completedInteractions.add(taskElement);
+                }
+            });
+        });
+
+        Promise.allSettled(states).then((results) => {
+            App.getMaxPossibleScore();
+            App.getMaxRequiredScore();
+            App.getPassingScore();
+            // App.getScore(); // надо ли пересчитывать при resume
+            addYTVideoScript();
+        });
+    }
+
+    static getMaxPossibleScore() {
+        App.currentInteractions.forEach((i) => {
+            App.course.maxPossibleScore += Number(i.weight);
+        });
+    }
+
+    static getMaxRequiredScore() {
+        Array.from(App.currentInteractions)
+            .filter((i) => i.data.required !== 'none')
+            .forEach((i) => {
+                App.course.maxRequiredScore += Number(i.weight);
+            });
+    }
+
+    static getPassingScore() {
+        if (App.course.data.passingScore === 'max') {
+            App.course.passingScore = App.course.maxRequiredScore;
+        } else if (Number(App.course.data.passingScore)) {
+            App.course.passingScore = Number(App.course.data.passingScore);
+        }
+    }
+
+    /* static isInViewport(elem) {
+        let bounding = elem.getBoundingClientRect();
+        return bounding.top - 50 <= window.innerHeight;
+    } */
+
+    static setIntersectionObserver() {
+        let options = {
+            root: null,
+            rootMargin: '100px',
+            threshold: 0,
+        };
+
+        let optionsLongread = {
+            root: null,
+            rootMargin: '2200px',
+            threshold: 0,
+        };
+
+        let callback = (entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    if (
+                        entry.target.tagName !== 'longread-unit'.toUpperCase()
+                    ) {
+                        console.log(
+                            `%c${entry.target.tagName} ${entry.target.data.id} is in viewport.`,
+                            'color:gray;'
+                        );
+                        entry.target['startTime'] = new Date();
+                        entry.target.emitEvent('interacted');
+
+                        observer.unobserve(entry.target);
+                    }
+                }
+                // Each entry describes an intersection change for one observed
+                // target element:
+                //   entry.boundingClientRect
+                //   entry.intersectionRatio
+                //   entry.intersectionRect
+                //   entry.isIntersecting
+                //   entry.rootBounds
+                //   entry.target
+                //   entry.time
+            });
+        };
+
+        let callbackLongread = (entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    if (
+                        entry.target.tagName === 'longread-unit'.toUpperCase()
+                    ) {
+                        console.log(
+                            `%c${entry.target.tagName} ${entry.target.data.id} is in viewport.`,
+                            'color:gray;'
+                        );
+                        entry.target.completed = true;
+                        entry.target.passed = true;
+                        entry.target.score = 1;
+                        entry.target.setState('longread is in viewport');
+                        entry.target.emitEvent('completed');
+                        entry.target.emitEvent('passed');
+                        observer.unobserve(entry.target);
+                    }
+                }
+            });
+        };
+
+        App.observer = new IntersectionObserver(callback, options);
+        App.observerLongread = new IntersectionObserver(
+            callbackLongread,
+            optionsLongread
+        );
+    }
+
+    static returnToTrack() {
+        console.log(
+            '%cRETURN TO TRACK',
+            'color:blue; font-weight: bold; font-size: 18px;'
+        );
+        (function () {
+            if (window.top) {
+                return window.top;
+            }
+            return window.parent;
+        })().location = '/back/';
+        return false;
+    }
+
+    static exitCourse() {
+        App.finishCourse()
+            .then((resp) => App.setState())
+            .then((resp) => {
+                let statements = Array.from(App.currentInteractions).map(
+                    (i) => {
+                        XAPI.sendStatement(
+                            new Statement(i, 'exited').statement
+                        );
+                    }
+                );
+
+                return Promise.allSettled(statements);
+            })
+            .then((resp) =>
+                XAPI.sendStatement(
+                    new Statement(App.course, 'exited').statement
+                )
+            )
+            .then((resp) => App.returnToTrack());
+    }
+
+    static getScore() {
+        let score = 0;
+        App.completedInteractions.forEach((i) => {
+            if (i.result) {
+                score += i.weight;
+            }
+        });
+        App.course.scores.push(score);
+        App.course.score = score;
+
+        if (App.course.data?.scoringFunction) {
+            App.course.processedScores = scoringFunctions[
+                App.course.data.scoringFunction
+            ](App.course);
+        } else {
+            App.course.processedScores = Array.from(App.course.scores);
+        }
+    }
+
+    static finishCourse() {
+        App.checkCourseCompleted();
+        let statements = [];
+        if (App.course.completed) {
+            console.log(
+                '%cCOURSE COMPLETED',
+                'color:green;font-size:18px;font-weight:bold;'
+            );
+            statements.push(
+                XAPI.sendStatement(
+                    new Statement(App.course, 'completed').statement
+                )
+            );
+
+            App.getScore();
+
+            if (
+                App.course.scores[App.course.scores.length - 1] >=
+                App.course.passingScore
+            ) {
+                App.course.result = true;
+                App.course.passed = true;
+                console.log(
+                    '%cCOURSE PASSED',
+                    'color:green;font-size:18px;font-weight:bold;'
+                );
+                statements.push(
+                    XAPI.sendStatement(
+                        new Statement(App.course, 'passed').statement
+                    )
+                );
+            } else {
+                App.course.result = false;
+                App.course.passed = false;
+                console.log(
+                    '%cCOURSE FAILED',
+                    'color:red;font-size:18px;font-weight:bold;'
+                );
+                statements.push(
+                    XAPI.sendStatement(
+                        new Statement(App.course, 'failed').statement
+                    )
+                );
+            }
+        } else {
+            console.log(
+                '%cCOURSE INCOMPLETE',
+                'color:red;font-size:18px;font-weight:bold;'
+            );
+        }
+
+        return Promise.allSettled(statements);
+    }
+
+    static checkCourseCompleted() {
+        if (
+            App.completedInteractions.size ===
+            config.interactions.filter((i) => i.required !== 'none').length
+        ) {
+            App.course.completed = true;
+        }
+    }
+
+    static setListeners() {
+        /* App.container.addEventListener('get_state', (e) => {
+            let state = XAPI.getState(e.detail.obj.data.id)
+        }) */
+
+        App.container.addEventListener('completed', (e) => {
+            App.completedInteractions.add(e.detail.obj);
+            if (e.detail.obj.data?.evaluated === true) {
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'completed').statement
+                );
+            } else {
+                console.log(
+                    `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                    'color:red;'
+                );
+            }
+
+            App.checkCourseCompleted();
+        });
+
+        App.container.addEventListener('state_changed', (e) => {
+            if (e.detail.obj.data.id.startsWith(App.course.data.trackId)) {
+                XAPI.postState(e.detail.obj.data.id, e.detail.obj.state);
+            } else {
+                XAPI.postState(
+                    `${e.detail.obj.parentId}/${e.detail.obj.data.id}`,
+                    e.detail.obj.state
+                );
+            }
+
+            // add prop to decide which results to use.
+            if (
+                e.detail.obj.tagName !== 'TEST-UNIT' &&
+                'userPoolsResult' in e.detail.obj &&
+                e.detail.obj.userPoolsResult.length > 0 &&
+                'globalPools' in App.course.data &&
+                e.detail.obj.status === 'completed'
+            ) {
+                e.detail.obj.userPoolsResult.forEach((p) => {
+                    let globalPool = App.course.data.globalPools.filter(
+                        (gp) => gp.id === p.id
+                    )[0];
+                    globalPool.scores.push(p.value);
+                });
+                App.recalculateGlobalPools();
+                XAPI.postState(`${config.trackId}/globalPools`, {
+                    globalPools: App.course.data.globalPools,
+                });
+            }
+
+            if (
+                'parent' in e.detail.obj &&
+                'questionsSettings' in e.detail.obj.parent.data &&
+                'metrics' in e.detail.obj.parent.data.questionsSettings &&
+                e.detail.obj.parent.data.questionsSettings.metrics !== '' &&
+                e.detail.obj.status === 'completed'
+            ) {
+                let currentMetric = config.globalMetrics.filter((metric) =>
+                    e.detail.obj.parent.data.questionsSettings.metrics.includes(
+                        metric.id
+                    )
+                )[0];
+
+                App.processMetric(currentMetric);
+
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'calculated', {
+                        metric: currentMetric,
+                    }).statement
+                );
+            } else if (
+                'metrics' in e.detail.obj.data &&
+                e.detail.obj.status === 'completed'
+            ) {
+                let currentMetric = config.globalMetrics.filter((metric) =>
+                    e.detail.obj.data.metrics.includes(metric.id)
+                )[0];
+                App.processMetric(currentMetric);
+
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'calculated', {
+                        metric: currentMetric,
+                    }).statement
+                );
+            }
+
+            if (
+                'parent' in e.detail.obj &&
+                e.detail.obj.status === 'completed' &&
+                e.detail.obj.checked &&
+                e.detail.obj.parent.data.structure[0] === 'conversation'
+            ) {
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'send').statement
+                );
+            }
+        });
+
+        App.container.addEventListener('created', (e) => {
+            App.observer.observe(e.detail.obj);
+        });
+
+        App.container.addEventListener('played', (e) => {
+            XAPI.sendStatement(new Statement(e.detail.obj, 'played').statement);
+        });
+
+        App.container.addEventListener('paused', (e) => {
+            XAPI.sendStatement(new Statement(e.detail.obj, 'paused').statement);
+        });
+
+        App.container.addEventListener('seeked', (e) => {
+            XAPI.sendStatement(new Statement(e.detail.obj, 'seeked').statement);
+        });
+
+        App.container.addEventListener('passed', (e) => {
+            if (e.detail.obj.data?.evaluated === true) {
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'passed').statement
+                );
+            } else {
+                console.log(
+                    `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                    'color:red;'
+                );
+            }
+        });
+
+        App.container.addEventListener('interacted', (e) => {
+            if (e.detail.obj.data?.evaluated === true) {
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'interacted').statement
+                );
+            } else {
+                console.log(
+                    `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                    'color:red;'
+                );
+            }
+        });
+
+        App.container.addEventListener('failed', (e) => {
+            if (e.detail.obj.data?.evaluated === true) {
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'failed').statement
+                );
+            } else {
+                console.log(
+                    `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                    'color:red;'
+                );
+            }
+        });
+
+        App.container.addEventListener('answered', (e) => {
+            if (e.detail.obj.parent.data?.evaluated === true) {
+                XAPI.sendStatement(
+                    new Statement(e.detail.obj, 'answered').statement
+                );
+            } else {
+                console.log(
+                    `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                    'color:red;'
+                );
+            }
+        });
+
+        App.container.addEventListener('exited', (e) => {
+            App.exitCourse();
+        });
+
+        document.addEventListener(
+            'visibilitychange',
+            (e) => {
+                if (document.visibilityState === 'hidden') {
+                    Array.from(
+                        document.querySelectorAll('ytvideo-unit')
+                    ).forEach((u) => u.player.pauseVideo());
+                }
+            },
+            false
+        );
+    }
+
+    static getIds() {
+        let data = App.course.data.interactions.map((i) => {
+            return [i.structure[1], i.id];
+        });
+        console.table(data);
+    }
+}
+
+class XAPI {
+    constructor() {}
+
+    static getURL(stateId) {
+        let agentObj = {
+            objectType: 'Agent',
+            name: XAPI.data.actor.name,
+            account: {
+                name: XAPI.data.actor.account.name,
+                homePage: XAPI.data.actor.account.homePage,
+            },
+        };
+
+        let agent = encodeURIComponent(JSON.stringify(agentObj).slice(1, -1));
+
+        let activityId = config.id;
+
+        if (stateId.endsWith('globalPools')) {
+            activityId = config.trackId;
+        }
+
+        let str = `activityId=${activityId}&stateId=${stateId}&agent={${agent}}`;
+
+        let url = `${XAPI.data.endpoint}activities/state?${str}`;
+
+        return url;
+    }
+
+    static async getState(stateId) {
+        console.log(`%c...getting state for: ${stateId}`, 'color:gray;');
+        if (!App.testMode) {
+            let url = XAPI.getURL(stateId);
+            let res = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            });
+
+            if (res.ok) {
+                let data = await res.json();
+                return data;
+            } else {
+                let fakeResponse = new Promise((resolve, reject) => {
+                    resolve({ id: stateId, isFake: true });
+                });
+                return fakeResponse;
+            }
+        } else {
+            let fakeResponse = new Promise((resolve, reject) => {
+                resolve({ id: stateId, isFake: true });
+            });
+            return fakeResponse;
+        }
+    }
+
+    static async postState(stateId, obj) {
+        if (!App.testMode) {
+            let url = XAPI.getURL(stateId);
+            let res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                body: JSON.stringify(obj),
+            });
+            console.log(`%cState posted: ${res.ok}`, 'color:gray;');
+            return res.ok;
+        }
+    }
+
+    static async deleteState(stateId) {
+        if (!App.testMode) {
+            let url = XAPI.getURL(stateId);
+            let res = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            });
+            console.log(`%cState deleted: ${res.ok}`, 'color:gray;');
+            return res.ok;
+        }
+    }
+
+    static deleteAllStates(clearGlobalPools = false) {
+        let deleted = [];
+
+        deleted.push(XAPI.deleteState(App.course.data.id));
+
+        if (clearGlobalPools) {
+            deleted.push(
+                XAPI.deleteState(App.course.data.trackId + '/globalPools')
+            );
+        }
+
+        App.course.data.interactions.forEach((i) => {
+            deleted.push(XAPI.deleteState(i.id));
+            if (i.type === 'test') {
+                // надо ли чистить остальные объекты
+                db.filter((item) => item.id === i.id)[0].iterables.forEach(
+                    (q) => {
+                        deleted.push(XAPI.deleteState(i.id + '/' + q.id));
+                    }
+                );
+            }
+        });
+
+        Promise.allSettled(deleted).then(() =>
+            console.log(
+                '%cALL STATES CLEARED',
+                'font-weight:bold;color:red;font-size:18px;'
+            )
+        );
+    }
+
+    static async getData() {
+        if (!App.testMode) {
+            if (
+                window.location.search.includes('xAPILaunchService') &&
+                window.location.search.includes('xAPILaunchKey')
+            ) {
+                console.log(
+                    '%cxAPI Launch found',
+                    'color:blue;font-size:16px;font-weight: bold;'
+                );
+
+                let queryParams = XAPI.parseQuery(window.location.search);
+                const response = await fetch(
+                    queryParams.xAPILaunchService +
+                        'launch/' +
+                        queryParams.xAPILaunchKey,
+                    {
+                        method: 'POST',
+                    }
+                );
+
+                return await response.json();
+            } else {
+                let queryParams = XAPI.parseQuery(window.location.search);
+                let context = {};
+                if (queryParams.context) {
+                    context = JSON.parse(queryParams.context);
+                }
+                let data = {
+                    endpoint: queryParams.endpoint,
+                    auth: queryParams.auth,
+                    actor: JSON.parse(queryParams.actor),
+                    registration: queryParams.registration,
+                    context: context,
+                };
+
+                if (Array.isArray(data.actor.account)) {
+                    data.actor.account = data.actor.account[0];
+                }
+
+                if (Array.isArray(data.actor.name)) {
+                    data.actor.name = data.actor.name[0];
+                }
+
+                if (
+                    data.actor.account &&
+                    data.actor.account.accountServiceHomePage
+                ) {
+                    data.actor.account.homePage =
+                        data.actor.account.accountServiceHomePage;
+                    data.actor.account.name = data.actor.account.accountName;
+                    delete data.actor.account.accountServiceHomePage;
+                    delete data.actor.account.accountName;
+                }
+
+                return new Promise((resolve, reject) => resolve(data));
+            }
+        } else {
+            return new Promise((resolve, reject) =>
+                resolve({
+                    actor: 'Unknown',
+                })
+            );
+        }
+    }
+
+    static parseQuery(queryString) {
+        let query = {};
+        let pairs = (
+            queryString[0] === '?' ? queryString.substr(1) : queryString
+        ).split('&');
+
+        pairs.forEach((pair) => {
+            let [key, value] = pair.split('=');
+            query[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        });
+
+        return query;
+    }
+
+    static async sendStatement(stmt) {
+        console.log('%c...sending statement', 'color:gray;');
+        console.log(stmt);
+        if (!App.testMode) {
+            const response = await fetch(XAPI.data.endpoint + 'statements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                },
+                body: JSON.stringify(stmt),
+            });
+
+            return await response.json();
+        }
+    }
+}
+
+class Statement {
+    constructor(obj, verb, extraData = {}) {
+        this.obj = obj;
+        this.verbString = verb;
+        this.time = new Date();
+        this.extraData = extraData;
+    }
+
+    get id() {
+        return {
+            id: ADL.ruuid(), //replace with crypto.randomUUID() when better browser support
+        };
+    }
+
+    get object() {
+        let object = {
+            object: {
+                id: '',
+                definition: {},
+            },
+        };
+
+        if (this.verbString === 'send') {
+            object.object.id = `${this.obj.parentId}/${
+                this.obj.data.id
+            }/message_${AuxFunctions.uuid()}`;
+            object.object.definition = {
+                name: {
+                    'ru-RU': this.obj.exactUserAnswer,
+                },
+                type: 'http://id.tincanapi.com/activitytype/chat-message',
+            };
+            object.object.objectType = 'Activity';
+        } else if (this.verbString === 'calculated') {
+            let name = `${this.extraData.metric.nameRus}`;
+            if ('metricName' in this.obj.data) {
+                name = `${name} - ${this.obj.data.metricName}`;
+            }
+
+            object.object.id =
+                this.obj.data?.metrics ??
+                this.obj?.parent?.data?.questionsSettings?.metrics;
+            object.object.definition = {
+                name: {
+                    'en-US': name,
+                    'ru-RU': name,
+                },
+                description: {
+                    'en-US': name,
+                    'ru-RU': name,
+                },
+                type: this.extraData.metric.metricType,
+            };
+        } else {
+            object.object.id = this.obj.data.id;
+
+            object.object.definition = {
+                name: {
+                    'en-US': this.obj.data?.nameRus || this.obj.data.id,
+                    'ru-RU': this.obj.data?.nameRus || this.obj.data.id,
+                },
+                description: {
+                    'en-US':
+                        this.obj.data?.description ||
+                        this.obj.data?.nameRus ||
+                        this.obj.data.id,
+                    'ru-RU':
+                        this.obj.data?.description ||
+                        this.obj.data?.nameRus ||
+                        this.obj.data.id,
+                },
+            };
+        }
+
+        if (this.obj.data?.answers) {
+            if (
+                this.verbString !== 'calculated' &&
+                this.verbString !== 'send'
+            ) {
+                object.object.id = `${this.obj.parentId}/${this.obj.data.id}`;
+                if (
+                    this.obj.data.type === 'mc' ||
+                    this.obj.data.type === 'mr'
+                ) {
+                    Object.assign(object.object.definition, {
+                        choices: this.choices,
+                        correctResponsesPattern: this.correctResponsesPattern,
+                        type: this.type,
+                        interactionType: this.interactionType,
+                    });
+                } else if (
+                    this.obj.data.type === 'range' ||
+                    this.obj.data.type === 'fill-in' ||
+                    this.obj.data.type === 'long-fill-in'
+                ) {
+                    Object.assign(object.object.definition, {
+                        correctResponsesPattern: this.correctResponsesPattern,
+                        type: this.type,
+                        interactionType: this.interactionType,
+                    });
+                }
+            }
+        }
+
+        return object;
+    }
+
+    get context() {
+        let object = {
+            context: {
+                registration: XAPI.data.registration,
+                contextActivities: {
+                    grouping:
+                        XAPI.data?.context?.contextActivities?.grouping || [],
+                },
+            },
+        };
+
+        if (this.verbString === 'send') {
+            Object.assign(object.context.contextActivities, {
+                parent: [
+                    {
+                        id: `${this.obj.parentId}/conversation`,
+                        objectType: 'Activity',
+                        definition: {
+                            name: {
+                                'ru-RU': 'conversation',
+                            },
+                        },
+                    },
+                ],
+            });
+
+            Object.assign(object.context, {
+                extensions: {
+                    'contextExt:learnerId': [XAPI.data.actor],
+                },
+            });
+        }
+
+        if (this.verbString === 'calculated') {
+            Object.assign(object.context.contextActivities, {
+                parent: [
+                    {
+                        id: App.course.data.id,
+                    },
+                ],
+                category: [
+                    {
+                        id: this.extraData.metric.metricProfile,
+                    },
+                ],
+            });
+        }
+
+        if (this.obj instanceof YTVideo) {
+            Object.assign(object.context.contextActivities, {
+                category: [
+                    {
+                        id: 'https://w3id.org/xapi/video',
+                    },
+                ],
+            });
+
+            Object.assign(object.context, {
+                extensions: {
+                    'contextExt:viewId': this.obj.viewId,
+                    'contextExt:videoDuration': this.obj.vidData.duration,
+                },
+            });
+
+            if (this.verb === 'played') {
+                Object.assign(object.context.extensions, {
+                    'contextExt:speed': this.obj.vidData.speed,
+                    'contextExt:volume': this.obj.vidData.volume,
+                    'contextExt:fullScreen': this.obj.vidData.fullscreen,
+                    'contextExt:quality': this.obj.vidData.quality,
+                    'contextExt:screenSize': this.obj.vidData.screenSize,
+                    'contextExt:focus': this.obj.vidData.focus,
+                });
+            }
+
+            if (this.verb === 'interacted') {
+                Object.assign(object.context.extensions, {
+                    'contextExt:speed': this.obj.vidData.speed,
+                });
+            }
+        }
+
+        if (this.obj.parentId) {
+            if (
+                this.verbString !== 'calculated' &&
+                this.verbString !== 'send'
+            ) {
+                Object.assign(object.context.contextActivities, {
+                    parent: [
+                        {
+                            id: this.obj.parentId,
+                            objectType: 'Activity',
+                        },
+                    ],
+                });
+            }
+        }
+
+        return object;
+    }
+
+    get verb() {
+        return {
+            verb: verbs[this.verbString],
+        };
+    }
+
+    get actor() {
+        return {
+            actor: XAPI.data.actor,
+        };
+    }
+
+    get result() {
+        let object = {
+            result: {},
+        };
+
+        if (this.verbString === 'completed') {
+            Object.assign(object.result, {
+                completion: true,
+                duration: moment
+                    .duration(
+                        Math.round((this.time - this.obj.startTime) / 1000),
+                        'seconds'
+                    )
+                    .toISOString(),
+            });
+        }
+
+        if (this.verbString === 'passed' || this.verbString === 'failed') {
+            Object.assign(object.result, {
+                success: this.verbString === 'passed' ? true : false,
+                score: {
+                    raw: this.obj.score,
+                    scaled: (1 / this.obj.maxPossibleScore) * this.obj.score,
+                    min: 0,
+                    max: this.obj.maxPossibleScore,
+                },
+                duration: moment
+                    .duration(
+                        Math.round((this.time - this.obj.startTime) / 1000),
+                        'seconds'
+                    )
+                    .toISOString(),
+            });
+        }
+
+        if (this.verbString === 'exited') {
+            Object.assign(object.result, {
+                duration: moment
+                    .duration(
+                        Math.round((this.time - this.obj.startTime) / 1000),
+                        'seconds'
+                    )
+                    .toISOString(),
+            });
+        }
+
+        if (this.verbString === 'send') {
+            Object.assign(object.result, {
+                success: true,
+                response: '',
+            });
+        }
+
+        if (this.verbString === 'answered') {
+            if (this.obj.data.type === 'mc' || this.obj.data.type === 'mr') {
+                Object.assign(object.result, {
+                    success: this.obj.result,
+                    response: this.obj.userAnswer
+                        .filter((e) => e[1] === true)
+                        .map((e) => e[0])
+                        .join('[,]'),
+                });
+            } else if (
+                this.obj.data.type === 'range' ||
+                this.obj.data.type === 'fill-in' ||
+                this.obj.data.type === 'long-fill-in'
+            ) {
+                Object.assign(object.result, {
+                    success: this.obj.result,
+                    response: this.obj.exactUserAnswer,
+                });
+            }
+        }
+
+        if (this.verbString === 'calculated') {
+            if (
+                'statement' in this.extraData.metric &&
+                'result' in this.extraData.metric.statement
+            ) {
+                AuxFunctions.mergeDeep(
+                    object.result,
+                    this.extraData.metric.statement.result
+                );
+            } else {
+                Object.assign(object.result, {
+                    score: {
+                        raw: this.metricScore.raw,
+                    },
+                    extensions: {
+                        'resultExt:changed': this.metricScore.changed,
+                    },
+                });
+            }
+        }
+
+        if (this.obj instanceof YTVideo) {
+            Object.assign(object.result, {
+                extensions: {
+                    'resultExt:viewedRanges': this.obj.vidData.ranges,
+                },
+            });
+            delete object.result.duration;
+            if (this.verbString === 'seeked') {
+                Object.assign(object.result.extensions, {
+                    'resultExt:from': this.obj.vidData.seekedData[0],
+                    'resultExt:to': this.obj.vidData.seekedData[1],
+                });
+            }
+            if (this.verbString === 'paused') {
+                Object.assign(object.result.extensions, {
+                    'resultExt:paused': this.obj.vidData.currentTime,
+                });
+            }
+            if (this.verbString === 'played') {
+                Object.assign(object.result.extensions, {
+                    'resultExt:resumed': this.obj.vidData.resumed,
+                });
+            }
+        }
+
+        return object;
+    }
+
+    get metricScore() {
+        let that = this;
+        let result = {
+            changed: 0,
+            raw: 0,
+        };
+
+        if (this.obj.processedScores.length === 1) {
+            result.changed = this.obj.processedScores[0];
+            result.raw = this.obj.processedScores[0];
+        } else if (this.obj.processedScores.length > 1) {
+            let lastValue =
+                this.obj.processedScores[this.obj.processedScores.length - 1];
+            let maxValue = Math.max(...this.obj.processedScores.slice(0, -1));
+            if (lastValue >= maxValue) {
+                result.changed = lastValue - maxValue;
+                result.raw = lastValue;
+            } else {
+                result.changed = 0;
+                result.raw = maxValue;
+            }
+        }
+        return result;
+    }
+
+    get choices() {
+        if (this.obj.data.type === 'mc' || this.obj.data.type === 'mr') {
+            return this.obj.data.answers.map((a) => {
+                return {
+                    id: a.id,
+                    description: {
+                        'en-US': a.text,
+                        'ru-RU': a.text,
+                    },
+                };
+            });
+        }
+    }
+
+    get correctResponsesPattern() {
+        if (this.obj.data.type === 'mr' || this.obj.data.type === 'mc') {
+            return [
+                this.obj.data.answers
+                    .filter((a) => {
+                        if (a.correct) {
+                            return a;
+                        }
+                    })
+                    .map((a) => a.id)
+                    .join('[,]'),
+            ];
+        } else if (this.obj.data.type === 'range') {
+            if (this.obj.data.answers.length > 0) {
+                return this.obj.data.answers
+                    .filter((a) => {
+                        if (a.correct) {
+                            return a;
+                        }
+                    })
+                    .map((a) => a.id);
+            } else {
+                let arr = [];
+                for (
+                    let i = this.obj.data.range[0];
+                    i <= this.obj.data.range[1];
+                    i++
+                ) {
+                    arr.push(i.toString());
+                }
+                return arr;
+            }
+        } else if (
+            this.obj.data.type === 'fill-in' ||
+            this.obj.data.type === 'long-fill-in'
+        ) {
+            let arr = [];
+            this.obj.data.answers.forEach((a) => arr.push(a.text));
+            return arr;
+        }
+    }
+
+    get type() {
+        if (
+            this.obj.data.type === 'mc' ||
+            this.obj.data.type === 'mr' ||
+            this.obj.data.type === 'range' ||
+            this.obj.data.type === 'fill-in' ||
+            this.obj.data.type === 'long-fill-in'
+        ) {
+            return 'http://adlnet.gov/expapi/activities/cmi.interaction';
+        }
+    }
+
+    get interactionType() {
+        if (this.obj.data.type === 'mc' || this.obj.data.type === 'mr') {
+            return 'choice';
+        } else if (
+            this.obj.data.type === 'range' ||
+            this.obj.data.type === 'fill-in'
+        ) {
+            return 'fill-in';
+        } else if (this.obj.data.type === 'long-fill-in') {
+            return 'long-fill-in';
+        }
+    }
+
+    get timestamp() {
+        return { timestamp: this.time };
+    }
+
+    get statement() {
+        return Object.assign(
+            {},
+            this.id,
+            this.actor,
+            this.verb,
+            this.object,
+            this.context,
+            this.timestamp,
+            this.result
+        );
+    }
+}
+
+window.addEventListener('load', function () {
+    window.App = App;
+    window.XAPI = XAPI;
+    App.init();
+});
+
+// functions to initialize YouTube iFrame API
+
+function addYTVideoScript() {
+    let tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    let firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+window.onYouTubeIframeAPIReady = () => {
+    console.log('%cYT iFrame API ready', 'color:blue;');
+    let vidDivs = document.querySelectorAll('ytvideo-unit');
+    setTimeout(function () {
+        vidDivs.forEach((div) => {
+            div.setPlayer();
+        });
+    }, 1000);
+};
