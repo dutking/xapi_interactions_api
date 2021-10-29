@@ -1048,14 +1048,23 @@ export class QuestionRange extends HTMLElement {
     }
 
     get userAnswer() {
-        if (this.data.answers.length > 0) {
-            this.data.answers.forEach((a) => {
-                if (a.text.toString() === that.exactUserAnswer.toString()) {
-                    return [[a.id, true]];
-                }
-            });
+        let that = this;
+        if (
+            that.data.answers.length === 1 &&
+            that.data.answers[0].text === ''
+        ) {
+            return [[that.data.answers[0].id, true]];
         } else {
-            return [[`${this.data.id}a1`, true]];
+            let answers = that.data.answers.filter((a) => {
+                a.text.toLowerCase().trim() ===
+                    that.exactUserAnswer.toLowerCase().trim();
+            });
+
+            if (answers.length > 0) {
+                return [[answers[0].id, true]];
+            } else {
+                return undefined;
+            }
         }
     }
 
