@@ -1407,7 +1407,7 @@ export class QuestionMR extends HTMLElement {
                     that.data.answers.filter((ans) => ans.id === id)[0].pools
             )
             .reduce((accum, unit) => {
-                if (unit !== undefined && unit.length > 0) {
+                if (unit && unit.length > 0) {
                     unit.forEach((item) => {
                         let pool = accum.filter((i) => i.id === item.id);
 

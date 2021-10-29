@@ -1310,7 +1310,7 @@ export class QuestionRange extends HTMLElement {
                 .map(
                     (id) =>
                         that.data.answers.filter((ans) => ans.id === id)[0]
-                            .pools
+                            .pools || []
                 )
                 .reduce((accum, unit) => {
                     if (unit.length > 0) {
