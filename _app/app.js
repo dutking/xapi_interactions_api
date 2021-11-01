@@ -540,16 +540,23 @@ export class App {
                 'globalPools' in App.course.data &&
                 e.detail.obj.status === 'completed'
             ) {
+                let globalPoolsUpdated = false;
                 e.detail.obj.userPoolsResult.forEach((p) => {
                     let globalPool = App.course.data.globalPools.filter(
                         (gp) => gp.id === p.id
                     )[0];
-                    globalPool.scores.push(p.value);
+                    if (globalPool) {
+                        globalPoolsUpdated = true;
+                        globalPool.scores.push(p.value);
+                    }
                 });
-                App.recalculateGlobalPools();
-                XAPI.postState(`${config.trackId}/globalPools`, {
-                    globalPools: App.course.data.globalPools,
-                });
+
+                if (globalPoolsUpdated) {
+                    App.recalculateGlobalPools();
+                    XAPI.postState(`${config.trackId}/globalPools`, {
+                        globalPools: App.course.data.globalPools,
+                    });
+                }
             }
 
             if (
