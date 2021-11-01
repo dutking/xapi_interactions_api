@@ -1186,7 +1186,7 @@ export class QuestionFillIn extends HTMLElement {
             this.parent.data.displayMode === 'one_instead_another' ||
             this.parent.data.displayMode === 'one_by_one'
         ) {
-            if (!feedback.className.includes('off')) {
+            if (this.hasFeedback) {
                 let continueBtn = this.shadowRoot.querySelector('.continueBtn');
                 let submitBtn = this.shadowRoot.querySelector('.submitBtn');
                 submitBtn.classList.add('off');
