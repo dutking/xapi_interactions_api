@@ -597,7 +597,7 @@ strong {
 
     input + label > span.inputMarker:before {
         content: '';
-        display: inline-block;
+        display: block;
         box-sizing: border-box;
         width: var(--inputbox-dimension);
         height: var(--inputbox-dimension);
@@ -606,11 +606,12 @@ strong {
         border-width: var(--inputbox-border-width);
         background: var(--inputbox-bg-color);
         border-radius: var(--input-box-border-radius-mr);
+        z-index:1;
     } 
 
     input + label > span.inputMarker:after {
         content: '';
-        display: inline-block;
+        display: block;
         position: absolute;
         top:0;
         left:0;
@@ -618,9 +619,11 @@ strong {
         width: var(--inputbox-dimension);
         height: var(--inputbox-dimension);
         border-radius: var(--input-box-border-radius-mr);
+        z-index: 2;
     } 
 
     input:checked + label > span.inputMarker:after {
+        content: '';
         background-color: var(--inputbox-marker-color);
         clip-path: inset(calc((var(--inputbox-dimension) / 2)));
         animation-name: inset;
@@ -628,6 +631,17 @@ strong {
         animation-duration: 0.2s;
         animation-timing-function: ease-in;
         animation-fill-mode: forwards;
+    }
+
+    .order input:checked + label > span.inputMarker:after {
+        counter-reset: variable var(--order);
+        content: counter(variable);
+        background-color: transparent;
+        clip-path: revert;
+        animation: none;
+        color: var(--inputbox-marker-color);
+        font-size: var(--font-size-primary);
+        text-align: center;
     }
 
     .questionContainer .answersContainer.image input:checked + label > span.imageContainer {
@@ -789,6 +803,7 @@ export class QuestionMR extends HTMLElement {
         this.status = 'initial';
         this.score = 0;
         this.state = {};
+        this.answersOrder = new Set();
     }
 
     get parentId() {
@@ -890,13 +905,20 @@ export class QuestionMR extends HTMLElement {
         answersData.forEach((a, i) => {
             let newAnswer;
 
-            if (that.data?.style === 'image') {
-                answers.classList.add('image');
-                newAnswer = answerTemplateMRImage.content.cloneNode(true);
-                let folder = this.data.id.split('_').slice(0, 2).join('_');
-                newAnswer
-                    .querySelector('img')
-                    .setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
+            if (that.data?.style !== '') {
+                answers.classList.add(that.data.style);
+                if (that.data.style === 'image') {
+                    newAnswer = answerTemplateMRImage.content.cloneNode(true);
+                    let folder = this.data.id.split('_').slice(0, 2).join('_');
+                    newAnswer
+                        .querySelector('img')
+                        .setAttribute(
+                            'src',
+                            `./_app/img/${folder}/${a.id}.svg`
+                        );
+                } else {
+                    newAnswer = answerTemplateMR.content.cloneNode(true);
+                }
             } else {
                 newAnswer = answerTemplateMR.content.cloneNode(true);
             }
@@ -1047,6 +1069,31 @@ export class QuestionMR extends HTMLElement {
         return false;
     }
 
+    setAnswersOrder(id) {
+        let that = this;
+        if (this.answersOrder.has(id)) {
+            this.answersOrder.delete(id);
+        } else {
+            this.answersOrder.add(id);
+        }
+
+        console.log(this.answersOrder);
+        let markers = Array.from(
+            this.shadowRoot.querySelectorAll('.inputMarker')
+        );
+        let arr = [...this.answersOrder];
+
+        markers.forEach((m) => {
+            let mId = m.parentElement.getAttribute('for');
+            console.log(arr.indexOf(mId));
+            m.style.setProperty('--order', '');
+
+            if (that.answersOrder.has(mId)) {
+                m.style.setProperty('--order', arr.indexOf(mId) + 1);
+            }
+        });
+    }
+
     setListeners() {
         let that = this;
         // Disable/enable submitBtn on inputs' changes.
@@ -1057,6 +1104,7 @@ export class QuestionMR extends HTMLElement {
 
         inputs.forEach((i) => {
             i.addEventListener('change', (e) => {
+                that.setAnswersOrder(e.target.id);
                 if (that.checked) {
                     submitBtn.disabled = false;
                     if (that.status === 'initial') {
@@ -1286,7 +1334,7 @@ export class QuestionMR extends HTMLElement {
                         if (answer.feedback.length > 0) {
                             let aFeedback = document.createElement('div');
                             aFeedback.classList.add('answerFeedback');
-                            aFeedback.innerHTML = AusFunctions.parseText(
+                            aFeedback.innerHTML = AuxFunctions.parseText(
                                 answer.feedback,
                                 answer
                             );
