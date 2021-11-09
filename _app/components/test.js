@@ -1448,7 +1448,7 @@ export class Test extends HTMLElement {
         let that = this;
         this.completed = true;
         this.status = 'completed';
-        this.showFeedback();
+
         console.log(
             `%cTest "${that.data.id}" completed`,
             'color:green;font-weight:bold;font-size:16px;'
@@ -1463,6 +1463,8 @@ export class Test extends HTMLElement {
             that.emitEvent('completed');
             that.emitEvent('failed');
         }
+
+        this.showFeedback();
     }
 
     setListeners() {

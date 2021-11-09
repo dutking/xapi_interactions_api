@@ -929,6 +929,7 @@ export class QuestionLongFillIn extends HTMLElement {
                 });
             }
 
+            this.emitEvent('answered');
             console.log(
                 `Question ${this.data.id} answered. Result: ${this.result}`
             );
@@ -942,7 +943,6 @@ export class QuestionLongFillIn extends HTMLElement {
                 delete this.state.isFake;
             }
             this.setState('question completed');
-            this.emitEvent('answered');
         }
     }
 

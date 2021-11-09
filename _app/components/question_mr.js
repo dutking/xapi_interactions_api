@@ -1170,6 +1170,7 @@ export class QuestionMR extends HTMLElement {
             this.result = true;
         }
 
+        this.emitEvent('answered');
         console.log(
             `Question ${this.data.id} answered. Result: ${this.result}`
         );
@@ -1183,7 +1184,6 @@ export class QuestionMR extends HTMLElement {
             delete this.state.isFake;
         }
         this.setState('question completed');
-        this.emitEvent('answered');
     }
 
     get exactUserAnswer() {

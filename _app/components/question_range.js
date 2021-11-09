@@ -1026,6 +1026,7 @@ export class QuestionRange extends HTMLElement {
             this.score = Number(this.exactUserAnswer); // must be improved - this was made for survey reasons
         }
 
+        this.emitEvent('answered');
         console.log(
             `Question ${this.data.id} answered. Result: ${this.result}`
         );
@@ -1044,7 +1045,6 @@ export class QuestionRange extends HTMLElement {
             delete this.state.isFake;
         }
         this.setState('question completed');
-        this.emitEvent('answered');
     }
 
     get userAnswer() {
