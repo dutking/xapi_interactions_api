@@ -111,8 +111,8 @@ export const scoringFunctions = {
             },
         ];
 
-        let results = scales.map((s) => {
-            let result = s.answers
+        let values = scales.map((s) => {
+            let value = s.answers
                 .map((a) => {
                     let order = obj.shadowRoot
                         .querySelector(`label[for$=${a}] .inputMarker`)
@@ -124,11 +124,11 @@ export const scoringFunctions = {
                 .reduce((sum, item) => (sum += item), 0);
             return {
                 name: s.name,
-                result: result,
+                value: value,
             };
         });
 
-        return results;
+        return values;
     },
     mir_motivation: function (obj) {
         const demotivatedThreshold = 5;
