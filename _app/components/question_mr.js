@@ -1085,7 +1085,6 @@ export class QuestionMR extends HTMLElement {
 
         markers.forEach((m) => {
             let mId = m.parentElement.getAttribute('for');
-            console.log(arr.indexOf(mId));
             m.style.setProperty('--order', '');
 
             if (that.answersOrder.has(mId)) {
@@ -1104,7 +1103,9 @@ export class QuestionMR extends HTMLElement {
 
         inputs.forEach((i) => {
             i.addEventListener('change', (e) => {
-                that.setAnswersOrder(e.target.id);
+                if (this.data?.style === 'order') {
+                    that.setAnswersOrder(e.target.id);
+                }
                 if (that.checked) {
                     submitBtn.disabled = false;
                     if (that.status === 'initial') {
