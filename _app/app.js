@@ -454,10 +454,7 @@ export class App {
 
             App.getScore();
 
-            if (
-                App.course.scores[App.course.scores.length - 1] >=
-                App.course.passingScore
-            ) {
+            if (App.course.score >= App.course.passingScore) {
                 App.course.result = true;
                 App.course.passed = true;
                 console.log(
@@ -494,7 +491,7 @@ export class App {
 
     static checkCourseCompleted() {
         if (
-            App.completedInteractions.size ===
+            App.completedInteractions.size >=
             config.interactions.filter((i) => i.required !== 'none').length
         ) {
             App.course.completed = true;
