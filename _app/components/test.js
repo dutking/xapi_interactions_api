@@ -1390,26 +1390,32 @@ export class Test extends HTMLElement {
     }
 
     get result() {
-        switch (this.data.required) {
-            case 'passed':
-                if (this.passed) {
-                    return true;
-                } else {
-                    return false;
-                }
-                break;
-            case 'completed':
-                if (this.completed) {
-                    return true;
-                } else {
-                    return false;
-                }
-                break;
-            case 'none':
+        if (this.data.required.startsWith('attempt')) {
+            let requiredAttempt = Number(this.data.required.split(':')[1]) - 1;
+            if (this.attempt === requiredAttempt) {
                 return true;
-                break;
-            default:
-                break;
+            }
+            return false;
+        }
+
+        if (this.data.required === 'passed') {
+            if (this.passed) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (this.data.required === 'completed') {
+            if (this.completed) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (this.data.required === 'none') {
+            return true;
         }
     }
 
