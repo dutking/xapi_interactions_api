@@ -1391,8 +1391,12 @@ export class Test extends HTMLElement {
 
     get result() {
         if (this.data.required.startsWith('attempt')) {
+            if (this.passed) {
+                return true;
+            }
             let requiredAttempt = Number(this.data.required.split(':')[1]) - 1;
-            if (this.attempt === requiredAttempt) {
+            console.log(requiredAttempt);
+            if (this.attempt >= requiredAttempt) {
                 return true;
             }
             return false;
