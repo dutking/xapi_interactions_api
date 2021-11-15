@@ -986,15 +986,41 @@ export class Test extends HTMLElement {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         } else if (
             this.data.feedback.markQuestionsCorrectness === 'passingAttempt' &&
-            this.attempt + 1 === this.passingAttempt
+            this.attempt + 1 === this.passingAttempt &&
+            this.attemptCompleted
         ) {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         } else if (
             this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
             this.attempt + 1 ===
-                Number(this.feedback.markQuestionsCorrectness.split(':')[1])
+                Number(this.feedback.markQuestionsCorrectness.split(':')[1]) &&
+            this.attemptCompleted
         ) {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+        }
+    }
+
+    showCorrectAnswers(question = null) {
+        if (this.data.feedback.showCorrectAnswers === 'answer' && question) {
+            question.showCorrectAnswers();
+        } else if (
+            this.data.feedback.showCorrectAnswers === 'completed' &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.showCorrectAnswers());
+        } else if (
+            this.data.feedback.showCorrectAnswers === 'passingAttempt' &&
+            this.attempt + 1 === this.passingAttempt &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.showCorrectAnswers());
+        } else if (
+            this.data.feedback.showCorrectAnswers.startsWith('attempt') &&
+            this.attempt + 1 ===
+                Number(this.feedback.showCorrectAnswers.split(':')[1]) &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.showCorrectAnswers());
         }
     }
 
@@ -1638,11 +1664,13 @@ export class Test extends HTMLElement {
             }
 
             this.markQuestionsCorrectness();
+            this.showCorrectAnswers();
         });
 
         this.addEventListener('answered', (e) => {
             this.setScore();
             this.markQuestionsCorrectness(e.detail.obj);
+            this.showCorrectAnswers(e.detail.obj);
         });
 
         let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');
@@ -1680,7 +1708,7 @@ export class Test extends HTMLElement {
             }, []);
     }
 
-    showCorrectAnswers(question) {
+    /* showCorrectAnswers(question) {
         let showMarker = (question, answer) => {
             console.log(answer.id);
             let marker = question.shadowRoot
@@ -1734,9 +1762,9 @@ export class Test extends HTMLElement {
                 }
             }
         }
-    }
+    } */
 
-    showQuestionsStatus(question) {
+    /* showQuestionsStatus(question) {
         let showMarker = (q) => {
             let marker = q.shadowRoot
                 .querySelector(`.subHeader`)
@@ -1774,7 +1802,7 @@ export class Test extends HTMLElement {
                 }
             }
         }
-    }
+    } */
 
     processTest() {
         if (this.status === 'initial') {

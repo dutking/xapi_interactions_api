@@ -1141,6 +1141,16 @@ export class QuestionRange extends HTMLElement {
         return false;
     }
 
+    showCorrectAnswers() {
+        let that = this;
+        let input = this.shadowRoot.querySelectorAll('input');
+
+        let correctResponse = that.data.answers.filter((a) => a.correct)[0]
+            .text;
+        input.value = Number(correctResponse);
+        input.classList.add('correct');
+    }
+
     showFeedback() {
         let feedback = this.shadowRoot.querySelector('.questionFeedback');
         feedback.scrollIntoView();

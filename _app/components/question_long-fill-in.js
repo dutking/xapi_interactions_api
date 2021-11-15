@@ -288,6 +288,14 @@ strong {
             outline: none;
         }
 
+        .questionContainer .answersContainer .answerContainer textarea.correct{
+            background: var(--color-correct);
+        }
+
+        .questionContainer .answersContainer .answerContainer textarea.incorrect{
+            background: var(--color-incorrect);
+        }
+
         .questionContainer .answersContainer .answerContainer textarea:focus-within {
             border-width: var(--fillin-border-width-focus);
             border-color: var(--fillin-border-color-focus);
@@ -1021,6 +1029,15 @@ export class QuestionLongFillIn extends HTMLElement {
         }
 
         return false;
+    }
+
+    showCorrectAnswers() {
+        let that = this;
+        let input = this.shadowRoot.querySelector('textarea');
+        let correctResponse = that.data.answers.filter((a) => a.correct)[0]
+            .text;
+        input.innerText = correctResponse;
+        input.classList.add('correct');
     }
 
     showFeedback() {

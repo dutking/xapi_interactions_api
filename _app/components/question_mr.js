@@ -640,6 +640,14 @@ strong {
         z-index:1;
     } 
 
+    input.correct + label > span.inputMarker:before {
+        background: var(--color-correct);
+    }
+
+    input.incorrect + label > span.inputMarker:before {
+        background: var(--color-incorrect);
+    }
+
     input + label > span.inputMarker:after {
         content: '';
         display: block;
@@ -1287,6 +1295,18 @@ export class QuestionMR extends HTMLElement {
             question.classList.add('incorrect');
             question.classList.remove('correct');
         }
+    }
+
+    showCorrectAnswers() {
+        let that = this;
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
+        inputs.forEach((i) => {
+            if (that.data.answers.filter((a) => a.id === i.id)[0].correct) {
+                i.classList.add('correct');
+            } else {
+                i.classList.add('incorrect');
+            }
+        });
     }
 
     showFeedback() {
