@@ -1404,7 +1404,6 @@ export class Test extends HTMLElement {
                 return true;
             }
             let requiredAttempt = Number(this.data.required.split(':')[1]) - 1;
-            console.log(requiredAttempt);
             if (this.attempt >= requiredAttempt) {
                 return true;
             }
