@@ -114,7 +114,14 @@ export class AuxFunctions {
         if (parsedText.includes('<result>')) {
             parsedText = parsedText.replace(
                 '<result>',
-                object.result === true ? 'пройдено' : 'не пройдено'
+                object.result === true ? 'пройден' : 'не пройден'
+            );
+        }
+
+        if (parsedText.includes('<passed>')) {
+            parsedText = parsedText.replace(
+                '<passed>',
+                object.result === true ? 'пройден успешно' : 'провален'
             );
         }
 
