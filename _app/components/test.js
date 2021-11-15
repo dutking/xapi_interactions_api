@@ -1221,6 +1221,37 @@ export class Test extends HTMLElement {
             feedbackContainer.appendChild(text);
         }
 
+        if (
+            this.data?.feedback?.byAttempt &&
+            this.data.feedback.byAttempt.length > 0 &&
+            this.data.feedback.byAttempt.filter((i) => {
+                if (
+                    (i[0] === 'passingAttempt' &&
+                        this.passingAttempt === this.attempt + 1) ||
+                    i[0] === this.attempt + 1
+                ) {
+                    return true;
+                }
+                return false;
+            }).length > 0
+        ) {
+            let text = document.createElement('p');
+            text.innerHTML = AuxFunctions.parseText(
+                this.data.feedback.byAttempt.filter((i) => {
+                    if (
+                        (i[0] === 'passingAttempt' &&
+                            this.passingAttempt === this.attempt + 1) ||
+                        i[0] === this.attempt + 1
+                    ) {
+                        return true;
+                    }
+                    return false;
+                })[0].text,
+                this
+            );
+            feedbackContainer.appendChild(text);
+        }
+
         this.shadowRoot.querySelector('.submitBtn').classList.add('off');
         this.showTryAgainBtn();
         this.setGridTemplateAreas();
