@@ -1252,6 +1252,19 @@ export class QuestionMR extends HTMLElement {
         return false;
     }
 
+    markQuestionCorrectness() {
+        let question = this.shadowRoot
+            .querySelector('.questionContainer')
+            .classList.add('correct');
+        if (this.result) {
+            question.classList.add('correct');
+            question.classList.remove('incorrect');
+        } else {
+            question.classList.add('incorrect');
+            question.classList.remove('correct');
+        }
+    }
+
     showFeedback() {
         let feedback = this.shadowRoot.querySelector('.questionFeedback');
         feedback.scrollIntoView();
@@ -1343,9 +1356,9 @@ export class QuestionMR extends HTMLElement {
                 );
                 feedback.append(qFeedback);
             }
-            this.shadowRoot
+            /* this.shadowRoot
                 .querySelector('.questionContainer')
-                .classList.add('correct');
+                .classList.add('correct'); */
         } else {
             if (this.data.feedback.incorrect) {
                 let qFeedback = document.createElement('div');
@@ -1355,9 +1368,9 @@ export class QuestionMR extends HTMLElement {
                 );
                 feedback.append(qFeedback);
             }
-            this.shadowRoot
+            /* this.shadowRoot
                 .querySelector('.questionContainer')
-                .classList.add('incorrect');
+                .classList.add('incorrect'); */
         }
 
         // show pools
