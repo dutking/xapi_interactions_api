@@ -1239,9 +1239,9 @@ export class Test extends HTMLElement {
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.byAttempt.filter((i) => {
                     if (
-                        (i[0] === 'passingAttempt' &&
+                        (i.attempt === 'passingAttempt' &&
                             this.passingAttempt === this.attempt + 1) ||
-                        i[0] === this.attempt + 1
+                        Number(i.attempt) === this.attempt + 1
                     ) {
                         return true;
                     }
@@ -1449,13 +1449,13 @@ export class Test extends HTMLElement {
             this.data.feedback.byAttempt.length > 0 &&
             this.data.feedback.byAttempt.filter((i) => {
                 if (
-                    i[0] === 'passingAttempt' &&
+                    i.attempt === 'passingAttempt' &&
                     this.passingAttempt === this.attempt + 1
                 ) {
                     return true;
                 }
 
-                if (i[0] === this.attempt + 1) {
+                if (Number(i.attempt) === this.attempt + 1) {
                     return true;
                 }
 

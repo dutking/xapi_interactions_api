@@ -1183,9 +1183,20 @@ export class QuestionMC extends HTMLElement {
             return true;
         }
 
+        if (this.data?.feedback?.correct && this.data.feedback.correct !== '') {
+            return true;
+        }
+
+        if (
+            this.data?.feedback?.incorrect &&
+            this.data.feedback.incorrect !== ''
+        ) {
+            return true;
+        }
+
         if (
             this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
-            this.parent.data.answersFeedbackMode === 'answer'
+            this.parent.data.answersFeedbackMode === 'question'
         ) {
             return true;
         }
