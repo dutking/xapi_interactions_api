@@ -1389,6 +1389,15 @@ export class Test extends HTMLElement {
         }
     }
 
+    get passingAttempt() {
+        if (this.data.required.startsWith('attempt')) {
+            let passingAttempt = Number(this.data.required.split(':')[1]);
+            return passingAttempt;
+        }
+
+        return undefined;
+    }
+
     get result() {
         if (this.data.required.startsWith('attempt')) {
             if (this.passed) {
