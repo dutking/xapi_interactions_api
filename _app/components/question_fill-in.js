@@ -1155,12 +1155,7 @@ export class QuestionFillIn extends HTMLElement {
         }
 
         // show feedback
-        if (
-            feedback.children.length > 0 ||
-            this.data.feedback?.correct ||
-            this.data.feedback?.incorrect ||
-            this.userPoolsResult.length > 0
-        ) {
+        if (this.hasFeedback) {
             feedback.classList.remove('off');
         } else {
             feedback.classList.add('off');
