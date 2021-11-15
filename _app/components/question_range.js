@@ -372,6 +372,14 @@ strong {
         font-weight: bold;
     }
 
+    .questionContainer .answersContainer .answerContainer .rangeContainer .input input.correct + .value {
+        color: var(--color-correct);
+    }
+
+    .questionContainer .answersContainer .answerContainer .rangeContainer .input input.incorrect + .value {
+        color: var(--color-incorrect);
+    }
+
     .questionContainer .answersContainer .answerContainer .rangeContainer .input input {
         width: 100%;
         cursor: pointer;
@@ -1145,10 +1153,25 @@ export class QuestionRange extends HTMLElement {
         let that = this;
         let input = this.shadowRoot.querySelectorAll('input');
 
-        let correctResponse = that.data.answers.filter((a) => a.correct)[0]
-            .text;
-        input.value = Number(correctResponse);
+        let correctResponse = Number(
+            that.data.answers.filter((a) => a.correct)[0].text
+        );
+        input.value = correctResponse;
         input.classList.add('correct');
+    }
+
+    markResponsesCorrectness() {
+        let that = this;
+        let input = this.shadowRoot.querySelector('input');
+        let correctResponse = Number(
+            that.data.answers.filter((a) => a.correct)[0].text
+        );
+
+        if (input.value === correctResponse) {
+            input.classList.add('correct');
+        } else {
+            input.classList.add('incorrect');
+        }
     }
 
     showFeedback() {

@@ -1309,6 +1309,20 @@ export class QuestionMR extends HTMLElement {
         });
     }
 
+    markResponsesCorrectness() {
+        let that = this;
+        let inputs = Array.from(
+            this.shadowRoot.querySelectorAll('input')
+        ).filter((i) => i.checked);
+        inputs.forEach((i) => {
+            if (that.data.answers.filter((a) => a.id === i.id)[0].correct) {
+                i.classList.add('correct');
+            } else {
+                i.classList.add('incorrect');
+            }
+        });
+    }
+
     showFeedback() {
         let feedback = this.shadowRoot.querySelector('.questionFeedback');
         feedback.scrollIntoView();

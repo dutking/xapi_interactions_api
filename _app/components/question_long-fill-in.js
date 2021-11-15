@@ -1040,6 +1040,19 @@ export class QuestionLongFillIn extends HTMLElement {
         input.classList.add('correct');
     }
 
+    markResponsesCorrectness() {
+        let that = this;
+        let input = this.shadowRoot.querySelector('textarea');
+        let correctResponse = that.data.answers.filter((a) => a.correct)[0]
+            .text;
+
+        if (input.innerText === correctResponse) {
+            input.classList.add('correct');
+        } else {
+            input.classList.add('incorrect');
+        }
+    }
+
     showFeedback() {
         let feedback = this.shadowRoot.querySelector('.questionFeedback');
         feedback.scrollIntoView();

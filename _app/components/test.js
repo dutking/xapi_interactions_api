@@ -1024,6 +1024,33 @@ export class Test extends HTMLElement {
         }
     }
 
+    markResponsesCorrectness(question = null) {
+        if (
+            this.data.feedback.markResponsesCorrectness === 'answer' &&
+            question
+        ) {
+            question.markResponsesCorrectness();
+        } else if (
+            this.data.feedback.markResponsesCorrectness === 'completed' &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.markResponsesCorrectness());
+        } else if (
+            this.data.feedback.markResponsesCorrectness === 'passingAttempt' &&
+            this.attempt + 1 === this.passingAttempt &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.markResponsesCorrectness());
+        } else if (
+            this.data.feedback.markResponsesCorrectness.startsWith('attempt') &&
+            this.attempt + 1 ===
+                Number(this.feedback.markResponsesCorrectness.split(':')[1]) &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.markResponsesCorrectness());
+        }
+    }
+
     showResumed() {
         if (
             this.data.resume?.hideElements &&
@@ -1664,12 +1691,14 @@ export class Test extends HTMLElement {
             }
 
             this.markQuestionsCorrectness();
+            this.markResponsesCorrectness();
             this.showCorrectAnswers();
         });
 
         this.addEventListener('answered', (e) => {
             this.setScore();
             this.markQuestionsCorrectness(e.detail.obj);
+            this.markResponsesCorrectness(e.detail.obj);
             this.showCorrectAnswers(e.detail.obj);
         });
 
