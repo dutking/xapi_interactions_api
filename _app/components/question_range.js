@@ -1091,33 +1091,9 @@ export class QuestionRange extends HTMLElement {
             return true;
         }
 
-        if (this.data.answers.filter((a) => a.feedback !== '').length > 0) {
-            return true;
-        }
-
-        if (this.data?.feedback?.common && this.data.feedback.common !== '') {
-            return true;
-        }
-
         if (
-            this.result &&
-            this.data?.feedback?.correct &&
-            this.data.feedback.correct !== ''
-        ) {
-            return true;
-        }
-
-        if (
-            !this.result &&
-            this.data?.feedback?.incorrect &&
-            this.data.feedback.incorrect !== ''
-        ) {
-            return true;
-        }
-
-        if (
-            this.data?.feedback?.byScore &&
-            this.data.feedback.byScore.length > 0
+            this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
+            this.parent.data.answersFeedbackMode === 'answer'
         ) {
             return true;
         }

@@ -1374,6 +1374,69 @@ export class Test extends HTMLElement {
         }
     }
 
+    get hasFeedback() {
+        if (this.data.showPoolsInFeedback) {
+            return true;
+        }
+
+        if (
+            this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
+            this.data.answersFeedbackMode === 'question'
+        ) {
+            return true;
+        }
+
+        if (this.data?.feedback?.common && this.data.feedback.common !== '') {
+            return true;
+        }
+
+        if (
+            this.result &&
+            this.data?.feedback?.correct &&
+            this.data.feedback.correct !== ''
+        ) {
+            return true;
+        }
+
+        if (
+            !this.result &&
+            this.data?.feedback?.incorrect &&
+            this.data.feedback.incorrect !== ''
+        ) {
+            return true;
+        }
+
+        if (
+            this.data?.feedback?.byScore &&
+            this.data.feedback.byScore.length > 0
+        ) {
+            return true;
+        }
+
+        if (
+            this.data?.feedback?.byAttempt &&
+            this.data.feedback.byAttempt.length > 0 &&
+            this.data.feedback.byAttempt.filter((i) => {
+                if (
+                    i[0] === 'passingAttempt' &&
+                    this.passingAttempt === this.attempt + 1
+                ) {
+                    return true;
+                }
+
+                if (i[0] === this.attempt + 1) {
+                    return true;
+                }
+
+                return false;
+            }).length > 0
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
     get score() {
         return this.scores[this.scores.length - 1];
     }
