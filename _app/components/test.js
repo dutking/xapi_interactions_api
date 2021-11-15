@@ -1410,13 +1410,6 @@ export class Test extends HTMLElement {
             return true;
         }
 
-        if (
-            this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
-            this.data.answersFeedbackMode === 'question'
-        ) {
-            return true;
-        }
-
         if (this.data?.feedback?.common && this.data.feedback.common !== '') {
             return true;
         }
