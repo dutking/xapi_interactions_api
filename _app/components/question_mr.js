@@ -6,7 +6,7 @@ answerTemplateMR.innerHTML = `
         <div class='answerContainer'>
             <div>
                 <input type='checkbox'/>
-                <label><span class='inputMarker'></span><span class='correctnessMarker off'></span><span class='text'></span></label>
+                <label><span class='inputMarker'></span><span class='text'></span></label>
                 <div class='answerFeedback off'></div>
             </div>
         </div>
@@ -559,22 +559,53 @@ strong {
 
     /* grid settings -> */
 
-    .answerContainer .correctnessMarker, .subHeader .correctnessMarker {
+    .questionContainer.correct .subHeader .correctnessMarker, .questionContainer.incorrect .subHeader .correctnessMarker{
         display: block;
-        width: calc(var(--inputbox-dimension) * 0.7);
-        height: calc(var(--inputbox-dimension) * 0.7);
+        position: relative;
+        width: calc(var(--inputbox-dimension));
+        height: calc(var(--inputbox-dimension));
         align-self: center;
+        border-radius: 360px;
     }
 
-    .correctnessMarker.correct {
+    .questionContainer .subHeader .correctnessMarker::before, .questionContainer .subHeader .correctnessMarker::after{
+        content: '';
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 360px;        
+    }
+
+    .questionContainer.correct .subHeader .correctnessMarker {
+        background: var(--color-correct);
+    }
+
+    .questionContainer.incorrect .subHeader .correctnessMarker {
+        background: var(--color-incorrect);
+    }
+
+    .questionContainer.correct .subHeader .correctnessMarker::before{        
+        clip-path: polygon(12% 47%, 29% 47%, 48% 62%, 75% 33%, 91% 33%, 48% 78%);
+        background: black;
+        opacity: 0.3;
+    }
+
+    .questionContainer.incorrect .subHeader .correctnessMarker::before{        
+        clip-path: polygon(30% 20%, 20% 30%, 40% 50%, 20% 70%, 30% 80%, 50% 60%, 70% 80%, 80% 70%, 60% 50%, 80% 30%, 70% 20%, 50% 40%);
+        background: black;
+        opacity: 0.3;
+    }
+
+    /* .correctnessMarker.correct {
         background-color: var(--color-correct);
         clip-path: polygon(20% 40%, 40% 40%, 40% 20%, 60% 20%, 60% 40%, 80% 40%, 80% 60%, 60% 60%, 60% 80%, 40% 80%, 40% 60%, 20% 60%);
+        
     }
 
     .correctnessMarker.incorrect {
         background-color: var(--color-incorrect);
         clip-path: polygon(20% 40%, 80% 40%, 80% 60%, 20% 60%);
-    }
+    } */
 
     .answerContainer label .text {
         align-self: center;
@@ -647,14 +678,6 @@ strong {
     .questionContainer .answersContainer.image input:checked + label > span.imageContainer {
         border-color: var(--color-hover);
     }
-
-    /* .correct .questionFeedback {
-        background-color: var(--color-correct);
-    }
-
-    .incorrect .questionFeedback {
-        background-color: var(--color-incorrect);
-    } */
 
     @keyframes inset {
         from {
@@ -1253,9 +1276,10 @@ export class QuestionMR extends HTMLElement {
     }
 
     markQuestionCorrectness() {
-        let question = this.shadowRoot
-            .querySelector('.questionContainer')
-            .classList.add('correct');
+        let question = this.shadowRoot.querySelector('.questionContainer');
+        let marker = question.querySelector('.subHeader .correctnessMarker');
+        marker.classList.remove('off');
+
         if (this.result) {
             question.classList.add('correct');
             question.classList.remove('incorrect');

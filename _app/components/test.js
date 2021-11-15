@@ -947,6 +947,12 @@ export class Test extends HTMLElement {
         }
     }
 
+    get questionsElements() {
+        return Array.from(
+            this.shadowRoot.querySelector('.questionsContainer').children
+        );
+    }
+
     markTestCorrectness() {
         let testContainer = this.shadowRoot.querySelector('.testContainer');
         if (this.passed) {
@@ -964,6 +970,31 @@ export class Test extends HTMLElement {
             );
             testContainer.classList.remove('correct');
             testContainer.classList.add('incorrect');
+        }
+    }
+
+    markQuestionsCorrectness(question = null) {
+        if (
+            this.data.feedback.markQuestionsCorrectness === 'answer' &&
+            question
+        ) {
+            question.markQuestionCorrectness();
+        } else if (
+            this.data.feedback.markQuestionsCorrectness === 'completed' &&
+            this.attemptCompleted
+        ) {
+            this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+        } else if (
+            this.data.feedback.markQuestionsCorrectness === 'passingAttempt' &&
+            this.attempt + 1 === this.passingAttempt
+        ) {
+            this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+        } else if (
+            this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
+            this.attempt + 1 ===
+                Number(this.feedback.markQuestionsCorrectness.split(':')[1])
+        ) {
+            this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         }
     }
 
@@ -1606,13 +1637,12 @@ export class Test extends HTMLElement {
                 that.completeTest();
             }
 
-            // MAKE CONFIG DEPENDENT!!!
-            /* this.showCorrectAnswers(e.detail.obj);
-            this.showQuestionsStatus(e.detail.obj); */
+            this.markQuestionsCorrectness();
         });
 
         this.addEventListener('answered', (e) => {
             this.setScore();
+            this.markQuestionsCorrectness(e.detail.obj);
         });
 
         let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');

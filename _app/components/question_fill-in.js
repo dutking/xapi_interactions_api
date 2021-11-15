@@ -467,29 +467,41 @@ strong {
 
     /* grid settings -> */
 
-    .answerContainer .correctnessMarker, .subHeader .correctnessMarker {
+    .questionContainer.correct .subHeader .correctnessMarker, .questionContainer.incorrect .subHeader .correctnessMarker{
         display: block;
-        width: calc(var(--inputbox-dimension) * 0.7);
-        height: calc(var(--inputbox-dimension) * 0.7);
+        position: relative;
+        width: calc(var(--inputbox-dimension));
+        height: calc(var(--inputbox-dimension));
         align-self: center;
+        border-radius: 360px;
     }
 
-    .correctnessMarker.correct {
-        background-color: var(--color-correct);
-        clip-path: polygon(20% 40%, 40% 40%, 40% 20%, 60% 20%, 60% 40%, 80% 40%, 80% 60%, 60% 60%, 60% 80%, 40% 80%, 40% 60%, 20% 60%);
+    .questionContainer .subHeader .correctnessMarker::before, .questionContainer .subHeader .correctnessMarker::after{
+        content: '';
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 360px;        
     }
 
-    .correctnessMarker.incorrect {
-        background-color: var(--color-incorrect);
-        clip-path: polygon(20% 40%, 80% 40%, 80% 60%, 20% 60%);
+    .questionContainer.correct .subHeader .correctnessMarker {
+        background: var(--color-correct);
     }
 
-    .correct .questionFeedback {
-        background-color: var(--color-correct);
+    .questionContainer.incorrect .subHeader .correctnessMarker {
+        background: var(--color-incorrect);
     }
 
-    .incorrect .questionFeedback {
-        background-color: var(--color-incorrect);
+    .questionContainer.correct .subHeader .correctnessMarker::before{        
+        clip-path: polygon(12% 47%, 29% 47%, 48% 62%, 75% 33%, 91% 33%, 48% 78%);
+        background: black;
+        opacity: 0.3;
+    }
+
+    .questionContainer.incorrect .subHeader .correctnessMarker::before{        
+        clip-path: polygon(30% 20%, 20% 30%, 40% 50%, 20% 70%, 30% 80%, 50% 60%, 70% 80%, 80% 70%, 60% 50%, 80% 30%, 70% 20%, 50% 40%);
+        background: black;
+        opacity: 0.3;
     }    
 
     .btn {
