@@ -1207,29 +1207,32 @@ export class QuestionFillIn extends HTMLElement {
 
         //show NEXT button
         if (
-            this.parent.data.displayMode === 'one_instead_another' ||
-            this.parent.data.displayMode === 'one_by_one'
+            this.parent.data.displayMode === 'one_instead_another' /* ||
+            this.parent.data.displayMode === 'one_by_one' */
         ) {
             if (this.hasFeedback) {
                 let continueBtn = this.shadowRoot.querySelector('.continueBtn');
                 let submitBtn = this.shadowRoot.querySelector('.submitBtn');
                 submitBtn.classList.add('off');
                 if (
-                    this.parent.data.displayMode === 'one_instead_another' ||
-                    this.parent.data.displayMode === 'one_by_one'
+                    this.parent.data.displayMode === 'one_instead_another' /* ||
+                    this.parent.data.displayMode === 'one_by_one' */
                 ) {
                     continueBtn.classList.remove('off');
                 }
-                if (
+                /* if (
                     this.parent.data.displayMode === 'one_by_one' &&
                     this.index < this.parent.lastQuestionIndex
                 ) {
                     continueBtn.classList.add('off');
-                }
+                } */
             } else {
                 this.emitEvent('continue');
             }
-        } else if (this.parent.data.displayMode === 'all_at_once') {
+        } else if (
+            this.parent.data.displayMode === 'all_at_once' ||
+            this.parent.data.displayMode === 'one_by_one'
+        ) {
             if (this.parent.data.submitMode === 'each') {
                 this.emitEvent('continue');
             }
