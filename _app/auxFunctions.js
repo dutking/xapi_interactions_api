@@ -121,7 +121,7 @@ export class AuxFunctions {
         if (parsedText.includes('<passed>')) {
             parsedText = parsedText.replace(
                 '<passed>',
-                object.result === true ? 'пройден успешно' : 'провален'
+                object.passed === true ? 'пройден успешно' : 'провален'
             );
         }
 
