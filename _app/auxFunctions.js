@@ -97,7 +97,10 @@ export class AuxFunctions {
         }
 
         if (parsedText.includes('<passingAttempt>')) {
-            parsedText = parsedText.replace('<attempt>', object.passingAttempt);
+            parsedText = parsedText.replace(
+                '<passingAttempt>',
+                object.passingAttempt
+            );
         }
 
         if (parsedText.includes('<passingScore>')) {
