@@ -981,20 +981,23 @@ export class Test extends HTMLElement {
             question.markQuestionCorrectness();
         } else if (
             this.data.feedback.markQuestionsCorrectness === 'completed' &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         } else if (
             this.data.feedback.markQuestionsCorrectness === 'passingAttempt' &&
             this.attempt + 1 === this.passingAttempt &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         } else if (
             this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
             this.attempt + 1 ===
                 Number(this.feedback.markQuestionsCorrectness.split(':')[1]) &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         }
@@ -1005,20 +1008,23 @@ export class Test extends HTMLElement {
             question.showCorrectAnswers();
         } else if (
             this.data.feedback.showCorrectAnswers === 'completed' &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.showCorrectAnswers());
         } else if (
             this.data.feedback.showCorrectAnswers === 'passingAttempt' &&
             this.attempt + 1 === this.passingAttempt &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.showCorrectAnswers());
         } else if (
             this.data.feedback.showCorrectAnswers.startsWith('attempt') &&
             this.attempt + 1 ===
                 Number(this.feedback.showCorrectAnswers.split(':')[1]) &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.showCorrectAnswers());
         }
@@ -1032,20 +1038,23 @@ export class Test extends HTMLElement {
             question.markResponsesCorrectness();
         } else if (
             this.data.feedback.markResponsesCorrectness === 'completed' &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.markResponsesCorrectness());
         } else if (
             this.data.feedback.markResponsesCorrectness === 'passingAttempt' &&
             this.attempt + 1 === this.passingAttempt &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.markResponsesCorrectness());
         } else if (
             this.data.feedback.markResponsesCorrectness.startsWith('attempt') &&
             this.attempt + 1 ===
                 Number(this.feedback.markResponsesCorrectness.split(':')[1]) &&
-            this.attemptCompleted
+            (this.attemptCompleted ||
+                (this.resumed && this.status === 'completed'))
         ) {
             this.questionsElements.forEach((q) => q.markResponsesCorrectness());
         }
@@ -1175,6 +1184,9 @@ export class Test extends HTMLElement {
         this.setButtons();
         this.showTryAgainBtn();
         this.setGridTemplateAreas();
+        this.markResponsesCorrectness();
+        this.showCorrectAnswers();
+        this.markQuestionsCorrectness();
     }
 
     showFeedback() {
