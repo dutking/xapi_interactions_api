@@ -634,6 +634,14 @@ templateMC.innerHTML = `
         background: var(--inputbox-bg-color);
     } 
 
+    input.correct + label > span.inputMarker:before {
+        background: var(--color-correct);
+    }
+
+    input.incorrect + label > span.inputMarker:before {
+        background: var(--color-incorrect);
+    }
+
     input + label > span.inputMarker:after {
         content: '';
         display: inline-block;
@@ -1214,6 +1222,20 @@ export class QuestionMC extends HTMLElement {
         }
 
         return false;
+    }
+
+    markQuestionCorrectness() {
+        let question = this.shadowRoot.querySelector('.questionContainer');
+        let marker = question.querySelector('.subHeader .correctnessMarker');
+        marker.classList.remove('off');
+
+        if (this.result) {
+            question.classList.add('correct');
+            question.classList.remove('incorrect');
+        } else {
+            question.classList.add('incorrect');
+            question.classList.remove('correct');
+        }
     }
 
     showCorrectAnswers() {

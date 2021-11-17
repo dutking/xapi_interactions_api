@@ -931,15 +931,15 @@ export class QuestionFillIn extends HTMLElement {
                 this.data.answers.length === 1 &&
                 this.data.answers[0].text === ''
             ) {
-                this.result = true;
-                this.score = a.weight;
+                this.result = this.data.answers[0].correct;
+                this.score = this.data.answers[0].weight;
             } else {
                 this.data.answers.forEach((a) => {
                     if (
                         a.text.toLowerCase().trim() ===
                         this.exactUserAnswer.toLowerCase().trim()
                     ) {
-                        this.result = true;
+                        this.result = a.correct;
                         this.score = a.weight;
 
                         if (a.feedback !== '') {
@@ -954,8 +954,6 @@ export class QuestionFillIn extends HTMLElement {
             console.log(
                 `Question ${this.data.id} answered. Result: ${this.result}`
             );
-
-            this.disableElements();
 
             this.disableElements();
             this.showFeedback();
@@ -1032,22 +1030,43 @@ export class QuestionFillIn extends HTMLElement {
         return false;
     }
 
+    markQuestionCorrectness() {
+        let question = this.shadowRoot.querySelector('.questionContainer');
+        let marker = question.querySelector('.subHeader .correctnessMarker');
+        marker.classList.remove('off');
+
+        if (this.result) {
+            question.classList.add('correct');
+            question.classList.remove('incorrect');
+        } else {
+            question.classList.add('incorrect');
+            question.classList.remove('correct');
+        }
+    }
+
     showCorrectAnswers() {
+        console.log('==============CALLED==============');
         let that = this;
         let input = this.shadowRoot.querySelector('input');
-        let correctResponse = that.data.answers.filter((a) => a.correct)[0]
-            .text;
-        input.value = correctResponse;
-        input.classList.add('correct');
+
+        if (this.result) {
+            input.classList.add('correct');
+        } else {
+            input.classList.add('incorrect');
+            let correctResponse = that.data.answers.filter((a) => a.correct)[0]
+                .text;
+            let feedback = this.shadowRoot.querySelector('.answerFeedback');
+            feedback.classList.remove('off');
+            let node = document.createElement('p');
+            node.innerText = `Ваш ответ: ${this.exactUserAnswer}. Возможный верный ответ: ${correctResponse}`;
+            feedback.append(node);
+        }
     }
 
     markResponsesCorrectness() {
-        let that = this;
         let input = this.shadowRoot.querySelector('input');
-        let correctResponse = that.data.answers.filter((a) => a.correct)[0]
-            .text;
 
-        if (input.value === correctResponse) {
+        if (this.result) {
             input.classList.add('correct');
         } else {
             input.classList.add('incorrect');

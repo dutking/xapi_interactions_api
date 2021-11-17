@@ -1049,18 +1049,19 @@ export class QuestionRange extends HTMLElement {
 
         this.status = 'completed';
 
-        if (this.data.answers.length > 0) {
+        if (
+            this.data.answers.length === 1 &&
+            this.data.answers[0].text === ''
+        ) {
+            this.result = this.data.answers[0].correct;
+            this.score = this.data.answers[0].weight;
+        } else {
             this.data.answers.forEach((a) => {
                 if (a.text.toString() === that.exactUserAnswer.toString()) {
-                    that.userAnswer = [[a.id, true]];
-                    that.result = true;
+                    that.result = a.correct;
                     that.score = a.weight;
                 }
             });
-        } else {
-            this.userAnswer = [[`${this.data.id}a1`, true]];
-            this.result = true;
-            this.score = Number(this.exactUserAnswer); // must be improved - this was made for survey reasons
         }
 
         this.emitEvent('answered');
@@ -1072,8 +1073,6 @@ export class QuestionRange extends HTMLElement {
             this.shadowRoot.querySelector('.submitBtn').innerHTML =
                 this.parent.data.buttons.submit.completed;
         }
-
-        this.disableElements();
 
         this.disableElements();
         this.showFeedback();
@@ -1149,15 +1148,37 @@ export class QuestionRange extends HTMLElement {
         return false;
     }
 
+    markQuestionCorrectness() {
+        let question = this.shadowRoot.querySelector('.questionContainer');
+        let marker = question.querySelector('.subHeader .correctnessMarker');
+        marker.classList.remove('off');
+
+        if (this.result) {
+            question.classList.add('correct');
+            question.classList.remove('incorrect');
+        } else {
+            question.classList.add('incorrect');
+            question.classList.remove('correct');
+        }
+    }
+
     showCorrectAnswers() {
         let that = this;
-        let input = this.shadowRoot.querySelectorAll('input');
+        let input = this.shadowRoot.querySelector('input');
 
-        let correctResponse = Number(
-            that.data.answers.filter((a) => a.correct)[0].text
-        );
-        input.value = correctResponse;
-        input.classList.add('correct');
+        if (this.result) {
+            input.classList.add('correct');
+        } else {
+            input.classList.add('incorrect');
+            let correctResponse = Number(
+                that.data.answers.filter((a) => a.correct)[0].text
+            );
+            let feedback = this.shadowRoot.querySelector('.answerFeedback');
+            feedback.classList.remove('off');
+            let node = document.createElement('p');
+            node.innerText = `Ваш ответ: ${this.exactUserAnswer}. Возможный верный ответ: ${correctResponse}`;
+            feedback.append(node);
+        }
     }
 
     markResponsesCorrectness() {
@@ -1167,7 +1188,7 @@ export class QuestionRange extends HTMLElement {
             that.data.answers.filter((a) => a.correct)[0].text
         );
 
-        if (input.value === correctResponse) {
+        if (this.result) {
             input.classList.add('correct');
         } else {
             input.classList.add('incorrect');
