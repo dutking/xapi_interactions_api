@@ -122,7 +122,7 @@
     --test-background: transparent;
 
     /* padding/margin */
-    --test-padding: 0 0 0 100px;
+    --test-padding: 0 0 0 0;
     --test-margin: 0 auto;
 
     /* border */
@@ -968,7 +968,7 @@
     :root {
         --multiplier: 0.9;
         --max-width: 38.75rem;
-        --test-padding: 2rem 0 0 0;
+        --test-padding: 0 0 0 0;
     }
 }
 
