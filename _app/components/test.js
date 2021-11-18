@@ -1709,9 +1709,6 @@ export class Test extends HTMLElement {
 
         this.addEventListener('answered', (e) => {
             this.setScore();
-            this.markQuestionsCorrectness(e.detail.obj);
-            this.markResponsesCorrectness(e.detail.obj);
-            this.showCorrectAnswers(e.detail.obj);
         });
 
         let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');
