@@ -1408,9 +1408,7 @@ export class Test extends HTMLElement {
                 let multiplier = Number(
                     this.data.passingScore.replace('%', '')
                 );
-                return Math.ceil(
-                    (this.questionsToTake.length / 100) * multiplier
-                );
+                return Math.ceil((this.maxPossibleScore / 100) * multiplier);
             } else {
                 return Number(this.data.passingScore);
             }
