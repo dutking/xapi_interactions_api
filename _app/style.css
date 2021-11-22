@@ -907,7 +907,8 @@
     justify-content: center;
 }
 
-/* #allrecords .placeholder.longread {
+/* <- БКГ*/
+#allrecords .placeholder.longread {
     position: relative;
     padding: 0;
     background-color: transparent;
@@ -937,10 +938,12 @@
     --longread-align-content: start;
     --longread-min-height: 5rem;
     --longread-bg-color: transparent;
-} */
+}
+
+/* БКГ ->*/
 
 /* <- Чат-бот */
-#allrecords .placeholder.longread {
+/* #allrecords .placeholder.longread {
     background-color: #162e4f;
     --button-width: 115px;
     --button-padding: 0.8rem 0.8rem;
@@ -975,7 +978,7 @@
 
 #allrecords .placeholder.longread:hover {
     background-color: #3869ad;
-}
+} */
 
 /*Чат-бот ->*/
 
