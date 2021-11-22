@@ -42,6 +42,7 @@ longreadTemplate.innerHTML = `
     font-size: var(--button-font-size);
     font-weight: var(--button-font-weight);
     font-style: var(--button-font-style);
+    letter-spacing: var(--button-letter-spacing, unset);
     color: var(--button-color-normal);
     background: var(--button-bg-color-normal);
     border-width: 0;

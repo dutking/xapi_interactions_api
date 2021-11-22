@@ -907,7 +907,7 @@
     justify-content: center;
 }
 
-#allrecords .placeholder.longread {
+/* #allrecords .placeholder.longread {
     position: relative;
     padding: 0;
     background-color: transparent;
@@ -937,7 +937,47 @@
     --longread-align-content: start;
     --longread-min-height: 5rem;
     --longread-bg-color: transparent;
+} */
+
+/* <- Чат-бот */
+#allrecords .placeholder.longread {
+    background-color: #162e4f;
+    --button-width: 115px;
+    --button-padding: 0.8rem 0.8rem;
+    --button-font-family: 'Fira Sans';
+    --button-font-weight: bold;
+    --button-font-size: 20px;
+    --button-letter-spacing: 0.2em;
+    --button-border-radius: 5px;
+    --button-border-width: 0;
+    --button-border-style: solid;
+    --button-border-color-normal: transparent;
+    --button-border-color-hover: transparent;
+    --button-color-normal: #b9e6ff;
+    --button-color-hover: #b9e6ff;
+    --button-bg-color-normal: transparent;
+    --button-bg-color-hover: transparent;
+    --button-box-shadow-normal: none;
+    --button-box-shadow-hover: none;
+    --button-text-shadow-normal: none;
+    --button-text-shadow-hover: none;
+    --button-transform-normal: none;
+    --button-transform-hover: none;
+    --button-transform-origin: center;
+
+    --longread-justify-items: center;
+    --longread-align-items: center;
+    --longread-justify-content: center;
+    --longread-align-content: center;
+    --longread-min-height: 95px;
+    --longread-bg-color: transparent;
 }
+
+#allrecords .placeholder.longread:hover {
+    background-color: #3869ad;
+}
+
+/*Чат-бот ->*/
 
 #allrecords test-unit {
     width: 100%;
