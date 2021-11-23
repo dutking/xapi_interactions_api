@@ -562,8 +562,8 @@ strong {
 .questionContainer.correct .subHeader .correctnessMarker, .questionContainer.incorrect .subHeader .correctnessMarker{
     display: block;
     position: relative;
-    width: calc(var(--inputbox-dimension));
-    height: calc(var(--inputbox-dimension));
+    width: calc(var(--inputbox-dimension) * 0.7);
+    height: calc(var(--inputbox-dimension) * 0.7);
     align-self: center;
     border-radius: 360px;
 }
