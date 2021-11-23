@@ -610,7 +610,7 @@ strong {
     font-weight: var(--button-font-weight);
     font-style: var(--button-font-style);
     color: var(--button-color-normal);
-    background-color: var(--button-bg-color-normal);
+    background: var(--button-bg-color-normal);
     border-width: 0;
     border-style: var(--button-border-style);
     border-width: var(--button-border-width-normal);
@@ -629,21 +629,21 @@ strong {
 
 .btn:hover{
     color: var(--button-color-hover);
-    background-color: var(--button-bg-color-hover);
+    background: var(--button-bg-color-hover);
     border-width: var(--button-border-width-hover);
     border-color: var(--button-border-color-hover);
 }
 
 .btn:active{
     color: var(--button-color-active);
-    background-color: var(--button-bg-color-active);
+    background: var(--button-bg-color-active);
     border-width: var(--button-border-width-active);
     border-color: var(--button-border-color-active);
 }
 
 .btn:disabled{
     color: var(--button-color-disabled);
-    background-color: var(--button-bg-color-disabled);
+    background: var(--button-bg-color-disabled);
     border-width: var(--button-border-width-disabled);
     border-color: var(--button-border-color-disabled);
     cursor: auto;
