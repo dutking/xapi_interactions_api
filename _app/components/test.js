@@ -57,7 +57,6 @@ testTemplate.innerHTML = `
         border-radius: var(--test-border-radius);
         
         width: var(--test-max-width);
-        tran
     }
 
     .testContainer .statisticsContainer {
