@@ -19,129 +19,119 @@ export class AuxFunctions {
     static parseText(text, object) {
         let parsedText = text;
 
+        if (parsedText.includes('<script')) {
+            parsedText = parsedText.replace(/(<script>.+<\/script>)/g, '');
+        }
+
         // <- for questions only
         if (parsedText.includes('<orderNum>')) {
-            parsedText = parsedText.replace('<orderNum>', object.index + 1);
+            parsedText = parsedText.replace(/<orderNum>/g, object.index + 1);
         }
         // for questions only ->
 
         if (parsedText.includes('<amountOfQuestions>')) {
             parsedText = parsedText.replace(
-                '<amountOfQuestions>',
+                /<amountOfQuestions>/g,
                 object.amountOfQuestions
             );
         }
 
         if (parsedText.includes('<correctlyAnsweredQuestions>')) {
             parsedText = parsedText.replace(
-                '<correctlyAnsweredQuestions>',
+                /<correctlyAnsweredQuestions>/g,
                 object.correctlyAnsweredQuestions
             );
         }
 
         if (parsedText.includes('<amountOfQuestionsToPass>')) {
             parsedText = parsedText.replace(
-                '<amountOfQuestionsToPass>',
+                /<amountOfQuestionsToPass>/g,
                 object.amountOfQuestionsToPass
             );
         }
 
         if (parsedText.includes('<score>')) {
-            parsedText = parsedText.replace('<score>', object.score);
+            parsedText = parsedText.replace(/<score>/g, object.score);
         }
 
         if (parsedText.includes('<maxScore>')) {
-            if (object.scores.length > 1) {
-                parsedText = parsedText.replace(
-                    '<maxScore>',
-                    Math.max(...object.scores.slice(0, -1))
-                );
-            } else {
-                parsedText = parsedText.replace(
-                    '<maxScore>',
-                    Math.max(...object.scores)
-                );
-            }
+            parsedText = parsedText.replace(
+                /<maxScore>/g,
+                Math.max(...object.scores)
+            );
         }
 
         if (parsedText.includes('<processedScore>')) {
             parsedText = parsedText.replace(
-                '<processedScore>',
+                /<processedScore>/g,
                 object.processedScore
             );
         }
 
         if (parsedText.includes('<maxProcessedScore>')) {
-            if (object.processedScores.length > 1) {
-                parsedText = parsedText.replace(
-                    '<maxProcessedScore>',
-                    Math.max(...object.processedScores.slice(0, -1))
-                );
-            } else {
-                parsedText = parsedText.replace(
-                    '<maxProcessedScore>',
-                    Math.max(...object.processedScores)
-                );
-            }
+            parsedText = parsedText.replace(
+                /<maxProcessedScore>/g,
+                Math.max(...object.processedScores)
+            );
         }
 
         if (parsedText.includes('<attemptsPerTest>')) {
             parsedText = parsedText.replace(
-                '<attemptsPerTest>',
+                /<attemptsPerTest>/g,
                 object.data.attemptsPerTest
             );
         }
 
         if (parsedText.includes('<attempt>')) {
-            parsedText = parsedText.replace('<attempt>', object.attempt + 1);
+            parsedText = parsedText.replace(/<attempt>/g, object.attempt + 1);
         }
 
         if (parsedText.includes('<passingAttempt>')) {
             parsedText = parsedText.replace(
-                '<passingAttempt>',
+                /<passingAttempt>/g,
                 object.passingAttempt
             );
         }
 
         if (parsedText.includes('<passingScore>')) {
             parsedText = parsedText.replace(
-                '<passingScore>',
+                /<passingScore>/g,
                 object.passingScore
             );
         }
 
         if (parsedText.includes('<nameRus>')) {
-            parsedText = parsedText.replace('<nameRus>', object.data.nameRus);
+            parsedText = parsedText.replace(/<nameRus>/g, object.data.nameRus);
         }
 
         if (parsedText.includes('<result>')) {
             parsedText = parsedText.replace(
-                '<result>',
+                /<result>/g,
                 object.result === true ? 'пройден' : 'не пройден'
             );
         }
 
         if (parsedText.includes('<passed>')) {
             parsedText = parsedText.replace(
-                '<passed>',
+                /<passed>/g,
                 object.passed === true ? 'пройден успешно' : 'провален'
             );
         }
 
         if (parsedText.includes('<answer>')) {
-            parsedText = parsedText.replace('<answers>', object.text);
+            parsedText = parsedText.replace(/<answers>/g, object.text);
         }
 
         if (parsedText.includes('<minResponses>')) {
             parsedText = parsedText.replace(
-                '<minResponses>',
+                /<minResponses>/g,
                 object.data.amountOfResponses.min
             );
         }
 
         if (parsedText.includes('<maxResponses>')) {
             parsedText = parsedText.replace(
-                '<maxResponses>',
+                /<maxResponses>/g,
                 object.data.amountOfResponses.max
             );
         }
