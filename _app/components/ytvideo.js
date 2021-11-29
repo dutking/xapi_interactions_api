@@ -24,7 +24,6 @@ export class YTVideo extends HTMLElement {
         };
         this.state = stateData;
         this.completed = false;
-        this.passed = false;
         this.lastPlayDuration = 0;
         this.vidData = {};
 
@@ -35,7 +34,6 @@ export class YTVideo extends HTMLElement {
         this.innerHTML = `<div id="${this.divId}" data-vid="${this.data.videoId}"></div>`;
 
         if ('completed' in this.state) {
-            this.passed = this.state.passed;
             this.completed = this.state.completed;
         }
 
@@ -76,67 +74,76 @@ export class YTVideo extends HTMLElement {
         this.emitEvent('state_changed');
     }
 
-    get calculatedRanges(){
-        const sorting = (a,b) => {
-            if(a[0] < b[0]){
-                return -1
+    get calculatedRanges() {
+        const sorting = (a, b) => {
+            if (a[0] < b[0]) {
+                return -1;
             }
-        
-            if(a[0] > b[0]) {
-                return 1
+
+            if (a[0] > b[0]) {
+                return 1;
             }
-        
-            if(a[0] === b[0]){
-                if(a[1] > b[1]) {
-                    return -1
+
+            if (a[0] === b[0]) {
+                if (a[1] > b[1]) {
+                    return -1;
                 }
-        
-                if(a[1] < b[1]) {
-                    return 1
+
+                if (a[1] < b[1]) {
+                    return 1;
                 }
             }
-        
-            return 0
-        }
+
+            return 0;
+        };
 
         const calculateRanges = (arr, startingIndex) => {
-            let start = 0
-            let end = 0
-            let newArr = []
-            let newIndex = 0
-        
-            if(startingIndex + 1 === arr.length){
-                return arr
+            let start = 0;
+            let end = 0;
+            let newArr = [];
+            let newIndex = 0;
+
+            if (startingIndex + 1 === arr.length) {
+                return arr;
             }
-        
-            if(arr[startingIndex+1][0] >= arr[startingIndex][0] && arr[startingIndex+1][0] <= arr[startingIndex][1]){
-                start = arr[startingIndex][0]
-                if(arr[startingIndex][1] >= arr[startingIndex+1][1]) {
-                    end = arr[startingIndex][1]
+
+            if (
+                arr[startingIndex + 1][0] >= arr[startingIndex][0] &&
+                arr[startingIndex + 1][0] <= arr[startingIndex][1]
+            ) {
+                start = arr[startingIndex][0];
+                if (arr[startingIndex][1] >= arr[startingIndex + 1][1]) {
+                    end = arr[startingIndex][1];
                 }
-                if(arr[startingIndex][1] < arr[startingIndex+1][1]) {
-                    end = arr[startingIndex+1][1]
+                if (arr[startingIndex][1] < arr[startingIndex + 1][1]) {
+                    end = arr[startingIndex + 1][1];
                 }
-                newArr = arr.slice(startingIndex + 2)
-                newArr.unshift([start,end])
-                newArr.unshift(...arr.slice(0, startingIndex))
-                return calculateRanges(newArr, startingIndex)
+                newArr = arr.slice(startingIndex + 2);
+                newArr.unshift([start, end]);
+                newArr.unshift(...arr.slice(0, startingIndex));
+                return calculateRanges(newArr, startingIndex);
             } else {
-                return calculateRanges(arr, startingIndex+1)
-            } 
-        }
+                return calculateRanges(arr, startingIndex + 1);
+            }
+        };
 
-        let currentRanges = Array.from(this.ranges).sort(sorting)
+        let currentRanges = Array.from(this.ranges).sort(sorting);
 
-        return calculateRanges(currentRanges, 0)
+        return calculateRanges(currentRanges, 0);
     }
 
-    get viewedDuration(){
-        return this.calculatedRanges.reduce((accum, item) => accum+(item[1] - item[0]), 0)
+    get viewedDuration() {
+        return this.calculatedRanges.reduce(
+            (accum, item) => accum + (item[1] - item[0]),
+            0
+        );
     }
 
-    get passed(){
-        return (this.viewedDuration >= this.player.getDuration - 5) || this.state?.passed
+    get passed() {
+        return (
+            this.viewedDuration >= this.player.getDuration - 5 ||
+            this.state?.passed
+        );
     }
 
     get result() {
