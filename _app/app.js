@@ -1402,10 +1402,11 @@ function addYTVideoScript() {
 
 window.onYouTubeIframeAPIReady = () => {
     console.log('%cYT iFrame API ready', 'color:blue;');
-    let vidDivs = document.querySelectorAll('ytvideo-unit');
     setTimeout(function () {
+        let vidDivs = document.querySelectorAll('ytvideo-unit');
+        console.log(`${vidDivs.length} videos to be loaded`, 'color:blue;');
         vidDivs.forEach((div) => {
             div.setPlayer();
         });
-    }, 1000);
+    }, 5000);
 };
