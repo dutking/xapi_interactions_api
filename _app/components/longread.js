@@ -53,8 +53,8 @@ longreadTemplate.innerHTML = `
     outline: none;
     cursor: pointer;
     width: var(--button-width);
-    box-shadow: var(--button-box-shadow-normal, none);
-    text-shadow:var(--button-text-shadow-normal, none);
+    text-shadow :var(--button-text-shadow-normal, none);
+    box-shadow :var(--button-box-shadow-normal, none);
     transition: all 200ms linear;
     transform-origin: var(--button-transform-origin);
     transform: var(--button-transform-normal);
@@ -66,8 +66,8 @@ longreadTemplate.innerHTML = `
     border-width: var(--button-border-width-hover);
     border-color: var(--button-border-color-hover);
     transform: var(--button-transform-hover);
-    box-shadow: var(--button-box-shadow-hover, none);
-    text-shadow:var(--button-text-shadow-hover, none);
+    text-shadow :var(--button-text-shadow-hover, none);
+    box-shadow :var(--button-box-shadow-hover, none);
 }
 
 .btn:active{
@@ -75,6 +75,8 @@ longreadTemplate.innerHTML = `
     background: var(--button-bg-color-active);
     border-width: var(--button-border-width-active);
     border-color: var(--button-border-color-active);
+    text-shadow :var(--button-text-shadow-active, none);
+    box-shadow :var(--button-box-shadow-active, none);
 }
 
 .btn:disabled{
@@ -82,6 +84,8 @@ longreadTemplate.innerHTML = `
     background-color: var(--button-bg-color-disabled);
     border-width: var(--button-border-width-disabled);
     border-color: var(--button-border-color-disabled);
+    text-shadow :var(--button-text-shadow-disabled, none);
+    box-shadow :var(--button-box-shadow-disabled, none);
     cursor: auto;
     pointer-events: none;
 }
