@@ -1,27 +1,3 @@
-@font-face {
-    font-family: 'Ubuntu';
-    src: url('fonts/Ubuntu-Italic.woff2') format('woff2'),
-        url('fonts/Ubuntu-Italic.woff') format('woff');
-    font-weight: normal;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Ubuntu';
-    src: url('fonts/Ubuntu-Bold.woff2') format('woff2'),
-        url('fonts/Ubuntu-Bold.woff') format('woff');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Ubuntu';
-    src: url('fonts/Ubuntu-Regular.woff2') format('woff2'),
-        url('fonts/Ubuntu-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
 :root {
     --multiplier: 1;
     --scrollbar-width: 19px;
@@ -29,32 +5,21 @@
     --z-index-base: 0;
 
     /* <- primary font vars */
-    --font-family-primary: 'Ubuntu', sans-serif;
-    --font-family-secondary: 'Ubuntu', sans-serif;
-    --font-family-tertiary: 'Ubuntu', sans-serif;
-    --font-family-quaternary: 'Ubuntu', sans-serif;
+    --font-family-primary: 'Arial', sans-serif;
 
-    --font-weight-regular: normal;
-    --font-weight-semibold: calc(500 * var(--multiplier));
-    --font-weight-bold: bold;
-
-    --font-style-regular: normal;
-    --font-style-italic: italic;
+    --font-weight-bold: 600;
+    --font-weight-semibold: 500;
+    --font-weight-normal: 400;
+    --font-weight-light: 300;
 
     --font-size-primary: 1.125rem;
-    --font-size-secondary: calc(var(--font-size-primary) * 0.75);
-    --font-size-tertiary: calc(var(--font-size-primary) * 0.5);
-    --font-size-quaternary: calc(var(--font-size-primary) * 1.5);
 
-    --line-height: calc(1.75rem * var(--multiplier));
+    --line-height-primary: 1.75rem;
     /* primary font vars -> */
 
     /* <- primary color vars */
     --color-dark-primary: #000;
-    --color-dark-secondary: #9aa7b0;
-
     --color-light-primary: #fff;
-    --color-light-secondary: #fff;
 
     --color-incorrect: #ff8282;
     --color-correct: #a0d49b;
@@ -64,18 +29,7 @@
     --color-hover: #348dfa;
     --color-disabled: #bebebe;
 
-    --color-bg-primary: transparent;
-    --color-bg-secondary: #e8ede7;
-    --color-bg-tertiary: transparent;
     /* primary color vars -> */
-
-    /* <- secondary color vars */
-    --color-font-dark-primary: var(--color-dark-primary);
-    --color-font-dark-secondary: var(--color-dark-secondary);
-
-    --color-font-light-primary: var(--color-light-primary);
-    --color-font-light-secondary: var(--color-light-secondary);
-    /* secondary color vars -> */
 
     /* <- primary spacing vars */
     --spacing-lvl_0: 0;
@@ -83,18 +37,6 @@
     --spacing_lvl_2: calc(2.5rem * var(--multiplier));
     --spacing_lvl_3: calc(1.5rem * var(--multiplier));
     /* primary spacing vars -> */
-
-    /* <- border settings */
-    --border-style-primary: solid;
-    --border-width-primary: 0;
-    --border-color-primary: transparent;
-    --border-radius-primary: 0;
-
-    --border-style-secondary: solid;
-    --border-width-secondary: 2px;
-    --border-color-secondary: transparent;
-    --border-radius-secondary: 0;
-    /* border settings -> */
 
     /* Elements settings */
 
@@ -112,11 +54,11 @@
     --test-align-content: start;
 
     /* font */
-    --test-color: var(--color-font-dark-primary);
+    --test-color: var(--color-dark-primary);
     --test-font-family: var(--font-family-primary);
     --test-font-size: var(--font-size-primary);
-    --test-font-weight: var(--font-weight-regular);
-    --test-font-style: var(--font-style-regular);
+    --test-font-weight: var(--font-weight-normal);
+    --test-font-style: normal;
 
     /* background */
     --test-background: transparent;
@@ -126,10 +68,10 @@
     --test-margin: 0 auto;
 
     /* border */
-    --test-border-style: var(--border-style-primary);
-    --test-border-width: var(--border-width-primary);
-    --test-border-color: var(--border-color-primary);
-    --test-border-radius: var(--border-radius-secondary);
+    --test-border-style: solid;
+    --test-border-width: 0;
+    --test-border-color: transparent;
+    --test-border-radius: 0;
 
     /* width */
     --test-max-width: var(--max-width);
@@ -148,23 +90,23 @@
     --test-instruction-align-content: start;
 
     /* font */
-    --test-instruction-color: var(--color-font-dark-primary);
+    --test-instruction-color: var(--color-dark-primary);
     --test-instruction-font-family: var(--font-family-primary);
     --test-instruction-font-size: var(--font-size-primary);
-    --test-instruction-font-weight: var(--font-weight-regular);
-    --test-instruction-font-style: var(--font-style-regular);
+    --test-instruction-font-weight: var(--font-weight-normal);
+    --test-instruction-font-style: normal;
 
     /* background */
-    --test-instruction-background: var(--color-bg-primary);
+    --test-instruction-background: transparent;
 
     /* padding */
     --test-instruction-padding: 0;
 
     /* border */
-    --test-instruction-border-style: var(--border-style-primary);
-    --test-instruction-border-width: var(--border-width-primary);
-    --test-instruction-border-color: var(--border-color-primary);
-    --test-instruction-border-radius: var(--border-radius-primary);
+    --test-instruction-border-style: solid;
+    --test-instruction-border-width: 0;
+    --test-instruction-border-color: transparent;
+    --test-instruction-border-radius: 0;
     /* test instruction settings ->*/
 
     /* <- test commonQuestion settings */
@@ -178,23 +120,23 @@
     --commonQuestion-align-content: start;
 
     /* font */
-    --commonQuestion-color: var(--color-font-dark-primary);
+    --commonQuestion-color: var(--color-dark-primary);
     --commonQuestion-font-family: var(--font-family-primary);
     --commonQuestion-font-size: var(--font-size-primary);
     --commonQuestion-font-weight: var(--font-weight-bold);
-    --commonQuestion-font-style: var(--font-style-regular);
+    --commonQuestion-font-style: normal;
 
     /* background */
-    --commonQuestion-background: var(--color-bg-primary);
+    --commonQuestion-background: transparent;
 
     /* padding */
     --commonQuestion-padding: 0;
 
     /* border */
-    --commonQuestion-border-style: var(--border-style-primary);
-    --commonQuestion-border-width: var(--border-width-primary);
-    --commonQuestion-border-color: var(--border-color-primary);
-    --commonQuestion-border-radius: var(--border-radius-primary);
+    --commonQuestion-border-style: solid;
+    --commonQuestion-border-width: 0;
+    --commonQuestion-border-color: transparent;
+    --commonQuestion-border-radius: 0;
     /* test commonQuestion settings ->*/
 
     /* <- test questionsContainer settings */
@@ -208,23 +150,23 @@
     --questionsContainer-align-content: start;
 
     /* font */
-    --questionsContainer-color: var(--color-font-dark-primary);
+    --questionsContainer-color: var(--color-dark-primary);
     --questionsContainer-font-family: var(--font-family-primary);
     --questionsContainer-font-size: var(--font-size-primary);
-    --questionsContainer-font-weight: var(--font-weight-regular);
-    --questionsContainer-font-style: var(--font-style-regular);
+    --questionsContainer-font-weight: var(--font-weight-normal);
+    --questionsContainer-font-style: normal;
 
     /* background */
-    --questionsContainer-background: var(--color-bg-primary);
+    --questionsContainer-background: transparent;
 
     /* padding */
     --questionsContainer-padding: 0;
 
     /* border */
-    --questionsContainer-border-style: var(--border-style-primary);
-    --questionsContainer-border-width: var(--border-width-primary);
-    --questionsContainer-border-color: var(--border-color-primary);
-    --questionsContainer-border-radius: var(--border-radius-primary);
+    --questionsContainer-border-style: solid;
+    --questionsContainer-border-width: 0;
+    --questionsContainer-border-color: transparent;
+    --questionsContainer-border-radius: 0;
     /* test questionsContainer settings ->*/
 
     /* <- test feedbackContainer settings */
@@ -238,23 +180,23 @@
     --feedbackContainer-align-content: start;
 
     /* font */
-    --feedbackContainer-color: var(--color-font-dark-primary);
+    --feedbackContainer-color: var(--color-dark-primary);
     --feedbackContainer-font-family: var(--font-family-primary);
     --feedbackContainer-font-size: var(--font-size-primary);
-    --feedbackContainer-font-weight: var(--font-weight-regular);
-    --feedbackContainer-font-style: var(--font-style-regular);
+    --feedbackContainer-font-weight: var(--font-weight-normal);
+    --feedbackContainer-font-style: normal;
 
     /* background */
-    --feedbackContainer-background: var(--color-bg-primary);
+    --feedbackContainer-background: transparent;
 
     /* padding */
     --feedbackContainer-padding: var(--spacing_lvl_0);
 
     /* border */
-    --feedbackContainer-border-style: var(--border-style-secondary);
+    --feedbackContainer-border-style: solid;
     --feedbackContainer-border-width: 0;
-    --feedbackContainer-border-color: var(--border-color-primary);
-    --feedbackContainer-border-radius: var(--border-radius-secondary);
+    --feedbackContainer-border-color: transparent;
+    --feedbackContainer-border-radius: 0;
     /* test feedbackContainer settings ->*/
 
     /* <- test buttonsContainer settings */
@@ -269,23 +211,23 @@
     --test-buttonsContainer-width: 100%;
 
     /* font */
-    --test-buttonsContainer-color: var(--color-font-dark-primary);
+    --test-buttonsContainer-color: var(--color-dark-primary);
     --test-buttonsContainer-font-family: var(--font-family-primary);
     --test-buttonsContainer-font-size: var(--font-size-primary);
-    --test-buttonsContainer-font-weight: var(--font-weight-regular);
-    --test-buttonsContainer-font-style: var(--font-style-regular);
+    --test-buttonsContainer-font-weight: var(--font-weight-normal);
+    --test-buttonsContainer-font-style: normal;
 
     /* background */
-    --test-buttonsContainer-background: var(--color-bg-primary);
+    --test-buttonsContainer-background: transparent;
 
     /* padding */
     --test-buttonsContainer-padding: 0;
 
     /* border */
-    --test-buttonsContainer-border-style: var(--border-style-primary);
-    --test-buttonsContainer-border-width: var(--border-width-primary);
-    --test-buttonsContainer-border-color: var(--border-color-primary);
-    --test-buttonsContainer-border-radius: var(--border-radius-primary);
+    --test-buttonsContainer-border-style: solid;
+    --test-buttonsContainer-border-width: 0;
+    --test-buttonsContainer-border-color: transparent;
+    --test-buttonsContainer-border-radius: 0;
     /* test buttonsContainer settings ->*/
 
     /* <- questionContainer settings */
@@ -301,23 +243,23 @@
     --questionContainer-align-content: start;
 
     /* font */
-    --questionContainer-color: var(--color-font-dark-primary);
+    --questionContainer-color: var(--color-dark-primary);
     --questionContainer-font-family: var(--font-family-primary);
     --questionContainer-font-size: var(--font-size-primary);
-    --questionContainer-font-weight: var(--font-weight-regular);
-    --questionContainer-font-style: var(--font-style-regular);
+    --questionContainer-font-weight: var(--font-weight-normal);
+    --questionContainer-font-style: normal;
 
     /* background */
-    --questionContainer-background: var(--color-bg-primary);
+    --questionContainer-background: transparent;
 
     /* padding */
     --questionContainer-padding: 0;
 
     /* border */
-    --questionContainer-border-style: var(--border-style-primary);
-    --questionContainer-border-width: var(--border-width-primary);
-    --questionContainer-border-color: var(--border-color-primary);
-    --questionContainer-border-radius: var(--border-radius-primary);
+    --questionContainer-border-style: solid;
+    --questionContainer-border-width: 0;
+    --questionContainer-border-color: transparent;
+    --questionContainer-border-radius: 0;
     /* questionContainer settings ->*/
 
     /* <- questionContainer subHeader settings */
@@ -334,21 +276,22 @@
     /* font */
     --subHeader-color: #000;
     --subHeader-font-family: var(--font-family-primary);
-    --subHeader-font-size: var(--font-size-secondary);
-    --subHeader-font-weight: var(--font-weight-regular);
-    --subHeader-font-style: var(--font-style-regular);
+    --subHeader-font-size: var(--font-size-primary);
+    --subHeader-font-weight: var(--font-weight-normal);
+    --subHeader-font-style: normal;
 
     /* background */
-    --subHeader-background: var(--color-bg-primary);
+    --subHeader-background: transparent;
 
     /* padding */
     --subHeader-padding: 0;
 
     /* border */
-    --subHeader-border-style: var(--border-style-primary);
-    --subHeader-border-width: var(--border-width-primary);
-    --subHeader-border-color: var(--border-color-primary);
-    --subHeader-border-radius: var(--border-radius-primary);
+    --subHeader-border-style: solid;
+    --subHeader-border-width: 0;
+    --subHeader-border-color: transparent;
+    --subHeader-border-radius: 0;
+
     /*transform*/
     --subHeader-transform: translateY(0);
 
@@ -365,23 +308,23 @@
     --question-align-content: start;
 
     /* font */
-    --question-color: var(--color-font-dark-primary);
+    --question-color: var(--color-dark-primary);
     --question-font-family: var(--font-family-primary);
     --question-font-size: var(--font-size-primary);
-    --question-font-weight: var(--font-weight-regular);
-    --question-font-style: var(--font-style-regular);
+    --question-font-weight: var(--font-weight-normal);
+    --question-font-style: normal;
 
     /* background */
-    --question-background: var(--color-bg-primary);
+    --question-background: transparent;
 
     /* padding */
     --question-padding: 0;
 
     /* border */
-    --question-border-style: var(--border-style-primary);
-    --question-border-width: var(--border-width-primary);
-    --question-border-color: var(--border-color-primary);
-    --question-border-radius: var(--border-radius-primary);
+    --question-border-style: solid;
+    --question-border-width: 0;
+    --question-border-color: transparent;
+    --question-border-radius: 0;
     /* questionContainer question settings ->*/
 
     /* <- questionContainer question story settings */
@@ -395,23 +338,23 @@
     --story-align-content: start;
 
     /* font */
-    --story-color: var(--color-font-dark-primary);
+    --story-color: var(--color-dark-primary);
     --story-font-family: var(--font-family-primary);
     --story-font-size: var(--font-size-primary);
-    --story-font-weight: var(--font-weight-regular);
-    --story-font-style: var(--font-style-regular);
+    --story-font-weight: var(--font-weight-normal);
+    --story-font-style: normal;
 
     /* background */
-    --story-background: var(--color-bg-primary);
+    --story-background: transparent;
 
     /* padding */
     --story-padding: 0;
 
     /* border */
-    --story-border-style: var(--border-style-primary);
-    --story-border-width: var(--border-width-primary);
-    --story-border-color: var(--border-color-primary);
-    --story-border-radius: var(--border-radius-primary);
+    --story-border-style: solid;
+    --story-border-width: 0;
+    --story-border-color: transparent;
+    --story-border-radius: 0;
     /* questionContainer question story settings ->*/
 
     /* <- questionContainer question questionText settings */
@@ -425,44 +368,44 @@
     --questionText-align-content: start;
 
     /* font */
-    --questionText-color: var(--color-font-dark-primary);
+    --questionText-color: var(--color-dark-primary);
     --questionText-font-family: var(--font-family-primary);
     --questionText-font-size: var(--font-size-primary);
     --questionText-font-weight: var(--font-weight-bold);
-    --questionText-font-style: var(--font-style-regular);
+    --questionText-font-style: normal;
 
     /* background */
-    --questionText-background: var(--color-bg-primary);
+    --questionText-background: transparent;
 
     /* padding */
     --questionText-padding: 0;
 
     /* border */
-    --questionText-border-style: var(--border-style-primary);
-    --questionText-border-width: var(--border-width-primary);
-    --questionText-border-color: var(--border-color-primary);
-    --questionText-border-radius: var(--border-radius-primary);
+    --questionText-border-style: solid;
+    --questionText-border-width: 0;
+    --questionText-border-color: transparent;
+    --questionText-border-radius: 0;
     /* questionContainer question grid questionText settings ->*/
 
     /* <- questionContainer question instruction settings */
     /* font */
-    --question-instruction-color: var(--color-font-dark-secondary);
+    --question-instruction-color: var(--color-dark-primary);
     --question-instruction-font-family: var(--font-family-primary);
     --question-instruction-font-size: var(--font-size-primary);
-    --question-instruction-font-weight: var(--font-weight-regular);
-    --question-instruction-font-style: var(--font-style-italic);
+    --question-instruction-font-weight: var(--font-weight-normal);
+    --question-instruction-font-style: italic;
 
     /* background */
-    --question-instruction-background: var(--color-bg-primary);
+    --question-instruction-background: transparent;
 
     /* padding */
     --question-instruction-padding: 0;
 
     /* border */
-    --question-instruction-border-style: var(--border-style-primary);
-    --question-instruction-border-width: var(--border-width-primary);
-    --question-instruction-border-color: var(--border-color-primary);
-    --question-instruction-border-radius: var(--border-radius-primary);
+    --question-instruction-border-style: solid;
+    --question-instruction-border-width: 0;
+    --question-instruction-border-color: transparent;
+    --question-instruction-border-radius: 0;
     /* questionContainer question instruction settings ->*/
 
     /* <- questionContainer answersContainer settings */
@@ -482,23 +425,23 @@
     --answersContainer-align-content: start;
 
     /* font */
-    --answersContainer-color: var(--color-font-dark-primary);
+    --answersContainer-color: var(--color-dark-primary);
     --answersContainer-font-family: var(--font-family-primary);
     --answersContainer-font-size: var(--font-size-primary);
-    --answersContainer-font-weight: var(--font-weight-regular);
-    --answersContainer-font-style: var(--font-style-regular);
+    --answersContainer-font-weight: var(--font-weight-normal);
+    --answersContainer-font-style: normal;
 
     /* background */
-    --answersContainer-background: var(--color-bg-primary);
+    --answersContainer-background: transparent;
 
     /* padding */
     --answersContainer-padding: 0;
 
     /* border */
-    --answersContainer-border-style: var(--border-style-primary);
-    --answersContainer-border-width: var(--border-width-primary);
-    --answersContainer-border-color: var(--border-color-primary);
-    --answersContainer-border-radius: var(--border-radius-primary);
+    --answersContainer-border-style: solid;
+    --answersContainer-border-width: 0;
+    --answersContainer-border-color: transparent;
+    --answersContainer-border-radius: 0;
     /* questionContainer answersContainer settings ->*/
 
     /* <- questionContainer answersContainer answerContainer settings */
@@ -513,24 +456,24 @@
     --answerContainer-align-content: center;
 
     /* font */
-    --answerContainer-color: var(--color-font-dark-primary);
+    --answerContainer-color: var(--color-dark-primary);
     --answerContainer-font-family: var(--font-family-primary);
     --answerContainer-font-size: var(--font-size-primary);
-    --answerContainer-font-weight: var(--font-weight-regular);
-    --answerContainer-font-style: var(--font-style-regular);
+    --answerContainer-font-weight: var(--font-weight-normal);
+    --answerContainer-font-style: normal;
 
     /* background */
-    --answerContainer-background: var(--color-bg-primary);
+    --answerContainer-background: transparent;
 
     /* padding */
     --answerContainer-padding: 0;
     --answerContainerImage-padding: 2rem 0 1rem 0;
 
     /* border */
-    --answerContainer-border-style: var(--border-style-primary);
-    --answerContainer-border-width: var(--border-width-primary);
-    --answerContainer-border-color: var(--border-color-primary);
-    --answerContainer-border-radius: var(--border-radius-primary);
+    --answerContainer-border-style: solid;
+    --answerContainer-border-width: 0;
+    --answerContainer-border-color: transparent;
+    --answerContainer-border-radius: 0;
     /* questionContainer answersContainer answerContainer settings ->*/
 
     /* <- questionContainer answersContainer answerContainer label settings */
@@ -552,14 +495,14 @@
     --answerContainer-label-align-content: center;
 
     /* font */
-    --answerContainer-label-color: var(--color-font-dark-primary);
+    --answerContainer-label-color: var(--color-dark-primary);
     --answerContainer-label-font-family: var(--font-family-primary);
     --answerContainer-label-font-size: var(--font-size-primary);
-    --answerContainer-label-font-weight: var(--font-weight-regular);
-    --answerContainer-label-font-style: var(--font-style-regular);
+    --answerContainer-label-font-weight: var(--font-weight-normal);
+    --answerContainer-label-font-style: normal;
 
     /* background */
-    --answerContainer-label-background: var(--color-bg-primary);
+    --answerContainer-label-background: transparent;
     --answerContainer-labelImage-background: transparent;
 
     /* padding */
@@ -567,10 +510,10 @@
     --answerContainer-labelImage-padding: 1rem;
 
     /* border */
-    --answerContainer-label-border-style: var(--border-style-primary);
-    --answerContainer-label-border-width: var(--border-width-primary);
-    --answerContainer-label-border-color: var(--border-color-primary);
-    --answerContainer-label-border-radius: var(--border-radius-primary);
+    --answerContainer-label-border-style: solid;
+    --answerContainer-label-border-width: 0;
+    --answerContainer-label-border-color: transparent;
+    --answerContainer-label-border-radius: 0;
     --answerContainer-labelImage-border-radius: 999px;
     /* questionContainer answersContainer answerContainer label settings ->*/
 
@@ -585,14 +528,14 @@
     --answerFeedback-align-content: start;
 
     /* font */
-    --answerFeedback-color: var(--color-font-dark-primary);
+    --answerFeedback-color: var(--color-dark-primary);
     --answerFeedback-font-family: var(--font-family-primary);
     --answerFeedback-font-size: var(--font-size-primary);
-    --answerFeedback-font-weight: var(--font-weight-regular);
-    --answerFeedback-font-style: var(--font-style-italic);
+    --answerFeedback-font-weight: var(--font-weight-normal);
+    --answerFeedback-font-style: italic;
 
     /* background */
-    --answerFeedback-background: var(--color-bg-primary);
+    --answerFeedback-background: transparent;
 
     /* padding */
     --answerFeedback-padding: 1rem 0 0
@@ -601,10 +544,10 @@
         );
 
     /* border */
-    --answerFeedback-border-style: var(--border-style-primary);
-    --answerFeedback-border-width: var(--border-width-primary);
-    --answerFeedback-border-color: var(--border-color-primary);
-    --answerFeedback-border-radius: var(--border-radius-primary);
+    --answerFeedback-border-style: solid;
+    --answerFeedback-border-width: 0;
+    --answerFeedback-border-color: transparent;
+    --answerFeedback-border-radius: 0;
     /* questionContainer answersContainer answerContainer answerFeedback settings ->*/
 
     /* <- questionContainer tipsContainer settings */
@@ -618,23 +561,23 @@
     --tipsContainer-align-content: start;
 
     /* font */
-    --tipsContainer-color: var(--color-font-dark-primary);
+    --tipsContainer-color: var(--color-dark-primary);
     --tipsContainer-font-family: var(--font-family-primary);
     --tipsContainer-font-size: var(--font-size-primary);
-    --tipsContainer-font-weight: var(--font-weight-regular);
-    --tipsContainer-font-style: var(--font-style-regular);
+    --tipsContainer-font-weight: var(--font-weight-normal);
+    --tipsContainer-font-style: normal;
 
     /* background */
-    --tipsContainer-background: var(--color-bg-primary);
+    --tipsContainer-background: transparent;
 
     /* padding */
     --tipsContainer-padding: 0;
 
     /* border */
-    --tipsContainer-border-style: var(--border-style-primary);
-    --tipsContainer-border-width: var(--border-width-primary);
-    --tipsContainer-border-color: var(--border-color-primary);
-    --tipsContainer-border-radius: var(--border-radius-primary);
+    --tipsContainer-border-style: solid;
+    --tipsContainer-border-width: 0;
+    --tipsContainer-border-color: transparent;
+    --tipsContainer-border-radius: 0;
     /* questionContainer tipsContainer settings ->*/
 
     /* <- questionContainer tipsContainer tipText settings */
@@ -648,23 +591,23 @@
     --tipText-align-content: start;
 
     /* font */
-    --tipText-color: var(--color-font-dark-primary);
+    --tipText-color: var(--color-dark-primary);
     --tipText-font-family: var(--font-family-primary);
     --tipText-font-size: var(--font-size-primary);
-    --tipText-font-weight: var(--font-weight-regular);
-    --tipText-font-style: var(--font-style-regular);
+    --tipText-font-weight: var(--font-weight-normal);
+    --tipText-font-style: normal;
 
     /* background */
-    --tipText-background: var(--color-bg-primary);
+    --tipText-background: transparent;
 
     /* padding */
     --tipText-padding: 0;
 
     /* border */
-    --tipText-border-style: var(--border-style-primary);
-    --tipText-border-width: var(--border-width-primary);
-    --tipText-border-color: var(--border-color-primary);
-    --tipText-border-radius: var(--border-radius-primary);
+    --tipText-border-style: solid;
+    --tipText-border-width: 0;
+    --tipText-border-color: transparent;
+    --tipText-border-radius: 0;
     /* questionContainer tipsContainer tipText settings ->*/
 
     /* <- questionContainer questionFeedback settings */
@@ -678,23 +621,23 @@
     --questionFeedback-align-content: start;
 
     /* font */
-    --questionFeedback-color: var(--color-font-dark-primary);
+    --questionFeedback-color: var(--color-dark-primary);
     --questionFeedback-font-family: var(--font-family-primary);
     --questionFeedback-font-size: var(--font-size-primary);
-    --questionFeedback-font-weight: var(--font-weight-regular);
-    --questionFeedback-font-style: var(--font-style-regular);
+    --questionFeedback-font-weight: var(--font-weight-normal);
+    --questionFeedback-font-style: normal;
 
     /* background */
-    --questionFeedback-background: var(--color-bg-primary);
+    --questionFeedback-background: transparent;
 
     /* padding */
     --questionFeedback-padding: var(--spacing_lvl_0);
 
     /* border */
-    --questionFeedback-border-style: var(--border-style-primary);
+    --questionFeedback-border-style: solid;
     --questionFeedback-border-width: 0;
-    --questionFeedback-border-color: var(--border-color-primary);
-    --questionFeedback-border-radius: var(--border-radius-secondary);
+    --questionFeedback-border-color: transparent;
+    --questionFeedback-border-radius: 0;
     /* questionContainer questionFeedback settings ->*/
 
     /* <- questionContainer buttonsContainer settings */
@@ -708,35 +651,25 @@
     --questionContainer-buttonsContainer-align-content: start;
 
     /* font */
-    --questionContainer-buttonsContainer-color: var(--color-font-dark-primary);
+    --questionContainer-buttonsContainer-color: var(--color-dark-primary);
     --questionContainer-buttonsContainer-font-family: var(
         --font-family-primary
     );
     --questionContainer-buttonsContainer-font-size: var(--font-size-primary);
-    --questionContainer-buttonsContainer-font-weight: var(
-        --font-weight-regular
-    );
-    --questionContainer-buttonsContainer-font-style: var(--font-style-regular);
+    --questionContainer-buttonsContainer-font-weight: var(--font-weight-normal);
+    --questionContainer-buttonsContainer-font-style: normal;
 
     /* background */
-    --questionContainer-buttonsContainer-background: var(--color-bg-primary);
+    --questionContainer-buttonsContainer-background: transparent;
 
     /* padding */
     --questionContainer-buttonsContainer-padding: 0;
 
     /* border */
-    --questionContainer-buttonsContainer-border-style: var(
-        --border-style-primary
-    );
-    --questionContainer-buttonsContainer-border-width: var(
-        --border-width-primary
-    );
-    --questionContainer-buttonsContainer-border-color: var(
-        --border-color-primary
-    );
-    --questionContainer-buttonsContainer-border-radius: var(
-        --border-radius-primary
-    );
+    --questionContainer-buttonsContainer-border-style: solid;
+    --questionContainer-buttonsContainer-border-width: 0;
+    --questionContainer-buttonsContainer-border-color: transparent;
+    --questionContainer-buttonsContainer-border-radius: 0;
     /* questionContainer buttonsContainer settings ->*/
 
     /* <- fill-in */
@@ -756,10 +689,11 @@
     /* fill-in ->*/
 
     /* <- button settings */
-    --button-font-family: var(--font-family-secondary);
+    --button-font-family: var(--font-family-primary);
     --button-font-size: var(--font-size-primary);
     --button-font-weight: var(--font-weight-bold);
-    --button-font-style: var(--font-style-regular);
+    --button-font-style: normal;
+    --button-letter-spacing: 1.1;
     --button-color-normal: #fff;
     --button-color-active: #fff;
     --button-color-hover: #fff;
@@ -786,8 +720,14 @@
     --button-padding: var(--button-padding-top) var(--button-padding-right)
         var(--button-padding-bottom) var(--button-padding-left);
     --button-text-align: center;
-    --button-text-shadow: none;
-    --button-box-shadow: none;
+    --button-text-shadow-normal: none;
+    --button-box-shadow-normal: none;
+    --button-text-shadow-hover: none;
+    --button-box-shadow-hover: none;
+    --button-text-shadow-active: none;
+    --button-box-shadow-active: none;
+    --button-text-shadow-disabled: none;
+    --button-box-shadow-disabled: none;
     /* button settings -> */
 
     /* <- mc/mr input settings */
@@ -878,7 +818,17 @@
     --pool-name-font-size: 14px;
     /* pool ->*/
 
+    /*mc/mr questions with images as answers*/
     --image-width: 180px;
+
+    /* <- Longread */
+    --longread-justify-items: start;
+    --longread-align-items: center;
+    --longread-justify-content: start;
+    --longread-align-content: center;
+    --longread-min-height: 50px;
+    --longread-bg-color: transparent;
+    /* Longread -> */
 }
 
 #allrecords .placeholder {
@@ -895,11 +845,7 @@
 }
 
 #allrecords em {
-    font-style: var(--font-style-italic);
-}
-
-#allrecords .placeholder.conversation {
-    --test-padding: 0;
+    font-style: italic;
 }
 
 #allrecords .placeholder ytvideo-unit {
@@ -907,98 +853,8 @@
     justify-content: center;
 }
 
-/* <- БКГ*/
-#allrecords .placeholder.longread {
-    position: relative;
-    padding: 0;
-    background-color: transparent;
-    --button-width: 160px;
-    --button-padding: 1rem 2rem;
-    --button-font-weight: bold;
-    --button-border-radius: 5px;
-    --button-border-width: 0;
-    --button-border-style: solid;
-    --button-border-color-normal: var(--color-normal);
-    --button-border-color-hover: var(--color-hover);
-    --button-color-normal: #fff;
-    --button-color-hover: #fff;
-    --button-bg-color-normal: var(--color-normal);
-    --button-bg-color-hover: var(--color-hover);
-    --button-box-shadow-normal: none;
-    --button-box-shadow-hover: none;
-    --button-text-shadow-normal: none;
-    --button-text-shadow-hover: none;
-    --button-transform-normal: none;
-    --button-transform-hover: none;
-    --button-transform-origin: center;
-
-    --longread-justify-items: start;
-    --longread-align-items: start;
-    --longread-justify-content: start;
-    --longread-align-content: start;
-    --longread-min-height: 5rem;
-    --longread-bg-color: transparent;
-}
-
-/* БКГ ->*/
-
-/* <- Чат-бот */
-/* #allrecords .placeholder.longread {
-    background-color: #162e4f;
-    --button-width: 115px;
-    --button-padding: 0.8rem 0.8rem;
-    --button-font-family: 'Fira Sans';
-    --button-font-weight: bold;
-    --button-font-size: 20px;
-    --button-letter-spacing: 0.2em;
-    --button-border-radius: 5px;
-    --button-border-width: 0;
-    --button-border-style: solid;
-    --button-border-color-normal: transparent;
-    --button-border-color-hover: transparent;
-    --button-color-normal: #b9e6ff;
-    --button-color-hover: #b9e6ff;
-    --button-bg-color-normal: transparent;
-    --button-bg-color-hover: transparent;
-    --button-box-shadow-normal: none;
-    --button-box-shadow-hover: none;
-    --button-text-shadow-normal: none;
-    --button-text-shadow-hover: none;
-    --button-transform-normal: none;
-    --button-transform-hover: none;
-    --button-transform-origin: center;
-
-    --longread-justify-items: center;
-    --longread-align-items: center;
-    --longread-justify-content: center;
-    --longread-align-content: center;
-    --longread-min-height: 95px;
-    --longread-bg-color: transparent;
-}
-
-#allrecords .placeholder.longread:hover {
-    background-color: #3869ad;
-} */
-
-/*Чат-бот ->*/
-
-#allrecords test-unit {
-    width: 100%;
-    position: relative;
-    z-index: calc(var(--z-index-base) + 899);
-}
-
 #allrecords .off {
     display: none;
-}
-
-@keyframes spinner {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 @media screen and (max-width: 1920px) {
@@ -1009,7 +865,6 @@
 
 @media screen and (max-width: 960px) {
     :root {
-        --multiplier: 0.9;
         --max-width: 38.75rem;
         --test-padding: 0 0 0 0;
     }
@@ -1017,7 +872,6 @@
 
 @media screen and (max-width: 640px) {
     :root {
-        --multiplier: 0.8;
         --test-padding: 0;
         --max-width: 28.75rem;
     }
