@@ -1626,7 +1626,6 @@ export class Test extends HTMLElement {
             }, 0);
         } else if (this.data.scoring === 'answers') {
             let sum = 0;
-            // прописать подсчет максимально-возможного балла
             this.questionsToTake.forEach((q) => {
                 if (q.type === 'mc' || q.type === 'fill-in') {
                     sum += Math.max(...q.answers.map((a) => Number(a.weight)));
@@ -1748,102 +1747,6 @@ export class Test extends HTMLElement {
                 return accum;
             }, []);
     }
-
-    /* showCorrectAnswers(question) {
-        let showMarker = (question, answer) => {
-            console.log(answer.id);
-            let marker = question.shadowRoot
-                .querySelector(`.answerContainer[data-id=${answer.id}]`)
-                .querySelector('.correctnessMarker');
-
-            marker.classList.remove('off');
-            marker.classList.add(`${answer.correct ? 'correct' : 'incorrect'}`);
-        };
-
-        if (this.data?.showCorrectAnswers) {
-            if (this.data.showCorrectAnswers.startsWith('onAnswered')) {
-                if (
-                    question.data.type === 'mc' ||
-                    question.data.type === 'mr'
-                ) {
-                    question.data.answers.forEach((a) => {
-                        showMarker(question, a);
-                    });
-                }
-            } else if (this.data.showCorrectAnswers.startsWith('onCompleted')) {
-                if (this.attemptCompleted) {
-                    let questions = Array.from(
-                        this.shadowRoot.querySelector('.questionsContainer')
-                            .childNodes
-                    );
-                    questions.forEach((q) => {
-                        if (q.data.type === 'mc' || q.data.type === 'mr') {
-                            q.data.answers.forEach((a) => {
-                                showMarker(q, a);
-                            });
-                        }
-                    });
-                }
-            } else if (this.data.showCorrectAnswers.startsWith('onAttempt')) {
-                let attempt = Number(
-                    this.data.showCorrectAnswers.split(':')[1]
-                );
-                if (this.attemptCompleted && this.attempt === attempt) {
-                    let questions = Array.from(
-                        this.shadowRoot.querySelector('.questionsContainer')
-                            .childNodes
-                    );
-                    questions.forEach((q) => {
-                        if (q.data.type === 'mc' || q.data.type === 'mr') {
-                            q.data.answers.forEach((a) => {
-                                showMarker(q, a);
-                            });
-                        }
-                    });
-                }
-            }
-        }
-    } */
-
-    /* showQuestionsStatus(question) {
-        let showMarker = (q) => {
-            let marker = q.shadowRoot
-                .querySelector(`.subHeader`)
-                .querySelector('.correctnessMarker');
-
-            marker.classList.remove('off');
-
-            marker.classList.add(`${q.result ? 'correct' : 'incorrect'}`);
-        };
-
-        if (this.data?.showQuestionsStatus) {
-            if (this.data.showQuestionsStatus.startsWith('onAnswered')) {
-                showMarker(question);
-            } else if (
-                this.data.showQuestionsStatus.startsWith('onCompleted') &&
-                this.attemptCompleted
-            ) {
-                let questions = Array.from(
-                    this.shadowRoot.querySelector('.questionsContainer')
-                        .childNodes
-                );
-
-                questions.forEach((q) => showMarker(q));
-            } else if (this.data.showQuestionsStatus.startsWith('onAttempt')) {
-                let attempt = Number(
-                    this.data.showCorrectAnswers.split(':')[1]
-                );
-                if (this.attemptCompleted && this.attempt === attempt) {
-                    let questions = Array.from(
-                        this.shadowRoot.querySelector('.questionsContainer')
-                            .childNodes
-                    );
-
-                    questions.forEach((q) => showMarker(q));
-                }
-            }
-        }
-    } */
 
     processTest() {
         if (this.status === 'initial') {
