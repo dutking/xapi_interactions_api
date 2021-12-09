@@ -1404,7 +1404,7 @@ window.onYouTubeIframeAPIReady = () => {
     console.log('%cYT iFrame API ready', 'color:blue;');
     setTimeout(function () {
         let vidDivs = document.querySelectorAll('ytvideo-unit');
-        console.log(`${vidDivs.length} videos to be loaded`, 'color:blue;');
+        console.log(`%c${vidDivs.length} videos to be loaded`, 'color:blue;');
         vidDivs.forEach((div) => {
             div.setPlayer();
         });
