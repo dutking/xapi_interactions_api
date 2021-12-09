@@ -772,6 +772,7 @@ export class Test extends HTMLElement {
                     index++;
                 }
 
+                // question with this.lastQuestionShownId
                 createdQuestions.push(
                     this.createQuestion(this.questionsToTake[index].id)
                 );
@@ -779,16 +780,23 @@ export class Test extends HTMLElement {
         }
 
         return Promise.allSettled(createdQuestions).then(() => {
-            let questions = Array.from(
-                this.shadowRoot.querySelector('.questionsContainer').children
-            );
-
             if (
                 status !== 'initial' &&
-                questions.length > 1 &&
+                this.questionsElements.length > 1 &&
                 this.data.displayMode === 'one_instead_another'
             ) {
-                questions.slice(0, -1).forEach((i) => i.classList.add('off'));
+                // setting status to Completed for questions whose status is inProgress due to connection errors
+                this.questionsElements.forEach((q, i, arr) => {
+                    if (q.status === 'inProgress' && i < arr.length - 1) {
+                        q.status = 'completed';
+                        q.setState('not last question cannot be inProgress');
+                        q.emitEvent('continue');
+                    }
+                });
+
+                this.questionsElements.slice(0, -1).forEach((i) => {
+                    i.classList.add('off');
+                });
             }
 
             this.submitBtn = this.shadowRoot.querySelector('.submitBtn');
@@ -804,6 +812,12 @@ export class Test extends HTMLElement {
 
             return new Promise((resolve, reject) => resolve());
         });
+    }
+
+    get questionsElements() {
+        return Array.from(
+            this.shadowRoot.querySelector('.questionsContainer').children
+        );
     }
 
     get allChecked() {
@@ -1423,12 +1437,8 @@ export class Test extends HTMLElement {
     }
 
     get attemptCompleted() {
-        let questions = Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        );
-
-        if (questions.length === this.questionsToTake.length) {
-            return questions
+        if (this.questionsElements.length === this.questionsToTake.length) {
+            return this.questionsElements
                 .map((i) => i.status === 'completed')
                 .every((i) => i === true);
         }
