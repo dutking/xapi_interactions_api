@@ -171,18 +171,13 @@ export class App {
     }
 
     static async setState() {
-        let date = new Date();
-
-        App.course.state.date.push(date);
-
-        App.course.state.duration.push(
-            moment
-                .duration(
-                    Math.round((date - App.course.startTime) / 1000),
-                    'seconds'
-                )
-                .toISOString()
-        );
+        App.course.state.date = new Date();
+        App.course.state.duration = moment
+            .duration(
+                Math.round((date - App.course.startTime) / 1000),
+                'seconds'
+            )
+            .toISOString();
         App.course.state.id = App.course.data.id;
         App.course.state.completed = App.course.completed;
         App.course.state.passed = App.course.passed;
@@ -192,6 +187,10 @@ export class App {
         /*         App.course.state.pools = App.course.pools; */
         App.course.state.attempt = App.course.attempt;
         App.course.state.processedScores = App.course.processedScores;
+
+        if ('isFake' in App.course.state) {
+            delete App.course.state.isFake;
+        }
 
         console.log(
             '%c...posting course state',

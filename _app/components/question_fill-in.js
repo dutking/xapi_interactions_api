@@ -1005,6 +1005,7 @@ export class QuestionFillIn extends HTMLElement {
             `%c...setting question ${this.data.id} state due to: ${msg}`,
             'color:blue;font-weight:bold;'
         );
+        this.state.date = new Date();
         this.state.status = this.status;
         this.state.result = this.result;
         this.state.userAnswer = this.userAnswer;

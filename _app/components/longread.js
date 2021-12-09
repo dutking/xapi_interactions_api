@@ -192,16 +192,14 @@ export class Longread extends HTMLElement {
     }
 
     setState() {
-        let date = new Date();
+        this.state.date = new Date();
         this.state.id = this.data.id;
         this.state.completed = this.completed;
         this.state.passed = this.passed;
         this.state.result = this.result;
 
-        if (this.state?.date) {
-            this.state.date.push(date);
-        } else {
-            this.state.date = [date];
+        if ('isFake' in this.state) {
+            delete this.state.isFake;
         }
 
         this.emitEvent('state_changed');
