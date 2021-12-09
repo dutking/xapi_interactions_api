@@ -114,10 +114,7 @@ export class App {
         );
         console.log(state);
         if (state?.date) {
-            console.log(
-                `%cResumed from ${state.date[state.date.length - 1]}`,
-                'color:gray;'
-            );
+            console.log(`%cResumed from ${state.date}`, 'color:gray;');
             Object.assign(App.course, {
                 data: config,
                 startTime: new Date(),
@@ -265,7 +262,9 @@ export class App {
                 }
 
                 if (interaction.type === 'longread') {
-                    App.observerLongread.observe(taskElement);
+                    setTimeout(() => {
+                        App.observerLongread.observe(taskElement);
+                    }, 2000);
                 } else {
                     App.observer.observe(taskElement);
                 }
@@ -321,7 +320,7 @@ export class App {
 
         let optionsLongread = {
             root: null,
-            rootMargin: '2200px',
+            rootMargin: '300px',
             threshold: 0,
         };
 
