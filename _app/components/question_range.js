@@ -624,7 +624,12 @@ strong {
     text-align: center;
     justify-content: center;
     justify-items: center;
+    opacity: 1;
     transition: all 200ms linear;
+}
+
+.btn.invisible {
+    opacity: 0;
 }
 
 .btn:hover{
@@ -749,7 +754,7 @@ strong {
     </div>
     <div class='questionFeedback off'></div>
     <div class='buttonsContainer'>
-        <button type='button' class='submitBtn btn'></button>
+        <button type='button' class='submitBtn btn invisible'></button>
         <button type='button' class='continueBtn btn off'></button>
     </div>
 </div>
@@ -905,6 +910,7 @@ export class QuestionRange extends HTMLElement {
 
     setButtons() {
         let continueBtn = this.shadowRoot.querySelector('.continueBtn');
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
         Object.keys(this.parent.data.buttons).forEach((k) => {
             let btn = this.shadowRoot.querySelector(`.${k}Btn`);
             if (btn) {
@@ -930,6 +936,8 @@ export class QuestionRange extends HTMLElement {
                 .querySelector('.buttonsContainer')
                 .classList.add('off');
         }
+
+        submitBtn.classList.remove('invisible');
     }
 
     get globalTestGridAreas() {

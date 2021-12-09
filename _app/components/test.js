@@ -383,6 +383,7 @@ testTemplate.innerHTML = `
         text-align: center;
         justify-content: center;
         justify-items: center;
+        opacity: 1;
         transition: all 200ms linear;
     }
 
@@ -413,6 +414,10 @@ testTemplate.innerHTML = `
         box-shadow :var(--button-box-shadow-disabled, none);
         cursor: auto;
         pointer-events: none;
+    }
+
+    .btn.invisible {
+        opacity: 0;
     }
 
     .submitBtn.icon:before{
