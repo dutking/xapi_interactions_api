@@ -171,7 +171,9 @@ export class App {
         App.course.state.date = new Date();
         App.course.state.duration = moment
             .duration(
-                Math.round((date - App.course.startTime) / 1000),
+                Math.round(
+                    (App.course.state.date - App.course.startTime) / 1000
+                ),
                 'seconds'
             )
             .toISOString();
