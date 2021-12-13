@@ -22,7 +22,7 @@ longreadTemplate.innerHTML = `
     justify-content: var(--longread-justify-content);
     align-content: var(--longread-align-content);
     row-gap: 2rem;
-    width: var(--max-width);
+    max-width: var(--max-width);
     min-height: var(--longread-min-height);
     background: var(--longread-bg-color, white);
 }
