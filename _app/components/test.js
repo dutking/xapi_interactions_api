@@ -148,29 +148,29 @@ testTemplate.innerHTML = `
         z-index: inherit;
         grid-area: instruction;
         display: grid;
-        grid-template-columns: var(--test-instrustion-grid-template-columns);
-        grid-template-rows: var(--test-instrustion-grid-template-rows);
-        row-gap: var(--test-instrustion-row-gap);
-        column-gap: var(--test-instrustion-column-gap);
-        justify-items: var(--test-instrustion-justify-items);
-        align-items: var(--test-instrustion-align-items);
-        justify-content: var(--test-instrustion-justify-content);
-        align-content: var(--test-instrustion-align-content);
+        grid-template-columns: var(--test-instruction-grid-template-columns);
+        grid-template-rows: var(--test-instruction-grid-template-rows);
+        row-gap: var(--test-instruction-row-gap);
+        column-gap: var(--test-instruction-column-gap);
+        justify-items: var(--test-instruction-justify-items);
+        align-items: var(--test-instruction-align-items);
+        justify-content: var(--test-instruction-justify-content);
+        align-content: var(--test-instruction-align-content);
 
-        color: var(--test-instrustion-color);
-        font-family: var(--test-instrustion-font-family);
-        font-size: var(--test-instrustion-font-size);
-        font-weight: var(--test-instrustion-font-weight);
-        font-style: var(--test-instrustion-font-style);
+        color: var(--test-instruction-color);
+        font-family: var(--test-instruction-font-family);
+        font-size: var(--test-instruction-font-size);
+        font-weight: var(--test-instruction-font-weight);
+        font-style: var(--test-instruction-font-style);
 
-        background: var(--test-instrustion-background);
+        background: var(--test-instruction-background);
 
-        padding: var(--test-instrustion-padding);
+        padding: var(--test-instruction-padding);
 
-        border-style: var(--test-instrustion-border-style);
-        border-width: var(--test-instrustion-border-width);
-        border-color: var(--test-instrustion-border-color);
-        border-radius: var(--test-instrustion-border-radius);
+        border-style: var(--test-instruction-border-style);
+        border-width: var(--test-instruction-border-width);
+        border-color: var(--test-instruction-border-color);
+        border-radius: var(--test-instruction-border-radius);
         width: var(--test-best-width);
     }
 
