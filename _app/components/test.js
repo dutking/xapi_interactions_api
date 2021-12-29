@@ -45,6 +45,7 @@ testTemplate.innerHTML = `
         font-size: var(--test-font-size);
         font-weight: var(--test-font-weight);
         font-style: var(--test-font-style);
+        line-height: var(--line-height-primary);
 
         background: var(--test-background);
 
@@ -57,92 +58,7 @@ testTemplate.innerHTML = `
         border-radius: var(--test-border-radius);
         
         width: var(--test-max-width);
-    }
-
-    .testContainer .statisticsContainer {
-        grid-area: statisticsContainer;
-        display: grid;
-        grid-template-columns: var(--statisticsContainer-grid-template-columns);
-        grid-template-rows: var(--statisticsContainer-grid-template-rows);
-        grid-template-areas: var(--statisticsContainer-grid-template-areas);
-        row-gap: var(--statisticsContainer-row-gap);
-        column-gap: var(--statisticsContainer-column-gap);
-        justify-items: var(--statisticsContainer-justify-items);
-        align-items: var(--statisticsContainer-align-items);
-        justify-content: var(--statisticsContainer-justify-content);
-        align-content: var(--statisticsContainer-align-content);
-
-        color: var(--statisticsContainer-color);
-        font-family: var(--statisticsContainer-font-family);
-        font-size: var(--statisticsContainer-font-size);
-        font-weight: var(--statisticsContainer-font-weight);
-        font-style: var(--statisticsContainer-font-style);
-
-        background: var(--statisticsContainer-background);
-
-        padding: var(--statisticsContainer-padding);
-
-        border-style: var(--statisticsContainer-border-style);
-        border-width: var(--statisticsContainer-border-width);
-        border-color: var(--statisticsContainer-border-color);
-        border-radius: var(--statisticsContainer-border-radius);
-    }
-
-    .testContainer .statisticsContainer .testStatistics {
-        grid-area: testStatistics;
-        display: grid;
-        grid-template-columns: var(--testStatistics-grid-template-columns);
-        grid-template-rows: var(--testStatistics-grid-template-rows);
-        row-gap: var(--testStatistics-row-gap);
-        column-gap: var(--testStatistics-column-gap);
-        justify-items: var(--testStatistics-justify-items);
-        align-items: var(--testStatistics-align-items);
-        justify-content: var(--testStatistics-justify-content);
-        align-content: var(--testStatistics-align-content);
-
-        color: var(--testStatistics-color);
-        font-family: var(--testStatistics-font-family);
-        font-size: var(--testStatistics-font-size);
-        font-weight: var(--testStatistics-font-weight);
-        font-style: var(--testStatistics-font-style);
-
-        background: var(--testStatistics-background);
-
-        padding: var(--testStatistics-padding);
-
-        border-style: var(--testStatistics-border-style);
-        border-width: var(--testStatistics-border-width);
-        border-color: var(--testStatistics-border-color);
-        border-radius: var(--testStatistics-border-radius);
-    }
-
-    .testContainer .statisticsContainer .userStatistics {
-        grid-area: userStatistics;
-        display: grid;
-        grid-template-columns: var(--userStatistics-grid-template-columns);
-        grid-template-rows: var(--userStatistics-grid-template-rows);
-        row-gap: var(--userStatistics-row-gap);
-        column-gap: var(--userStatistics-column-gap);
-        justify-items: var(--userStatistics-justify-items);
-        align-items: var(--userStatistics-align-items);
-        justify-content: var(--userStatistics-justify-content);
-        align-content: var(--userStatistics-align-content);
-
-        color: var(--userStatistics-color);
-        font-family: var(--userStatistics-font-family);
-        font-size: var(--userStatistics-font-size);
-        font-weight: var(--userStatistics-font-weight);
-        font-style: var(--userStatistics-font-style);
-
-        background: var(--userStatistics-background);
-
-        padding: var(--userStatistics-padding);
-
-        border-style: var(--userStatistics-border-style);
-        border-width: var(--userStatistics-border-width);
-        border-color: var(--userStatistics-border-color);
-        border-radius: var(--userStatistics-border-radius);
-    }
+    }    
 
     .testContainer .instruction {
         z-index: inherit;
