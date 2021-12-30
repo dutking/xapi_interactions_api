@@ -224,4 +224,10 @@ export const scoringFunctions = {
             obj.status = 'normal';
         }
     },
+    metric_rating: function (obj) {
+        let metricValues = obj.scores.map((s, i) => {
+            return s;
+        });
+        return metricValues;
+    },
 };
