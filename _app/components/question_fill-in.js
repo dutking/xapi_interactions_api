@@ -808,9 +808,8 @@ export class QuestionFillIn extends HTMLElement {
         return getComputedStyle(document.documentElement)
             .getPropertyValue('--questionContainer-grid-template-areas')
             .trim()
-            .replaceAll('"', '')
-            .replaceAll('  ', ' ')
-            .split(' ');
+            .split('" "')
+            .map((i) => i.replaceAll('"', ''));
     }
 
     setGridTemplateAreas() {
@@ -828,7 +827,8 @@ export class QuestionFillIn extends HTMLElement {
 
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
-                if (currentAreas.includes(unit)) {
+                let subunits = unit.split(' ');
+                if (subunits.every((u) => currentAreas.includes(u))) {
                     return `"${unit}"`;
                 } else {
                     return '';
