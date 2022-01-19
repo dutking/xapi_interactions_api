@@ -23,11 +23,11 @@ templateRange.innerHTML = `
 * {
     margin: 0;
     padding: 0;
-    line-height: var(--line-height);
+    line-height: var(--line-height-primary);
     box-sizing: border-box;
     font-family: var(--font-family-primary);
     font-size: var(--font-size-primary);
-    color: var(--color-font-dark-primary);
+    color: var(--color-dark-primary);
 }
 
 strong {
@@ -323,8 +323,8 @@ strong {
 
     .questionContainer .answersContainer .answerContainer .rangeContainer .range .label {
         padding: 1rem;
-        font-size: calc(var(--font-size-regular) * 0.75);
-        line-height: calc(var(--line-height) * 0.8);
+        font-size: calc(var(--font-size-primary) * 0.75);
+        line-height: calc(var(--line-height-primary) * 0.8);
         position: relative;
     }
 
@@ -713,7 +713,7 @@ strong {
         }
 
         .questionContainer .answersContainer .answerContainer .rangeContainer .range .label {
-            line-height: calc(var(--line-height) * 0.8);
+            line-height: calc(var(--line-height-primary) * 0.8);
         }
 
         .questionContainer .answersContainer .answerContainer .rangeContainer .range .label.min::after{

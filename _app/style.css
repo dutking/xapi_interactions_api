@@ -268,6 +268,7 @@
     --subHeader-grid-template-areas: 'counter correctnessMarker';
     --subHeader-subHeader-row-gap: 0;
     --subHeader-column-gap: var(--spacing_lvl_3);
+    --subHeader-row-gap: 0;
     --subHeader-justify-items: start;
     --subHeader-align-items: start;
     --subHeader-justify-content: start;
@@ -294,6 +295,26 @@
 
     /*transform*/
     --subHeader-transform: translateY(0);
+
+    /* <- subHeader counter*/
+    --counter-color: inherit;
+    --counter-font-family: var(--font-family-primary);
+    --counter-font-size: var(--font-size-primary);
+    --counter-font-weight: var(--font-weight-normal);
+    --counter-font-style: normal;
+    --counter-line-height: var(--line-height-primary);
+    --counter-letter-spacing: revert;
+
+    --counter-writing-mode: revert;
+    --counter-text-orientation: revert;
+    --counter-background: transparent;
+
+    --counter-padding: 0;
+    --counter-border-style: revert;
+    --counter-border-width: 0;
+    --counter-border-color: revert;
+    --counter-border-radius: revert;
+    /* subHeader counter ->*/
 
     /* questionContainer subHeader settings ->*/
 

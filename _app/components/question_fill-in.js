@@ -14,11 +14,11 @@ templateFillIn.innerHTML = `
 * {
     margin: 0;
     padding: 0;
-    line-height: var(--line-height);
+    line-height: var(--line-height-primary);
     box-sizing: border-box;
     font-family: var(--font-family-primary);
     font-size: var(--font-size-primary);
-    color: var(--color-font-dark-primary);
+    color: var(--color-dark-primary);
 }
 
 strong {
