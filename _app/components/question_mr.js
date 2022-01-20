@@ -564,7 +564,6 @@ strong {
         position: relative;
         width: calc(var(--inputbox-dimension) * 0.7);
         height: calc(var(--inputbox-dimension) * 0.7);
-        align-self: center;
         border-radius: 360px;
     }
 

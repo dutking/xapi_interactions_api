@@ -136,6 +136,8 @@ templateMC.innerHTML = `
         .questionContainer .subHeader .correctnessMarker {
             grid-area: correctnessMarker;
             transform: var(--question-correctnessMarker-transform, revert);
+            width: calc(var(--inputbox-dimension) * 0.7);
+            height: calc(var(--inputbox-dimension) * 0.7);
         }
 
         .questionContainer .question {
@@ -569,7 +571,6 @@ templateMC.innerHTML = `
         position: relative;
         width: calc(var(--inputbox-dimension) * 0.7);
         height: calc(var(--inputbox-dimension) * 0.7);
-        align-self: center;
         border-radius: 360px;
     }
 
