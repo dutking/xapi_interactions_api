@@ -877,39 +877,3 @@
 #allrecords .off {
     display: none;
 }
-
-@media screen and (max-width: 1920px) {
-    :root {
-        --max-width: 56.88rem;
-    }
-}
-
-@media screen and (max-width: 960px) {
-    :root {
-        --max-width: 38.75rem;
-        --test-padding: 0 0 0 0;
-    }
-}
-
-@media screen and (max-width: 640px) {
-    :root {
-        --test-padding: 0;
-        --max-width: 28.75rem;
-    }
-
-    #allrecords .placeholder {
-        padding-left: 1.25rem !important;
-        padding-right: 1.25rem !important;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    :root {
-        --max-width: 18.75rem;
-    }
-
-    #allrecords .placeholder {
-        padding-left: 1.25rem !important;
-        padding-right: 1.25rem !important;
-    }
-}
