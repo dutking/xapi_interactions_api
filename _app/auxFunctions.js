@@ -125,14 +125,14 @@ export class AuxFunctions {
         if (parsedText.includes('<minResponses>')) {
             parsedText = parsedText.replace(
                 /<minResponses>/g,
-                object.data.amountOfResponses.min
+                object.data.validation.min
             );
         }
 
         if (parsedText.includes('<maxResponses>')) {
             parsedText = parsedText.replace(
                 /<maxResponses>/g,
-                object.data.amountOfResponses.max
+                object.data.validation.max
             );
         }
 
