@@ -933,6 +933,7 @@ export class Test extends HTMLElement {
         ) {
             this.questionsElements.forEach((q) => q.markQuestionCorrectness());
         } else if (
+            'markQuestionsCorrectness' in this.data.feedback &&
             this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
             this.attempt + 1 ===
                 Number(this.feedback.markQuestionsCorrectness.split(':')[1]) &&
