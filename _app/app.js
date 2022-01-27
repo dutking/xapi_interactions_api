@@ -578,6 +578,7 @@ export class App {
                 );
             } else if (
                 'metrics' in e.detail.obj.data &&
+                e.detail.obj.data.metrics !== '' &&
                 e.detail.obj.status === 'completed'
             ) {
                 let currentMetric = config.globalMetrics.filter((metric) =>
