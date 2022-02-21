@@ -1,7 +1,7 @@
 import { AuxFunctions } from './auxFunctions.js';
 
 export const scoringFunctions = {
-    adaptation_survey: function (obj) {
+    adaptation_asp_survey: function (obj) {
         const options = [2, 1, -2];
         const scales = [
             {
@@ -114,9 +114,14 @@ export const scoringFunctions = {
         let values = scales.map((s) => {
             let value = s.answers
                 .map((a) => {
-                    let order = obj.shadowRoot
+                    let question = obj.questionsElements.filter((i) =>
+                        i.data.id.endsWith(a.split('a')[0])
+                    )[0];
+
+                    let order = question.shadowRoot
                         .querySelector(`label[for$=${a}] .inputMarker`)
                         .style.getPropertyValue('--order');
+
                     if (order) {
                         return options[order - 1];
                     }

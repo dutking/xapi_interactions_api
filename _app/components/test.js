@@ -3,6 +3,7 @@ import { QuestionMR } from './question_mr.js';
 import { QuestionRange } from './question_range.js';
 import { QuestionFillIn } from './question_fill-in.js';
 import { QuestionLongFillIn } from './question_long-fill-in.js';
+import { ChartHTML } from './chart_html.js';
 import { scoringFunctions } from '../scoringFunctions.js';
 import { AuxFunctions } from '../auxFunctions.js';
 import { Pool } from './pool.js';
@@ -1216,6 +1217,17 @@ export class Test extends HTMLElement {
                 this
             );
             feedbackContainer.appendChild(text);
+        }
+
+        if (
+            this.data?.feedback?.chartFunction &&
+            this.data.feedback.chartFunction !== ''
+        ) {
+            let chart = document.createElement('chart-html');
+            chart.init(
+                scoringFunctions[`${this.data.feedback.chartFunction}`](this)
+            );
+            feedbackContainer.appendChild(chart);
         }
 
         if (
