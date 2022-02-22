@@ -235,4 +235,14 @@ export const scoringFunctions = {
         });
         return metricValues;
     },
+    adaptation_metric_zun: function (obj) {
+        let metricValues = obj.scores.map((s, i) => {
+            if (i > 2) {
+                return AuxFunctions.roundAccurately(s / 2, 0);
+            } else {
+                return AuxFunctions.roundAccurately(s, 0);
+            }
+        });
+        return metricValues;
+    },
 };
