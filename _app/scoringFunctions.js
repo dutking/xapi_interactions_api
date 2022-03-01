@@ -5,7 +5,7 @@ export const scoringFunctions = {
         const options = [2, 1, -2];
         const scales = [
             {
-                name: 'Активное изменение среды',
+                name: '1. Активное изменение среды',
                 answers: [
                     'q1a2',
                     'q2a2',
@@ -20,7 +20,7 @@ export const scoringFunctions = {
                 ],
             },
             {
-                name: 'Активное изменение себя',
+                name: '2. Активное изменение себя',
                 answers: [
                     'q1a4',
                     'q2a7',
@@ -35,7 +35,7 @@ export const scoringFunctions = {
                 ],
             },
             {
-                name: 'Уход из среды и поиск новой',
+                name: '3. Уход из среды и поиск новой',
                 answers: [
                     'q1a3',
                     'q2a3',
@@ -50,7 +50,7 @@ export const scoringFunctions = {
                 ],
             },
             {
-                name: 'Избегание контакта со средой и погружение во внутренний мир',
+                name: '4. Избегание контакта со средой и погружение во внутренний мир',
                 answers: [
                     'q1a1',
                     'q2a5',
@@ -65,7 +65,7 @@ export const scoringFunctions = {
                 ],
             },
             {
-                name: 'Пассивное предъявление своей позиции',
+                name: '5. Пассивное предъявление своей позиции',
                 answers: [
                     'q1a5',
                     'q2a6',
@@ -80,7 +80,7 @@ export const scoringFunctions = {
                 ],
             },
             {
-                name: 'Пассивное подчинение условиям среды',
+                name: '6. Пассивное подчинение условиям среды',
                 answers: [
                     'q1a7',
                     'q2a1',
@@ -95,7 +95,7 @@ export const scoringFunctions = {
                 ],
             },
             {
-                name: 'Пассивное выжидание изменений',
+                name: '7. Пассивное выжидание изменений',
                 answers: [
                     'q1a6',
                     'q2a4',
@@ -118,14 +118,15 @@ export const scoringFunctions = {
                         i.data.id.endsWith(a.split('a')[0])
                     )[0];
 
-                    let order = question.shadowRoot
+                    let order = Number(question.shadowRoot
                         .querySelector(`label[for$=${a}] .inputMarker`)
-                        .style.getPropertyValue('--order');
+                        .style.getPropertyValue('--order'));
 
                     if (order) {
                         return options[order - 1];
                     }
                 })
+                .filter(i => i !== undefined)
                 .reduce((sum, item) => (sum += item), 0);
             return {
                 name: s.name,
