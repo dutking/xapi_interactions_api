@@ -1,19 +1,20 @@
 const chartContainer = document.createElement('template');
 chartContainer.innerHTML = `
 <style>
-.chartContainer {
+.chartContainer {    
     width: max-content;
     display: grid;
     grid-template-columns: repeat(var(--cols), max-content);
     grid-template-rows: repeat(var(--rows), 1fr);
     position: relative;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 .cell{
     box-sizing: border-box;
-    width: var(--width);
-    height: var(--height);
+    width: var(--cell-width);
+    height: var(--cell-height);
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
@@ -83,7 +84,7 @@ chartContainer.innerHTML = `
     position: absolute;
     box-sizing: content-box;
     inset: 0;
-    width: var(--width, 100%);
+    width: var(--cell-width, 100%);
     height: 100%;
     border-bottom: 3px solid red;
     z-index: 20;
@@ -130,7 +131,8 @@ chartContainer.innerHTML = `
     display: block;
     position: absolute;
     box-sizing: border-box;
-    width: calc(var(--width) * 1.5);
+    min-width: 150px;
+    width: calc(var(--cell-width) * 2);
     transform: translateY(-110%);
     text-align: center;
     padding: 0.5rem;
@@ -159,18 +161,18 @@ export class ChartHTML extends HTMLElement {
 
     init(scales) {
         this.scales = scales;
-        this.range = [-10, 10];
+        this.range = [-20, 20];
         this.step = 1;
-        this.unitHeight = 20;
-        this.unitWidth = 80;
-        this.pinSize = 20;
+        this.unitHeight = Number(window.getComputedStyle(document.documentElement).getPropertyValue('--cell-height').replace('px', '')); 
+        this.unitWidth = Number(window.getComputedStyle(document.documentElement).getPropertyValue('--cell-width').replace('px', '')); 
+        /* this.pinSize = 20; */
         this.cols = this.scales.length;
         this.rows = Math.abs(this.range[0]) + Math.abs(this.range[1]) + 1;
 
         let chartContainer = this.shadowRoot.querySelector('.chartContainer');
-        chartContainer.style.setProperty('--width', this.unitWidth + 'px');
-        chartContainer.style.setProperty('--height', this.unitHeight + 'px');
-        chartContainer.style.setProperty('--pinSize', this.pinSize + 'px');
+        /* chartContainer.style.setProperty('--cell-width', this.unitWidth + 'px');
+        chartContainer.style.setProperty('--cell-height', this.unitHeight + 'px');
+        chartContainer.style.setProperty('--pinSize', this.pinSize + 'px'); */
         chartContainer.style.setProperty('--cols', this.cols);
         chartContainer.style.setProperty('--rows', this.rows);
         for (let y = this.range[1]; y >= this.range[0]; y -= 1) {
@@ -211,6 +213,11 @@ export class ChartHTML extends HTMLElement {
         }
 
         this.buildGraph(this.scales);
+        window.addEventListener('resize', () => {
+            this.unitHeight = Number(window.getComputedStyle(document.documentElement).getPropertyValue('--cell-height').replace('px', '')); 
+            this.unitWidth = Number(window.getComputedStyle(document.documentElement).getPropertyValue('--cell-width').replace('px', ''));
+            this.buildGraph(this.scales)
+        })
     }
 
     buildGraph(arr) {
@@ -229,7 +236,7 @@ export class ChartHTML extends HTMLElement {
                     this.unitHeight;
                 let hypotenuse = Math.hypot(height, this.unitWidth);
 
-                graph.style.setProperty('--width', hypotenuse + 'px');
+                graph.style.setProperty('--cell-width', hypotenuse + 'px');
 
                 let angle = 0;
                 if (item.value > arr[index + 1].value) {
@@ -255,6 +262,9 @@ export class ChartHTML extends HTMLElement {
     radToDeg(rad) {
         return rad * (180 / Math.PI);
     }
+
+    
 }
+
 
 window.customElements.define('chart-html', ChartHTML);

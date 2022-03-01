@@ -973,6 +973,8 @@ export class Test extends HTMLElement {
     }
 
     markResponsesCorrectness(question = null) {
+        if(this.data.feedback?.markResponsesCorrectness ?? this.data.feedback.markResponsesCorrectness !== ''){
+
         if (
             this.data.feedback.markResponsesCorrectness === 'answer' &&
             question
@@ -1000,6 +1002,7 @@ export class Test extends HTMLElement {
         ) {
             this.questionsElements.forEach((q) => q.markResponsesCorrectness());
         }
+    }
     }
 
     showResumed() {
@@ -1170,6 +1173,7 @@ export class Test extends HTMLElement {
             this.data.feedback?.common !== '' ||
             this.data.feedback?.passed !== '' ||
             this.data.feedback?.failed !== '' ||
+            this.data.feedback?.chartFunction !== '' ||
             (this.data.feedback?.byScore &&
                 this.data.feedback.byScore.length > 0) ||
             this.data.feedback?.showUserPoolsResult === true
@@ -1224,10 +1228,10 @@ export class Test extends HTMLElement {
             this.data.feedback.chartFunction !== ''
         ) {
             let chart = document.createElement('chart-html');
+            feedbackContainer.appendChild(chart);
             chart.init(
                 scoringFunctions[`${this.data.feedback.chartFunction}`](this)
             );
-            feedbackContainer.appendChild(chart);
         }
 
         if (
