@@ -1374,7 +1374,7 @@ class Statement {
     }
 
     get statement() {
-        return Object.assign(
+        let finalStatement = Object.assign(
             {},
             this.id,
             this.actor,
@@ -1384,6 +1384,15 @@ class Statement {
             this.timestamp,
             this.result
         );
+
+        if (
+            this.verbString === 'interacted' ||
+            this.verbString === 'launched'
+        ) {
+            delete finalStatement.result;
+        }
+
+        return finalStatement;
     }
 }
 
