@@ -5,14 +5,14 @@ export const statementFunctions = {
     adaptation_metric_zun: function (metric, obj) {
         let max = Math.max(...obj.processedScores);
         let last = obj.processedScores[obj.processedScores.length - 1];
-        let prevMax = obj.processedScores.length > 1 ? Math.max(...(obj.processedScores.slice(0, -1))) : obj.processedScores[0];
-        console.log('RAW', obj.scores)
-        console.log('PROCESSED', obj.processedScores)
-        console.log('MAX_LAST_PREVMAX', max, last, prevMax)
+        let prevMax =
+            obj.processedScores.length > 1
+                ? Math.max(...obj.processedScores.slice(0, -1))
+                : obj.processedScores[0];
         metric.statement = {
             result: {
                 extensions: {
-                    'resultExt:changed': max > prevMax ? (max - prevMax) : 0,
+                    'resultExt:changed': max > prevMax ? max - prevMax : 0,
                 },
                 score: {
                     raw: last,
