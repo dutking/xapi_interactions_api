@@ -1084,12 +1084,23 @@ export class QuestionMR extends HTMLElement {
 
         if ('userAnswer' in this.state) {
             let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
-            inputs.forEach((i) => {
+            let inputMarkers = Array.from(
+                this.shadowRoot.querySelectorAll('.inputMarker')
+            );
+            inputs.forEach((i, index) => {
                 let currentAnswer = that.state.userAnswer.filter(
                     (a) => a[0] === i.id
                 )[0];
                 if (currentAnswer[1] === true) {
                     i.checked = true;
+                }
+                if (that.data.style === 'order') {
+                    if (currentAnswer[2]) {
+                        inputMarkers[index].style.setProperty(
+                            '--order',
+                            currentAnswer[2]
+                        );
+                    }
                 }
             });
 
@@ -1178,6 +1189,22 @@ export class QuestionMR extends HTMLElement {
     get userAnswer() {
         let that = this;
         let inputs = Array.from(that.shadowRoot.querySelectorAll('input'));
+
+        if (this.data.style === 'order') {
+            let order = Array.from(
+                that.shadowRoot.querySelectorAll('.inputMarker')
+            ).map((i) => {
+                if (i.style.getPropertyValue('--order')) {
+                    return i.style.getPropertyValue('--order');
+                } else {
+                    return '';
+                }
+            });
+            return inputs.map((i, index) => {
+                return [i.id, i.checked, order[index]];
+            });
+        }
+
         return inputs.map((i) => {
             return [i.id, i.checked];
         });
@@ -1242,7 +1269,11 @@ export class QuestionMR extends HTMLElement {
                     (ans) => ans.id === a[0]
                 )[0];
 
-                exactUserAnswer.push(answer.text);
+                if (this.data.style === 'order') {
+                    exactUserAnswer.push(`${a[2]}. ${answer.text}`);
+                } else {
+                    exactUserAnswer.push(answer.text);
+                }
             });
 
         return exactUserAnswer.map((a, ind) => `${ind + 1}) ${a}`).join('   ');
