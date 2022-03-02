@@ -85,9 +85,9 @@ export class App {
         }
     }
 
-    static processMetric(metric) {
+    static processMetric(metric, obj) {
         if ('statementFunction' in metric) {
-            statementFunctions[metric.statementFunction](metric);
+            statementFunctions[metric.statementFunction](metric, obj);
         }
     }
 
@@ -569,7 +569,7 @@ export class App {
                     )
                 )[0];
 
-                App.processMetric(currentMetric);
+                App.processMetric(currentMetric, e.detail.obj);
 
                 XAPI.sendStatement(
                     new Statement(e.detail.obj, 'calculated', {
@@ -584,7 +584,8 @@ export class App {
                 let currentMetric = config.globalMetrics.filter((metric) =>
                     e.detail.obj.data.metrics.includes(metric.id)
                 )[0];
-                App.processMetric(currentMetric);
+                console.log(e.detail.obj)
+                App.processMetric(currentMetric, e.detail.obj);
 
                 XAPI.sendStatement(
                     new Statement(e.detail.obj, 'calculated', {

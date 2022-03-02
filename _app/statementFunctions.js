@@ -2,14 +2,17 @@ import { App } from './app.js';
 import { AuxFunctions } from './auxFunctions.js';
 
 export const statementFunctions = {
-    adaptation_metric_zun: function (obj) {
-        let max = Math.max(...obj.processedScore);
-        let last = obj.processedScore[obj.processedScore.length - 1];
-        let prevMax = Math.max(...obj.processedScore.slice(0, -1));
-        obj.statement = {
+    adaptation_metric_zun: function (metric, obj) {
+        let max = Math.max(...obj.processedScores);
+        let last = obj.processedScores[obj.processedScores.length - 1];
+        let prevMax = obj.processedScores.length > 1 ? Math.max(...(obj.processedScores.slice(0, -1))) : obj.processedScores[0];
+        console.log('RAW', obj.scores)
+        console.log('PROCESSED', obj.processedScores)
+        console.log('MAX_LAST_PREVMAX', max, last, prevMax)
+        metric.statement = {
             result: {
                 extensions: {
-                    'resultExt:changed': max > prevMax ? max - prevMax : 0,
+                    'resultExt:changed': max > prevMax ? (max - prevMax) : 0,
                 },
                 score: {
                     raw: last,
@@ -17,7 +20,7 @@ export const statementFunctions = {
             },
         };
     },
-    mir_motivation: function (obj) {
+    mir_motivation: function (metric, obj) {
         let data = App.course.data.globalPools.map((p) => {
             return {
                 id: p.id,
@@ -28,7 +31,7 @@ export const statementFunctions = {
             };
         });
 
-        obj.statement = {
+        metric.statement = {
             result: {
                 extensions: {
                     'contextExt:motivation': data,
@@ -36,7 +39,7 @@ export const statementFunctions = {
             },
         };
     },
-    mir_development: function (obj) {
+    mir_development: function (metric, obj) {
         let data = App.course.data.globalPools.map((p) => {
             return {
                 id: p.id,
@@ -47,7 +50,7 @@ export const statementFunctions = {
             };
         });
 
-        obj.statement = {
+        metric.statement = {
             result: {
                 extensions: {
                     'contextExt:development': data,

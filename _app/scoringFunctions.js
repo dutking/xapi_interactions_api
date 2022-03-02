@@ -239,9 +239,9 @@ export const scoringFunctions = {
     adaptation_metric_zun: function (obj) {
         let metricValues = obj.scores.map((s, i) => {
             if (i > 2) {
-                return AuxFunctions.roundAccurately(s / 2, 0);
+                return AuxFunctions.roundAccurately(s / 2, 1);
             } else {
-                return AuxFunctions.roundAccurately(s, 0);
+                return AuxFunctions.roundAccurately(s, 1);
             }
         });
         return metricValues;

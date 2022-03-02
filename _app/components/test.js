@@ -396,7 +396,7 @@ export class Test extends HTMLElement {
         this.state = stateData;
         this.completed = false;
         this.scores = [];
-        this.processedScores = [];
+        /* this.processedScores = []; */
         this.questionsOrder = [];
         this.lastQuestionShownId = '';
         this.resumed = false;
@@ -409,7 +409,7 @@ export class Test extends HTMLElement {
             this.attempt = this.state.attempt;
             this.completed = this.state.completed;
             this.scores = this.state.scores;
-            this.processedScores = this.state.processedScores;
+            /* this.processedScores = this.state.processedScores; */
             this.questionsOrder = this.state.questionsOrder;
             this.lastQuestionShownId = this.state.lastQuestionShownId;
         }
@@ -639,7 +639,7 @@ export class Test extends HTMLElement {
         this.state.passed = this.passed;
         this.state.result = this.result;
         this.state.scores = this.scores;
-        this.state.processedScores = this.processedScores;
+        /* this.state.processedScores = this.processedScores; */
         this.state.userPoolsResult = this.userPoolsResult;
         this.state.questionsOrder = this.questionsOrder;
         this.state.lastQuestionShownId = this.lastQuestionShownId;
@@ -915,60 +915,64 @@ export class Test extends HTMLElement {
     }
 
     markQuestionsCorrectness(question = null) {
-        if (
-            this.data.feedback.markQuestionsCorrectness === 'answer' &&
-            question
-        ) {
-            question.markQuestionCorrectness();
-        } else if (
-            this.data.feedback.markQuestionsCorrectness === 'completed' &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.markQuestionCorrectness());
-        } else if (
-            this.data.feedback.markQuestionsCorrectness === 'passingAttempt' &&
-            this.attempt + 1 === this.passingAttempt &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.markQuestionCorrectness());
-        } else if (
-            'markQuestionsCorrectness' in this.data.feedback &&
-            this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
-            this.attempt + 1 ===
-                Number(this.feedback.markQuestionsCorrectness.split(':')[1]) &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+        if(this.data.feedback?.markQuestionsCorrectness && this.data.feedback.markQuestionsCorrectness !== ''){
+            if (
+                this.data.feedback.markQuestionsCorrectness === 'answer' &&
+                question
+            ) {
+                question.markQuestionCorrectness();
+            } else if (
+                this.data.feedback.markQuestionsCorrectness === 'completed' &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === 'completed'))
+            ) {
+                this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+            } else if (
+                this.data.feedback.markQuestionsCorrectness === 'passingAttempt' &&
+                this.attempt + 1 === this.passingAttempt &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === 'completed'))
+            ) {
+                this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+            } else if (
+                'markQuestionsCorrectness' in this.data.feedback &&
+                this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
+                this.attempt + 1 ===
+                    Number(this.feedback.markQuestionsCorrectness.split(':')[1]) &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === 'completed'))
+            ) {
+                this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+            }
         }
     }
 
     showCorrectAnswers(question = null) {
-        if (this.data.feedback.showCorrectAnswers === 'answer' && question) {
-            question.showCorrectAnswers();
-        } else if (
-            this.data.feedback.showCorrectAnswers === 'completed' &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.showCorrectAnswers());
-        } else if (
-            this.data.feedback.showCorrectAnswers === 'passingAttempt' &&
-            this.attempt + 1 === this.passingAttempt &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.showCorrectAnswers());
-        } else if (
-            this.data.feedback.showCorrectAnswers.startsWith('attempt') &&
-            this.attempt + 1 ===
-                Number(this.feedback.showCorrectAnswers.split(':')[1]) &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.showCorrectAnswers());
+        if(this.data.feedback?.showCorrectAnswers && this.data.feedback.showCorrectAnswers !== ''){
+            if (this.data.feedback.showCorrectAnswers === 'answer' && question) {
+                question.showCorrectAnswers();
+            } else if (
+                this.data.feedback.showCorrectAnswers === 'completed' &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === 'completed'))
+            ) {
+                this.questionsElements.forEach((q) => q.showCorrectAnswers());
+            } else if (
+                this.data.feedback.showCorrectAnswers === 'passingAttempt' &&
+                this.attempt + 1 === this.passingAttempt &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === 'completed'))
+            ) {
+                this.questionsElements.forEach((q) => q.showCorrectAnswers());
+            } else if (
+                this.data.feedback.showCorrectAnswers.startsWith('attempt') &&
+                this.attempt + 1 ===
+                    Number(this.feedback.showCorrectAnswers.split(':')[1]) &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === 'completed'))
+            ) {
+                this.questionsElements.forEach((q) => q.showCorrectAnswers());
+            }
         }
     }
 
@@ -1444,11 +1448,19 @@ export class Test extends HTMLElement {
             2
         );
 
-        if (this.data?.scoringFunction) {
+        /* if (this.data?.scoringFunction) {
             this.processedScores =
                 scoringFunctions[this.data.scoringFunction](this);
         } else {
             this.processedScores = Array.from(this.scores);
+        } */
+    }
+
+    get processedScores(){
+        if (this.data?.scoringFunction) {
+            return scoringFunctions[this.data.scoringFunction](this);
+        } else {
+            return Array.from(this.scores);
         }
     }
 
