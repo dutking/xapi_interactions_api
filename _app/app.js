@@ -16,7 +16,7 @@ export class App {
             .then((data) => (XAPI.data = data))
             .then(() => {
                 /* ADL.XAPIWrapper.changeConfig(XAPI.data); */
-                App.container = document.querySelector('#allrecords');
+                App.container = document.querySelector('body');
                 App.placeholders = document.querySelectorAll('.placeholder');
 
                 App.completedInteractions = new Set();
@@ -584,7 +584,7 @@ export class App {
                 let currentMetric = config.globalMetrics.filter((metric) =>
                     e.detail.obj.data.metrics.includes(metric.id)
                 )[0];
-                console.log(e.detail.obj)
+                console.log(e.detail.obj);
                 App.processMetric(currentMetric, e.detail.obj);
 
                 XAPI.sendStatement(
