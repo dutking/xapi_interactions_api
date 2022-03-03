@@ -1046,7 +1046,7 @@ export class Test extends HTMLElement {
             this.data.resume?.failed !== '' ||
             (this.data.resume?.byScore &&
                 this.data.resume.byScore.length > 0) ||
-            this.data.resume?.showUserPoolsResult === true
+            this.data.resume?.showUserPoolsResult === true || this.data.feedback.chartFunction !== ''
         ) {
             feedbackContainer.classList.remove('off');
         } else {
