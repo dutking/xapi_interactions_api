@@ -585,13 +585,31 @@ export class App {
                     e.detail.obj.data.metrics.includes(metric.id)
                 )[0];
                 console.log(e.detail.obj);
-                App.processMetric(currentMetric, e.detail.obj);
 
-                XAPI.sendStatement(
-                    new Statement(e.detail.obj, 'calculated', {
-                        metric: currentMetric,
-                    }).statement
-                );
+                if ('required' in currentMetric) {
+                    if (
+                        (currentMetric.required === 'completed' &&
+                            e.detail.obj.attemptCompleted) ||
+                        (currentMetric.required === 'passed' &&
+                            e.detail.obj.passed)
+                    ) {
+                        App.processMetric(currentMetric, e.detail.obj);
+
+                        XAPI.sendStatement(
+                            new Statement(e.detail.obj, 'calculated', {
+                                metric: currentMetric,
+                            }).statement
+                        );
+                    }
+                } else {
+                    App.processMetric(currentMetric, e.detail.obj);
+
+                    XAPI.sendStatement(
+                        new Statement(e.detail.obj, 'calculated', {
+                            metric: currentMetric,
+                        }).statement
+                    );
+                }
             }
 
             if (
