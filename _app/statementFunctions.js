@@ -15,7 +15,7 @@ export const statementFunctions = {
                     'resultExt:changed': max > prevMax ? max - prevMax : 0,
                 },
                 score: {
-                    raw: last,
+                    raw: max > prevMax ? max : prevMax,
                 },
             },
         };
