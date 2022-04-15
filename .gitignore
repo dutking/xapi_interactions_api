@@ -1,0 +1,10 @@
+node_modules
+_output
+_toInsert
+courses
+in
+test_package
+.DS_Store
+.git
+.vscode
+.prettier
