@@ -294,7 +294,7 @@ export class App {
 
     static getMaxRequiredScore() {
         Array.from(App.currentInteractions)
-            .filter((i) => i.data.required !== 'none')
+            .filter((i) => i.data.requiredState !== 'none')
             .forEach((i) => {
                 App.course.maxRequiredScore += Number(i.weight);
             });
@@ -492,7 +492,7 @@ export class App {
     static checkCourseCompleted() {
         if (
             App.completedInteractions.size >=
-            config.interactions.filter((i) => i.required !== 'none').length
+            config.interactions.filter((i) => i.requiredState !== 'none').length
         ) {
             App.course.completed = true;
         }
@@ -586,11 +586,11 @@ export class App {
                 )[0];
                 console.log(e.detail.obj);
 
-                if ('required' in currentMetric) {
+                if ('requiredState' in currentMetric) {
                     if (
-                        (currentMetric.required === 'completed' &&
+                        (currentMetric.requiredState === 'completed' &&
                             e.detail.obj.attemptCompleted) ||
-                        (currentMetric.required === 'passed' &&
+                        (currentMetric.requiredState === 'passed' &&
                             e.detail.obj.passed)
                     ) {
                         App.processMetric(currentMetric, e.detail.obj);

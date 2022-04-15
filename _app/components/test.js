@@ -1538,8 +1538,8 @@ export class Test extends HTMLElement {
     }
 
     get passingAttempt() {
-        if (this.data.required.startsWith('attempt')) {
-            let passingAttempt = Number(this.data.required.split(':')[1]);
+        if (this.data.requiredState.startsWith('attempt')) {
+            let passingAttempt = Number(this.data.requiredState.split(':')[1]);
             return passingAttempt;
         }
 
@@ -1547,18 +1547,18 @@ export class Test extends HTMLElement {
     }
 
     get result() {
-        if (this.data.required.startsWith('attempt')) {
+        if (this.data.requiredState.startsWith('attempt')) {
             if (this.passed) {
                 return true;
             }
-            let requiredAttempt = Number(this.data.required.split(':')[1]) - 1;
+            let requiredAttempt = Number(this.data.requiredState.split(':')[1]) - 1;
             if (this.attempt >= requiredAttempt) {
                 return true;
             }
             return false;
         }
 
-        if (this.data.required === 'passed') {
+        if (this.data.requiredState === 'passed') {
             if (this.passed) {
                 return true;
             } else {
@@ -1566,7 +1566,7 @@ export class Test extends HTMLElement {
             }
         }
 
-        if (this.data.required === 'completed') {
+        if (this.data.requiredState === 'completed') {
             if (this.completed) {
                 return true;
             } else {
@@ -1574,7 +1574,7 @@ export class Test extends HTMLElement {
             }
         }
 
-        if (this.data.required === 'none') {
+        if (this.data.requiredState === 'none') {
             return true;
         }
     }

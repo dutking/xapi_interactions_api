@@ -172,7 +172,7 @@ export class Longread extends HTMLElement {
     }
 
     get result() {
-        switch (this.data.required) {
+        switch (this.data.requiredState) {
             case 'passed':
                 if (this.passed) {
                     return true;
