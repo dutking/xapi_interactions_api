@@ -946,9 +946,9 @@ export class QuestionMR extends HTMLElement {
         answersData.forEach((a, i) => {
             let newAnswer;
 
-            if (that.data?.style !== '') {
+            if (that.data?.subtype !== '') {
                 answers.classList.add(that.data.style);
-                if (that.data.style === 'image') {
+                if (that.data.subtype === 'image') {
                     newAnswer = answerTemplateMRImage.content.cloneNode(true);
                     let folder = this.data.id.split('_').slice(0, 2).join('_');
                     newAnswer
@@ -1094,7 +1094,7 @@ export class QuestionMR extends HTMLElement {
                 if (currentAnswer[1] === true) {
                     i.checked = true;
                 }
-                if (that.data.style === 'order') {
+                if (that.data.subtype === 'order') {
                     if (currentAnswer[2]) {
                         inputMarkers[index].style.setProperty(
                             '--order',
@@ -1158,7 +1158,7 @@ export class QuestionMR extends HTMLElement {
 
         inputs.forEach((i) => {
             i.addEventListener('change', (e) => {
-                if (this.data?.style === 'order') {
+                if (this.data?.subtype === 'order') {
                     that.setAnswersOrder(e.target.id);
                 }
                 if (that.checked) {
@@ -1190,7 +1190,7 @@ export class QuestionMR extends HTMLElement {
         let that = this;
         let inputs = Array.from(that.shadowRoot.querySelectorAll('input'));
 
-        if (this.data.style === 'order') {
+        if (this.data.subtype === 'order') {
             let order = Array.from(
                 that.shadowRoot.querySelectorAll('.inputMarker')
             ).map((i) => {
@@ -1269,7 +1269,7 @@ export class QuestionMR extends HTMLElement {
                     (ans) => ans.id === a[0]
                 )[0];
 
-                if (this.data.style === 'order') {
+                if (this.data.subtype === 'order') {
                     exactUserAnswer.push(`${a[2]}. ${answer.text}`);
                 } else {
                     exactUserAnswer.push(answer.text);

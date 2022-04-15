@@ -926,7 +926,7 @@ export class QuestionMC extends HTMLElement {
         answersData.forEach((a, i) => {
             let newAnswer;
 
-            if (that.data?.style === 'image') {
+            if (that.data?.subtype === 'image') {
                 answers.classList.add('image');
                 newAnswer = answerTemplateMCImage.content.cloneNode(true);
                 let folder = this.data.id.split('_').slice(0, 2).join('_');
