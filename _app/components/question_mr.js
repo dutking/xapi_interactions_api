@@ -947,7 +947,7 @@ export class QuestionMR extends HTMLElement {
             let newAnswer;
 
             if (that.data?.subtype !== '') {
-                answers.classList.add(that.data.style);
+                answers.classList.add(that.data.subtype);
                 if (that.data.subtype === 'image') {
                     newAnswer = answerTemplateMRImage.content.cloneNode(true);
                     let folder = this.data.id.split('_').slice(0, 2).join('_');
@@ -1259,7 +1259,6 @@ export class QuestionMR extends HTMLElement {
     }
 
     get exactUserAnswer() {
-        let that = this;
         let exactUserAnswer = [];
 
         this.userAnswer
