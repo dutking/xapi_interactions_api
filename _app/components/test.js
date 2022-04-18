@@ -385,12 +385,11 @@ export class Test extends HTMLElement {
         this.shadowRoot.appendChild(testTemplate.content.cloneNode(true));
     }
 
-    async init(placeholder, interaction, db, stateData = {}) {
+    async init(placeholder, interaction, stateData = {}) {
         let that = this;
         this.parentId = config.id;
         this.placeholder = placeholder;
         this.data = interaction;
-        this.db = db;
         this.attempt = 0;
         this.questionsToTake = [];
         this.state = stateData;
@@ -541,7 +540,7 @@ export class Test extends HTMLElement {
             let val = Number(data.split(':')[1]);
 
             if (val === 0) {
-                return this.db.iterables.length;
+                return this.data.iterables.length;
             }
 
             return val;
@@ -549,7 +548,7 @@ export class Test extends HTMLElement {
 
         if (data.endsWith('%')) {
             return Math.floor(
-                (this.db.iterables.length / 100) *
+                (this.data.iterables.length / 100) *
                     Number(data.split(':')[1].split('%')[0])
             );
         }
@@ -559,7 +558,7 @@ export class Test extends HTMLElement {
                 let key = e[0];
                 let value = e[1];
                 if (Number(value) === 0) {
-                    return (sum += this.db.iterables.filter(
+                    return (sum += this.data.iterables.filter(
                         (i) => i.group === key
                     ).length);
                 } else if (Number(value) > 0) {
@@ -580,11 +579,11 @@ export class Test extends HTMLElement {
                         'color:blue;font-weight:bold;font-size:16px;'
                     );
                     this.questionsToTake = AuxFunctions.shuffleArray(
-                        this.db.iterables.slice(0, this.amountOfQuestions)
+                        this.data.iterables.slice(0, this.amountOfQuestions)
                     );
                 } else {
                     this.questionsToTake = Array.from(
-                        this.db.iterables.slice(0, this.amountOfQuestions)
+                        this.data.iterables.slice(0, this.amountOfQuestions)
                     );
                 }
             }
@@ -594,17 +593,17 @@ export class Test extends HTMLElement {
                     let group = e[0];
                     let questionsFromGroup = Number(e[1]);
                     if (questionsFromGroup === 0) {
-                        questionsFromGroup = that.db.iterables.filter(
+                        questionsFromGroup = that.data.iterables.filter(
                             (i) => i.group === group
                         ).length;
                     }
                     let currentGroupQuestions = [];
                     if (this.data.shuffleQuestions === true) {
                         currentGroupQuestions = AuxFunctions.shuffleArray(
-                            that.db.iterables.filter((i) => i.group === group)
+                            that.data.iterables.filter((i) => i.group === group)
                         );
                     } else {
-                        currentGroupQuestions = that.db.iterables.filter(
+                        currentGroupQuestions = that.data.iterables.filter(
                             (i) => i.group === group
                         );
                     }
@@ -622,7 +621,7 @@ export class Test extends HTMLElement {
             this.lastQuestionShownId = this.questionsOrder[0];
         } else if (restore === true) {
             this.questionsToTake = this.questionsOrder.map((qId) => {
-                return this.db.iterables.filter((i) => i.id === qId)[0];
+                return this.data.iterables.filter((i) => i.id === qId)[0];
             });
         }
     }
@@ -761,7 +760,7 @@ export class Test extends HTMLElement {
     }
 
     async createQuestion(id) {
-        let question = this.db.iterables.filter((q) => q.id === id)[0];
+        let question = this.data.iterables.filter((q) => q.id === id)[0];
         let questionElement = document.createElement(
             `question-${question.type}`
         );
@@ -793,7 +792,7 @@ export class Test extends HTMLElement {
     }
 
     deleteQuestionsStates() {
-        this.db.iterables.forEach((i) =>
+        this.data.iterables.forEach((i) =>
             window.XAPI.deleteState(`${this.data.id}/${i.id}`)
         );
     }
@@ -1390,8 +1389,8 @@ export class Test extends HTMLElement {
 
     get amountOfQuestionsToPass() {
         if (this.data.scoring === 'questions') {
-            let singleWeight = this.db.iterables[0].weight;
-            let sameWeights = this.db.iterables.every(
+            let singleWeight = this.data.iterables[0].weight;
+            let sameWeights = this.data.iterables.every(
                 (q) => q.weight === singleWeight
             );
             if (sameWeights) {

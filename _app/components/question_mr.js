@@ -1320,7 +1320,7 @@ export class QuestionMR extends HTMLElement {
 
         if (
             this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
-            this.parent.data.answersFeedbackMode === 'question'
+            this.parent.data.feedback.answersFeedbackMode === 'question'
         ) {
             return true;
         }
@@ -1410,8 +1410,8 @@ export class QuestionMR extends HTMLElement {
         } */
 
         // process answers feedbacks
-        if ('answersFeedbackMode' in this.parent.data) {
-            if (this.parent.data.answersFeedbackMode === 'answer') {
+        if ('answersFeedbackMode' in this.parent.data.feedback) {
+            if (this.parent.data.feedback.answersFeedbackMode === 'answer') {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {
@@ -1427,7 +1427,7 @@ export class QuestionMR extends HTMLElement {
                             answerFeedback.classList.remove('off');
                         }
                     });
-            } else if (this.parent.data.answersFeedbackMode === 'question') {
+            } else if (this.parent.data.feedback.answersFeedbackMode === 'question') {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {

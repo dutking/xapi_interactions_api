@@ -1036,7 +1036,7 @@ export class QuestionFillIn extends HTMLElement {
 
         if (
             this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
-            this.parent.data.answersFeedbackMode === 'question'
+            this.parent.data.feedback.answersFeedbackMode === 'question'
         ) {
             return true;
         }
@@ -1128,9 +1128,9 @@ export class QuestionFillIn extends HTMLElement {
         } */
 
         // process answers feedbacks
-        if ('answersFeedbackMode' in this.parent.data) {
+        if ('answersFeedbackMode' in this.parent.data.feedback) {
             if (
-                this.parent.data.answersFeedbackMode === 'answer' &&
+                this.parent.data.feedback.answersFeedbackMode === 'answer' &&
                 this.userAnswer
             ) {
                 this.userAnswer
@@ -1149,7 +1149,7 @@ export class QuestionFillIn extends HTMLElement {
                         }
                     });
             } else if (
-                this.parent.data.answersFeedbackMode === 'question' &&
+                this.parent.data.feedback.answersFeedbackMode === 'question' &&
                 this.userAnswer
             ) {
                 this.userAnswer

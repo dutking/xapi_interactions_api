@@ -234,16 +234,6 @@ export class App {
                 console.log(state);
                 console.groupEnd();
 
-                let dbase = {};
-                if (
-                    !state.id.includes('longread') ||
-                    !state.id.includes('ytvideo')
-                ) {
-                    if (db.length > 0) {
-                        dbase = db.filter((i) => i.id === state.id)[0];
-                    }
-                }
-
                 let taskElement = document.createElement(
                     `${interaction.type}-unit`
                 );
@@ -255,7 +245,6 @@ export class App {
                 taskElement.init(
                     App.placeholders[index],
                     interaction,
-                    dbase,
                     state
                 );
 
@@ -823,7 +812,7 @@ class XAPI {
             deleted.push(XAPI.deleteState(i.id));
             if (i.type === 'test') {
                 // надо ли чистить остальные объекты
-                db.filter((item) => item.id === i.id)[0].iterables.forEach(
+                i.iterables.forEach(
                     (q) => {
                         deleted.push(XAPI.deleteState(i.id + '/' + q.id));
                     }

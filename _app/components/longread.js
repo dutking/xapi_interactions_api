@@ -104,7 +104,7 @@ export class Longread extends HTMLElement {
         this.shadowRoot.appendChild(longreadTemplate.content.cloneNode(true));
     }
 
-    init(placeholder, interaction, db, stateData = {}) {
+    init(placeholder, interaction, stateData = {}) {
         this.placeholder = placeholder;
         this.parentId = config.id;
         this.data = interaction;
