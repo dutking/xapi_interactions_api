@@ -651,6 +651,10 @@ export class Test extends HTMLElement {
             )
             .toISOString();
 
+        if(this.data?.statements?.send){
+            this.state.sendStmtMessage = this.sendStmtMessage
+        }
+
         if ('isFake' in this.state) {
             delete this.state.isFake;
         }
@@ -1533,6 +1537,12 @@ export class Test extends HTMLElement {
             return true;
         } else if (this.score < this.passingScore) {
             return false;
+        }
+    }
+
+    get sendStmtMessage() {
+        if(this.data?.statements?.send){
+            return AuxFunctions.parseText(this.data.statements.send.message, this)
         }
     }
 

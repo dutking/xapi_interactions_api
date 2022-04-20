@@ -136,6 +136,20 @@ export class AuxFunctions {
             );
         }
 
+        if (parsedText.includes('<qId:')){
+            let regex = /(\<qId:q\d+\>)/g
+            let matches = parsedText.match(regex)
+
+            matches.forEach(m => {
+                let qId = m.replace('<','')
+                qId = qId.replace('>','')
+                qId = qId.split(':')[1]
+                let text = object.questionsElements.filter(el => el.data.id.split('_').pop() === qId)[0].exactUserAnswer
+            
+                parsedText = parsedText.replace(m, text)
+            })
+        }
+
         return parsedText;
     }
 
