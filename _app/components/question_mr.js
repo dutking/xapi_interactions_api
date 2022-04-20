@@ -847,8 +847,8 @@ export class QuestionMR extends HTMLElement {
         this.answersOrder = new Set();
     }
 
-    get parentId() {
-        return this.parent.data.id;
+    get iri() {
+        return `${this.parent.iri}/${this.data.id}`;
     }
 
     get amountOfQuestions() {

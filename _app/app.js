@@ -38,8 +38,9 @@ export class App {
                 App.completedInteractions = new Set();
                 App.currentInteractions = new Set();
                 App.course = {};
+                App.course.iri = `${config.trackIRI}/${config.id}`
             })
-            .then(() => XAPI.getState(config.id))
+            .then(() => XAPI.getState(App.course.iri))
             .then((data) => {
                 App.createCourseObject(data);
                 console.log(
@@ -50,7 +51,7 @@ export class App {
                     new Statement(App.course, 'launched').statement
                 );
             })
-            .then(() => XAPI.getState(`${config.trackId}/globalPools`))
+            .then(() => XAPI.getState(`${config.trackIRI}/globalPools`))
             .then((data) => {
                 let contextData =
                     XAPI.data.context?.contextActivities?.grouping?.[0]?.definition?.extensions?.[config.globalMetrics[0].metricExtension];
@@ -192,7 +193,7 @@ export class App {
                 'seconds'
             )
             .toISOString();
-        App.course.state.id = App.course.data.id;
+        App.course.state.id = App.course.iri;
         App.course.state.completed = App.course.completed;
         App.course.state.passed = App.course.passed;
         App.course.state.result = App.course.result;
@@ -211,7 +212,7 @@ export class App {
             'font-size: 18px; color: blue; font-weight: bold;'
         );
         console.log(App.course.state);
-        XAPI.postState(App.course.data.id, App.course.state);
+        XAPI.postState(App.course.iri, App.course.state);
 
         if (App.course.data?.metrics) {
             console.log(
@@ -219,7 +220,7 @@ export class App {
                 'font-size: 18px; color: blue; font-weight: bold;'
             );
             let currentMetric = config.globalMetrics.filter((metric) =>
-                App.course.data.metrics.includes(metric.id)
+                App.course.data.metrics.includes(metric.iri)
             )[0];
 
             let statements = [];
@@ -239,7 +240,7 @@ export class App {
 
     static async createCourse() {
         let states = config.interactions.map(async (interaction, index) => {
-            return await XAPI.getState(interaction.id).then((state) => {
+            return await XAPI.getState(interaction.iri).then((state) => {
                 console.group('STATE FOR: ' + state.id);
                 if ('isFake' in state) {
                     console.log('%cFake state recieved:', 'color:orange;');
@@ -254,13 +255,14 @@ export class App {
                 );
 
                 console.log(
-                    `%c${interaction.id} -> ${state.completed}`,
+                    `%c${interaction.iri} -> ${state.completed}`,
                     'color:orange;font-weight:bold;'
                 );
                 taskElement.init(
                     App.placeholders[index],
                     interaction,
-                    state
+                    state,
+                    App.course
                 );
 
                 if (interaction.evaluated) {
@@ -337,7 +339,7 @@ export class App {
                         entry.target.tagName !== 'longread-unit'.toUpperCase()
                     ) {
                         console.log(
-                            `%c${entry.target.tagName} ${entry.target.data.id} is in viewport.`,
+                            `%c${entry.target.tagName} ${entry.target.iri} is in viewport.`,
                             'color:gray;'
                         );
                         entry.target['startTime'] = new Date();
@@ -365,7 +367,7 @@ export class App {
                         entry.target.tagName === 'longread-unit'.toUpperCase()
                     ) {
                         console.log(
-                            `%c${entry.target.tagName} ${entry.target.data.id} is in viewport.`,
+                            `%c${entry.target.tagName} ${entry.target.iri} is in viewport.`,
                             'color:gray;'
                         );
                         entry.target.completed = true;
@@ -504,7 +506,7 @@ export class App {
 
     static setListeners() {
         /* App.container.addEventListener('get_state', (e) => {
-            let state = XAPI.getState(e.detail.obj.data.id)
+            let state = XAPI.getState(e.detail.obj.iri)
         }) */
 
         App.container.addEventListener('completed', (e) => {
@@ -515,7 +517,7 @@ export class App {
                 );
             } else {
                 console.log(
-                    `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                    `%c${e.detail.obj.iri} is not evaluated. No statement was sent.`,
                     'color:red;'
                 );
             }
@@ -524,13 +526,8 @@ export class App {
         });
 
         App.container.addEventListener('state_changed', (e) => {
-                if (e.detail.obj.data.id.startsWith(App.course.data.trackId)) {
-                    XAPI.postState(e.detail.obj.data.id, e.detail.obj.state);
-                } else {
-                    XAPI.postState(
-                        `${e.detail.obj.parentId}/${e.detail.obj.data.id}`,
-                        e.detail.obj.state
-                    );
+                if (e.detail.obj.iri.startsWith(App.course.data.trackIRI)) {
+                    XAPI.postState(e.detail.obj.iri, e.detail.obj.state);
                 }
 
                 // add prop to decide which results to use.
@@ -554,14 +551,14 @@ export class App {
 
                     if (globalPoolsUpdated) {
                         App.recalculateGlobalPools();
-                        XAPI.postState(`${config.trackId}/globalPools`, {
+                        XAPI.postState(`${config.trackIRI}/globalPools`, {
                             globalPools: App.course.data.globalPools,
                         });
                     }
                 }
 
                 if (
-                    'parent' in e.detail.obj &&
+                    e.detail.obj.parent instanceof Test &&
                     'questionsSettings' in e.detail.obj.parent.data &&
                     'metrics' in e.detail.obj.parent.data.questionsSettings &&
                     e.detail.obj.parent.data.questionsSettings.metrics !== '' &&
@@ -569,7 +566,7 @@ export class App {
                 ) {
                     let currentMetric = config.globalMetrics.filter((metric) =>
                         e.detail.obj.parent.data.questionsSettings.metrics.includes(
-                            metric.id
+                            metric.iri
                         )
                     )[0];
 
@@ -586,7 +583,7 @@ export class App {
                     e.detail.obj.status === 'completed'
                 ) {
                     let currentMetric = config.globalMetrics.filter((metric) =>
-                        e.detail.obj.data.metrics.includes(metric.id)
+                        e.detail.obj.data.metrics.includes(metric.iri)
                     )[0];
                     console.log(e.detail.obj);
 
@@ -657,7 +654,7 @@ export class App {
                     );
                 } else {
                     console.log(
-                        `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                        `%c${e.detail.obj.iri} is not evaluated. No statement was sent.`,
                         'color:red;'
                     );
                 }
@@ -670,7 +667,7 @@ export class App {
                     );
                 } else {
                     console.log(
-                        `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                        `%c${e.detail.obj.data.iri} is not evaluated. No statement was sent.`,
                         'color:red;'
                     );
                 }
@@ -683,7 +680,7 @@ export class App {
                     );
                 } else {
                     console.log(
-                        `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                        `%c${e.detail.obj.data.iri} is not evaluated. No statement was sent.`,
                         'color:red;'
                     );
                 }
@@ -696,7 +693,7 @@ export class App {
                     );
                 } else {
                     console.log(
-                        `%c${e.detail.obj.data.id} is not evaluated. No statement was sent.`,
+                        `%c${e.detail.obj.data.iri} is not evaluated. No statement was sent.`,
                         'color:red;'
                     );
                 }
@@ -722,7 +719,7 @@ export class App {
 
         static getIds() {
             let data = App.course.data.interactions.map((i) => {
-                return [i.structure[1], i.id];
+                return [i.structure[1], i.iri];
             });
             console.table(data);
         }
@@ -743,10 +740,10 @@ export class App {
 
             let agent = encodeURIComponent(JSON.stringify(agentObj).slice(1, -1));
 
-            let activityId = config.id;
+            let activityId = `${config.trackIRI}/${config.id}`
 
             if (stateId.endsWith('globalPools')) {
-                activityId = config.trackId;
+                activityId = config.trackIRI;
             }
 
             let str = `activityId=${activityId}&stateId=${stateId}&agent={${agent}}`;
@@ -828,21 +825,21 @@ export class App {
         static deleteAllStates(clearGlobalPools = false) {
             let deleted = [];
 
-            deleted.push(XAPI.deleteState(App.course.data.id));
+            deleted.push(XAPI.deleteState(App.course.iri));
 
             if (clearGlobalPools) {
                 deleted.push(
-                    XAPI.deleteState(App.course.data.trackId + '/globalPools')
+                    XAPI.deleteState(App.course.data.trackIRI + '/globalPools')
                 );
             }
 
             App.course.data.interactions.forEach((i) => {
-                deleted.push(XAPI.deleteState(i.id));
+                deleted.push(XAPI.deleteState(i.iri));
                 if (i.type === 'test') {
                     // надо ли чистить остальные объекты
                     i.iterables.forEach(
                         (q) => {
-                            deleted.push(XAPI.deleteState(i.id + '/' + q.id));
+                            deleted.push(XAPI.deleteState(q.iri));
                         }
                     );
                 }
@@ -977,7 +974,7 @@ export class App {
             };
 
             if (this.verbString === 'send') {
-                object.object.id = `${this.obj.data.id}/message_${AuxFunctions.uuid()}`;
+                object.object.id = `${this.obj.iri}/message_${AuxFunctions.uuid()}`;
                 object.object.definition = {
                     name: {
                         'ru-RU': this.extraData.message,
@@ -1007,20 +1004,20 @@ export class App {
                     type: this.extraData.metric.metricType,
                 };
             } else {
-                object.object.id = this.obj.data.id;
+                object.object.id = this.obj.iri;
 
                 object.object.definition = {
                     name: {
-                        'en-US': this.obj.data?.nameRus || this.obj.data.id,
-                        'ru-RU': this.obj.data?.nameRus || this.obj.data.id,
+                        'en-US': this.obj.data?.nameRus || this.obj.iri,
+                        'ru-RU': this.obj.data?.nameRus || this.obj.iri,
                     },
                     description: {
                         'en-US': this.obj.data?.description ||
                             this.obj.data?.nameRus ||
-                            this.obj.data.id,
+                            this.obj.iri,
                         'ru-RU': this.obj.data?.description ||
                             this.obj.data?.nameRus ||
-                            this.obj.data.id,
+                            this.obj.iri,
                     },
                 };
             }
@@ -1030,7 +1027,7 @@ export class App {
                     this.verbString !== 'calculated' &&
                     this.verbString !== 'send'
                 ) {
-                    object.object.id = `${this.obj.parentId}/${this.obj.data.id}`;
+                    object.object.id = this.obj.iri;
                     if (
                         this.obj.data.type === 'mc' ||
                         this.obj.data.type === 'mr'
@@ -1071,7 +1068,7 @@ export class App {
             if (this.verbString === 'send') {
                 Object.assign(object.context.contextActivities, {
                     parent: [{
-                        id: `${this.obj.data.id}/conversation`,
+                        id: `${this.obj.iri}/conversation`,
                         objectType: 'Activity',
                         definition: {
                             name: {
@@ -1091,7 +1088,7 @@ export class App {
             if (this.verbString === 'calculated') {
                 Object.assign(object.context.contextActivities, {
                     parent: [{
-                        id: App.course.data.id,
+                        id: App.course.iri,
                     }, ],
                     category: [{
                         id: this.extraData.metric.metricProfile,
@@ -1131,14 +1128,14 @@ export class App {
                 }
             }
 
-            if (this.obj.parentId) {
+            if (this.obj.parent) {
                 if (
                     this.verbString !== 'calculated' &&
                     this.verbString !== 'send'
                 ) {
                     Object.assign(object.context.contextActivities, {
                         parent: [{
-                            id: this.obj.parentId,
+                            id: this.obj.parent.iri,
                             objectType: 'Activity',
                         }, ],
                     });

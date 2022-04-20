@@ -5,7 +5,6 @@ export class YTVideo extends HTMLElement {
 
     init(placeholder, interaction, db, stateData = {}) {
         this.placeholder = placeholder;
-        this.parentId = config.id;
         this.data = interaction;
         this.player;
         this.viewId = ADL.ruuid();
@@ -40,6 +39,10 @@ export class YTVideo extends HTMLElement {
         this.placeholder.append(this);
     }
 
+    get iri() {
+        return `${this.parent.iri}/${this.data.id}`
+    }
+
     setPlayer() {
         this.player = new YT.Player(`${this.divId}`, {
             height: '480',
@@ -60,7 +63,7 @@ export class YTVideo extends HTMLElement {
 
     setState() {
         let date = new Date();
-        this.state.id = this.data.id;
+        this.state.id = this.iri;
         this.state.completed = this.completed;
         this.state.passed = this.passed;
         this.state.result = this.result;
@@ -187,7 +190,7 @@ export class YTVideo extends HTMLElement {
                 obj: that,
             },
         });
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`);
+        console.log(`Event "${eventName}" was dispatched by ${this.iri}`);
         this.dispatchEvent(event);
     }
 

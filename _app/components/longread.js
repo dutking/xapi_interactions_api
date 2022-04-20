@@ -104,9 +104,9 @@ export class Longread extends HTMLElement {
         this.shadowRoot.appendChild(longreadTemplate.content.cloneNode(true));
     }
 
-    init(placeholder, interaction, stateData = {}) {
+    init(placeholder, interaction, stateData = {}, parent) {
+        this.parent = parent;
         this.placeholder = placeholder;
-        this.parentId = config.id;
         this.data = interaction;
         this.state = stateData;
         this.completed = false;
@@ -157,6 +157,10 @@ export class Longread extends HTMLElement {
         nextBtn.addEventListener('click', (e) => {
             that.emitEvent('exited');
         });
+    }
+
+    get iri() {
+        return `${this.parent.iri}/${this.data.id}`
     }
 
     get maxScore() {

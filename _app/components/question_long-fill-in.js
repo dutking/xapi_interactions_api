@@ -660,8 +660,8 @@ export class QuestionLongFillIn extends HTMLElement {
         this.state = {};
     }
 
-    get parentId() {
-        return this.parent.data.id;
+    get iri() {
+        return `${this.parent.iri}/${this.data.id}`;
     }
 
     get amountOfQuestions() {
@@ -964,7 +964,7 @@ export class QuestionLongFillIn extends HTMLElement {
 
             this.emitEvent('answered');
             console.log(
-                `Question ${this.data.id} answered. Result: ${this.result}`
+                `Question ${this.iri} answered. Result: ${this.result}`
             );
 
             this.disableElements();
@@ -1000,7 +1000,7 @@ export class QuestionLongFillIn extends HTMLElement {
 
     setState(msg = '') {
         console.log(
-            `%c...setting question ${this.data.id} state due to: ${msg}`,
+            `%c...setting question ${this.iri} state due to: ${msg}`,
             'color:blue;font-weight:bold;'
         );
         this.state.date = new Date();
@@ -1308,7 +1308,7 @@ export class QuestionLongFillIn extends HTMLElement {
                 obj: that,
             },
         });
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`);
+        console.log(`Event "${eventName}" was dispatched by ${this.iri}`);
         this.dispatchEvent(event);
     }
 

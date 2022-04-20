@@ -773,8 +773,8 @@ export class QuestionRange extends HTMLElement {
         this.state = {};
     }
 
-    get parentId() {
-        return this.parent.data.id;
+    get iri() {
+        return `${this.parent.iri}/${this.data.id}`;
     }
 
     get amountOfQuestions() {

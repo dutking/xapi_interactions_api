@@ -385,9 +385,8 @@ export class Test extends HTMLElement {
         this.shadowRoot.appendChild(testTemplate.content.cloneNode(true));
     }
 
-    async init(placeholder, interaction, stateData = {}) {
-        let that = this;
-        this.parentId = config.id;
+    async init(placeholder, interaction, stateData = {}, parent) {
+        this.parent = parent;
         this.placeholder = placeholder;
         this.data = interaction;
         this.attempt = 0;
@@ -451,6 +450,10 @@ export class Test extends HTMLElement {
                 .split(',')
                 .forEach((cl) => this.placeholder.classList.add(cl));
         }
+    }
+
+    get iri() {
+        return `${this.parent.iri}/${this.data.id}`
     }
 
     get globalTestGridAreas() {
