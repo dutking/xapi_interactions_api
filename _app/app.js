@@ -240,7 +240,7 @@ export class App {
 
     static async createCourse() {
         let states = config.interactions.map(async (interaction, index) => {
-            return await XAPI.getState(interaction.iri).then((state) => {
+            return await XAPI.getState(`${App.course.iri}/${interaction.id}`).then((state) => {
                 console.group('STATE FOR: ' + state.id);
                 if ('isFake' in state) {
                     console.log('%cFake state recieved:', 'color:orange;');
@@ -255,7 +255,7 @@ export class App {
                 );
 
                 console.log(
-                    `%c${interaction.iri} -> ${state.completed}`,
+                    `%c${App.course.iri}/${interaction.id} -> ${state.completed}`,
                     'color:orange;font-weight:bold;'
                 );
                 taskElement.init(

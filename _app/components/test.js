@@ -539,36 +539,38 @@ export class Test extends HTMLElement {
 
     get amountOfQuestions() {
         let data = this.data.amountOfQuestions;
-        if (data.startsWith('num')) {
-            let val = Number(data.split(':')[1]);
+        if (!isNaN(data)) {
+            let val = Number(data);
 
             if (val === 0) {
                 return this.data.iterables.length;
             }
 
             return val;
+        } else {
+            if (data.endsWith('%')) {
+                return Math.floor(
+                    (this.data.iterables.length / 100) *
+                        Number(data.split(':')[1].split('%')[0])
+                );
+            }
+    
+            if (data.endsWith('groups')) {
+                return Object.entries(this.data.groups).reduce((sum, e) => {
+                    let key = e[0];
+                    let value = e[1];
+                    if (Number(value) === 0) {
+                        return (sum += this.data.iterables.filter(
+                            (i) => i.group === key
+                        ).length);
+                    } else if (Number(value) > 0) {
+                        return (sum += Number(value));
+                    }
+                }, 0);
+            }
         }
 
-        if (data.endsWith('%')) {
-            return Math.floor(
-                (this.data.iterables.length / 100) *
-                    Number(data.split(':')[1].split('%')[0])
-            );
-        }
-
-        if (data.endsWith('groups')) {
-            return Object.entries(this.data.groups).reduce((sum, e) => {
-                let key = e[0];
-                let value = e[1];
-                if (Number(value) === 0) {
-                    return (sum += this.data.iterables.filter(
-                        (i) => i.group === key
-                    ).length);
-                } else if (Number(value) > 0) {
-                    return (sum += Number(value));
-                }
-            }, 0);
-        }
+        
     }
 
     setCurrentAttemptQuestions(restore = false) {
@@ -776,7 +778,7 @@ export class Test extends HTMLElement {
             .querySelector('.questionsContainer')
             .appendChild(questionElement);
 
-        let qState = await window.XAPI.getState(this.data.id + '/' + id);
+        let qState = await window.XAPI.getState(this.iri + '/' + id);
 
         questionElement.setFields(
             question,
@@ -800,7 +802,7 @@ export class Test extends HTMLElement {
 
     deleteQuestionsStates() {
         this.data.iterables.forEach((i) =>
-            window.XAPI.deleteState(`${this.data.id}/${i.id}`)
+            window.XAPI.deleteState(`${i.iri}`)
         );
     }
 
