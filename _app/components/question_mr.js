@@ -1373,27 +1373,17 @@ export class QuestionMR extends HTMLElement {
 
         if (
             this.parent.data?.questionsSettings?.feedback?.hideElements &&
-            this.parent.data.questionsSettings.feedback.hideElements !== ''
+            this.parent.data.questionsSettings.feedback.hideElements.length > 0
         ) {
-            if (
-                Array.isArray(
-                    this.parent.data.questionsSettings.feedback.hideElements
-                )
-            ) {
+            
                 this.parent.data.questionsSettings.feedback.hideElements.forEach(
                     (element) => {
                         this.shadowRoot
-                            .querySelector(`.${element}`)
+                            .querySelector(`${element}`)
                             .classList.add('off');
                     }
                 );
-            } else {
-                this.shadowRoot
-                    .querySelector(
-                        `${this.parent.data.questionsSettings.feedback.hideElements}`
-                    )
-                    .classList.add('off');
-            }
+            
         }
 
         /* if (this.displayMode === 'one_instead_another') {

@@ -1022,17 +1022,13 @@ export class Test extends HTMLElement {
             this.data.resume?.hideElements &&
             this.data.resume.hideElements.length > 0
         ) {
-            if (Array.isArray(this.data.resume.hideElements)) {
+            
                 this.data.resume.hideElements.forEach((element) => {
                     this.shadowRoot
                         .querySelector(`${element}`)
                         .classList.add('off');
                 });
-            } else {
-                this.shadowRoot
-                    .querySelector(`${this.data.resume.hideElements}`)
-                    .classList.add('off');
-            }
+            
         }
 
         if (this.data.displayMode === 'one_instead_another') {
@@ -1153,17 +1149,13 @@ export class Test extends HTMLElement {
             this.data.feedback?.hideElements &&
             this.data.feedback.hideElements.length > 0
         ) {
-            if (Array.isArray(this.data.feedback.hideElements)) {
+            
                 this.data.feedback.hideElements.forEach((element) => {
                     this.shadowRoot
                         .querySelector(`${element}`)
                         .classList.add('off');
                 });
-            } else {
-                this.shadowRoot
-                    .querySelector(`${this.data.feedback.hideElements}`)
-                    .classList.add('off');
-            }
+           
         }
 
         if (this.data.displayMode === 'one_instead_another') {
@@ -1617,10 +1609,7 @@ export class Test extends HTMLElement {
     }
 
     get weight() {
-        let weightData = this.data.weight.split(':');
-        if (weightData[0] === 'num') {
-            return Number(weightData[1]);
-        }
+        return this.data.weight
     }
 
     completeTest() {
