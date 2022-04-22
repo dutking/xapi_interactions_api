@@ -565,7 +565,7 @@ export class App {
                     e.detail.obj.status === 'completed'
                 ) {
                     let currentMetric = config.globalMetrics.filter((metric) =>
-                        e.detail.obj.parent.data.questionsSettings.metrics.includes(
+                        e.detail.obj.parent.data.questionsSettings.metrics[0].includes(
                             metric.iri
                         )
                     )[0];
@@ -583,9 +583,8 @@ export class App {
                     e.detail.obj.status === 'completed'
                 ) {
                     let currentMetric = config.globalMetrics.filter((metric) =>
-                        e.detail.obj.data.metrics.includes(metric.iri)
+                        e.detail.obj.data.metrics[0].includes(metric.iri)
                     )[0];
-                    console.log(e.detail.obj);
 
                     if ('requiredState' in currentMetric) {
                         if (
