@@ -214,7 +214,7 @@ export class App {
         console.log(App.course.state);
         XAPI.postState(App.course.iri, App.course.state);
 
-        if (App.course.data?.metrics) {
+        if (App.course.data?.metrics && App.course.data?.metrics.length > 0) {
             console.log(
                 '%c...posting metrics',
                 'font-size: 18px; color: blue; font-weight: bold;'
@@ -561,7 +561,7 @@ export class App {
                     e.detail.obj.parent instanceof Test &&
                     'questionsSettings' in e.detail.obj.parent.data &&
                     'metrics' in e.detail.obj.parent.data.questionsSettings &&
-                    e.detail.obj.parent.data.questionsSettings.metrics !== '' &&
+                    e.detail.obj.parent.data.questionsSettings.metrics.length > 0 &&
                     e.detail.obj.status === 'completed'
                 ) {
                     let currentMetric = config.globalMetrics.filter((metric) =>
@@ -579,7 +579,7 @@ export class App {
                     );
                 } else if (
                     'metrics' in e.detail.obj.data &&
-                    e.detail.obj.data.metrics !== '' &&
+                    e.detail.obj.data.metrics.length > 0 &&
                     e.detail.obj.status === 'completed'
                 ) {
                     let currentMetric = config.globalMetrics.filter((metric) =>
@@ -989,8 +989,8 @@ export class App {
                 }
 
                 object.object.id =
-                    this.obj.data?.metrics ??
-                    this.obj?.parent?.data?.questionsSettings?.metrics;
+                    this.obj.data?.metrics[0] ??
+                    this.obj?.parent?.data?.questionsSettings?.metrics[0];
 
                 object.object.definition = {
                     name: {
