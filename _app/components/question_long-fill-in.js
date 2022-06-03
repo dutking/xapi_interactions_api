@@ -412,6 +412,14 @@ strong {
             border-radius: var(--questionFeedback-border-radius);
         }
 
+        .questionContainer.correct .questionFeedback{
+            background: var(--questionFeedback-bg-color-correct, var(--questionFeedback-background));
+        }
+
+        .questionContainer.incorrect .questionFeedback{
+            background: var(--questionFeedback-bg-color-incorrect, var(--questionFeedback-background));
+        }
+
         .questionContainer .questionFeedback .poolsContainer {
             box-sizing: border-box;
             display: grid;

@@ -650,6 +650,8 @@
 
     /* background */
     --questionFeedback-background: transparent;
+    --questionFeedback-bg-color-correct: transparent;
+    --questionFeedback-bg-color-incorrect: transparent;
 
     /* padding */
     --questionFeedback-padding: var(--spacing_lvl_0);

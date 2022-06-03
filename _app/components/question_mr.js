@@ -496,6 +496,14 @@ strong {
             border-radius: var(--questionFeedback-border-radius);
         }
 
+        .questionContainer.correct .questionFeedback{
+            background: var(--questionFeedback-bg-color-correct, var(--questionFeedback-background));
+        }
+
+        .questionContainer.incorrect .questionFeedback{
+            background: var(--questionFeedback-bg-color-incorrect, var(--questionFeedback-background));
+        }
+
         .questionContainer .questionFeedback .poolsContainer {
             box-sizing: border-box;
             display: grid;
@@ -1448,9 +1456,9 @@ export class QuestionMR extends HTMLElement {
                 );
                 feedback.append(qFeedback);
             }
-            /* this.shadowRoot
+            this.shadowRoot
                 .querySelector('.questionContainer')
-                .classList.add('correct'); */
+                .classList.add('correct');
         } else {
             if (this.data.feedback.incorrect) {
                 let qFeedback = document.createElement('div');
@@ -1460,9 +1468,9 @@ export class QuestionMR extends HTMLElement {
                 );
                 feedback.append(qFeedback);
             }
-            /* this.shadowRoot
+            this.shadowRoot
                 .querySelector('.questionContainer')
-                .classList.add('incorrect'); */
+                .classList.add('incorrect');
         }
 
         // show pools
