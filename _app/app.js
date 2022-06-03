@@ -53,8 +53,12 @@ export class App {
             })
             .then(() => XAPI.getState(`${config.trackIRI}/globalPools`))
             .then((data) => {
-                let contextData =
+                let contextData = null
+                if('globalMetrics' in config && config.globalMetrics.length > 0) {
+                    contextData =
                     XAPI.data.context?.contextActivities?.grouping?.[0]?.definition?.extensions?.[config.globalMetrics[0].metricExtension];
+                }
+                
                 if (contextData) {
                     App.course.data.globalPools.forEach((p) => {
                         let pool = contextData.filter((d) => d.id === p.id)[0];
@@ -68,7 +72,10 @@ export class App {
                     App.course.data.globalPools = data.globalPools;
                 }
 
-                App.recalculateGlobalPools();
+                if('globalPools' in config && config.globalPools.length > 0) {
+                    App.recalculateGlobalPools();
+                }
+                
                 App.setListeners();
                 App.createCourse();
                 App.setSidebar();
