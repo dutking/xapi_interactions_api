@@ -555,10 +555,14 @@ export class Test extends HTMLElement {
                 );
             }
     
-            if (data.endsWith('groups')) {
-                return Object.entries(this.data.groups).reduce((sum, e) => {
+            if (data.startsWith('groups')) {
+                let groups = data.split('groups:')[1].split("=")
+                return groups.reduce((sum, e) => {
                     let key = e[0];
                     let value = e[1];
+                    if(key.startsWith('http')) {
+                        key = 'group_' + window.XAPI.data.context.contextActivities?.grouping[0]?.extensions[e[0]]
+                    }
                     if (Number(value) === 0) {
                         return (sum += this.data.iterables.filter(
                             (i) => i.group === key
@@ -577,7 +581,7 @@ export class Test extends HTMLElement {
         this.questionsToTake = [];
         let that = this;
         if (restore === false) {
-            if (!this.data.amountOfQuestions.endsWith('groups')) {
+            if (!this.data.amountOfQuestions.startsWith('groups')) {
                 if (this.data?.shuffleQuestions === true) {
                     console.log(
                         '%cQuestions shuffled',
@@ -593,9 +597,13 @@ export class Test extends HTMLElement {
                 }
             }
 
-            if (this.data.amountOfQuestions.endsWith('groups')) {
-                Object.entries(this.data.groups).forEach((e) => {
+            if (this.data.amountOfQuestions.startsWith('groups')) {
+                let groups = data.split('groups:')[1].split("=")
+                groups.forEach((e) => {
                     let group = e[0];
+                    if(group.startsWith('http')){
+                        group = 'group_' + window.XAPI.data.context.contextActivities?.grouping[0]?.extensions[e[0]]
+                    }
                     let questionsFromGroup = Number(e[1]);
                     if (questionsFromGroup === 0) {
                         questionsFromGroup = that.data.iterables.filter(
