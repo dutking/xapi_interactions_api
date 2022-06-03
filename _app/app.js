@@ -69,7 +69,7 @@ export class App {
                     !('isFake' in data) &&
                     !('errorId' in data)
                 ) {
-                    App.course.data.globalPools = data.globalPools;
+                    App.course.data.globalPools = data.globalPools || [];
                 }
 
                 if('globalPools' in config && config.globalPools.length > 0) {
