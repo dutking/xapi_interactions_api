@@ -1149,7 +1149,7 @@ export class App {
                 }
             }
 
-            if("extensions" in object.context.contextActivities.grouping[0] && "https://urbanlearning.mguu.ru/xapi/extension/character" in object.context.contextActivities.grouping[0].extensions){
+            if(!App.testMode && object?.context?.contextActivities?.grouping && "extensions" in object.context.contextActivities.grouping[0] && "https://urbanlearning.mguu.ru/xapi/extension/character" in object.context.contextActivities.grouping[0].extensions){
 
                 delete object.context.contextActivities.grouping[0].extensions
             }
