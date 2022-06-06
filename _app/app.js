@@ -31,6 +31,7 @@ export class App {
         XAPI.getData()
             .then((data) => (XAPI.data = data))
             .then(() => {
+                console.log("XAPI.data", XAPI.data)
                 /* ADL.XAPIWrapper.changeConfig(XAPI.data); */
                 App.container = document.querySelector('body');
                 App.placeholders = document.querySelectorAll('.placeholder');
@@ -1146,6 +1147,11 @@ export class App {
                         }, ],
                     });
                 }
+            }
+
+            if("extensions" in object.context.contextActivities.grouping[0] && "https://urbanlearning.mguu.ru/xapi/extension/character" in object.context.contextActivities.grouping[0].extensions){
+
+                delete object.context.contextActivities.grouping[0].extensions
             }
 
             return object;
