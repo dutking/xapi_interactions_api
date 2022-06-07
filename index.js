@@ -30,12 +30,14 @@ fs.readdir('in')
         fs.ensureDirSync(path.join('_output', projectFolder, 'temp'));
         fs.ensureDirSync(path.join('_output', projectFolder, 'packages'));
         files.forEach((f) => {
-            let zip = new AdmZip(path.join('in', f));
-            let extract = util.promisify(zip.extractAllTo);
-            if (f.includes('project')) {
-                extract(path.join('_output', projectFolder, 'temp'), true);
-            } else if (f.includes('data')) {
-                extract(path.join('_output', projectFolder, 'packages'), true);
+            if(f !== '.DS_Store'){
+                let zip = new AdmZip(path.join('in', f));
+                let extract = util.promisify(zip.extractAllTo);
+                if (f.includes('project')) {
+                    extract(path.join('_output', projectFolder, 'temp'), true);
+                } else if (f.includes('data')) {
+                    extract(path.join('_output', projectFolder, 'packages'), true);
+                }
             }
         });
     })
