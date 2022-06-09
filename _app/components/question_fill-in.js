@@ -1160,7 +1160,7 @@ export class QuestionFillIn extends HTMLElement {
                         if (answer.feedback.length > 0) {
                             let aFeedback = document.createElement('div');
                             aFeedback.classList.add('answerFeedback');
-                            aFeedback.innerHTML = AusFunctions.parseText(
+                            aFeedback.innerHTML = AuxFunctions.parseText(
                                 answer.feedback,
                                 answer
                             );
