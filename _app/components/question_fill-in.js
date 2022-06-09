@@ -286,6 +286,7 @@ strong {
             font-size: var(--fillin-font-size);
             font-family: var(--fillin-font-family);
             outline: none;
+            color: black;
         }
 
         .questionContainer .answersContainer .answerContainer input[type=text].correct{
