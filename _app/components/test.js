@@ -965,8 +965,13 @@ export class Test extends HTMLElement {
 
     showCorrectAnswers(question = null) {
         if(this.data.feedback?.showCorrectAnswers && this.data.feedback.showCorrectAnswers !== ''){
-            if (this.data.feedback.showCorrectAnswers === 'answer' && question) {
-                question.showCorrectAnswers();
+            if (this.data.feedback.showCorrectAnswers === 'answer') {
+                if(question){
+                    question.showCorrectAnswers();
+                }
+                if(this.resumed === true && this.completed === true) {
+                    this.questionsElements.forEach((q) => q.showCorrectAnswers());
+                }
             } else if (
                 this.data.feedback.showCorrectAnswers === 'completed' &&
                 (this.attemptCompleted ||
@@ -1320,6 +1325,9 @@ export class Test extends HTMLElement {
         this.shadowRoot.querySelector('.submitBtn').classList.add('off');
         this.showTryAgainBtn();
         this.setGridTemplateAreas();
+        this.markResponsesCorrectness();
+        this.showCorrectAnswers();
+        this.markQuestionsCorrectness();
     }
 
     showTryAgainBtn() {
@@ -1682,6 +1690,7 @@ export class Test extends HTMLElement {
 
         this.addEventListener('answered', (e) => {
             this.setScore();
+            this.showCorrectAnswers(e.detail.obj)
         });
 
         let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');
