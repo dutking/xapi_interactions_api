@@ -840,7 +840,7 @@ export class App {
                 );
             }
 
-            App.course.data.interactions.forEach((i) => {
+            App.currentInteractions.forEach((i) => {
                 deleted.push(XAPI.deleteState(i.iri));
                 if (i.type === 'test') {
                     // надо ли чистить остальные объекты
