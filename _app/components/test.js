@@ -988,7 +988,7 @@ export class Test extends HTMLElement {
             } else if (
                 this.data.feedback.showCorrectAnswers.startsWith('attempt') &&
                 this.attempt + 1 ===
-                    Number(this.feedback.showCorrectAnswers.split(':')[1]) &&
+                    Number(this.data.feedback.showCorrectAnswers.split(':')[1]) &&
                 (this.attemptCompleted ||
                     (this.resumed && this.status === 'completed'))
             ) {
