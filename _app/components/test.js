@@ -561,7 +561,7 @@ export class Test extends HTMLElement {
                     let key = e[0];
                     let value = e[1];
                     if(key.startsWith('http')) {
-                        key = 'group_' + window.XAPI.data.context.contextActivities?.grouping[0]?.extensions[e[0]]
+                        key = 'group_' + window.XAPI.data.context.contextActivities?.grouping[0]?.definition.extensions[e[0]]
                     }
                     if (Number(value) === 0) {
                         return (sum += this.data.iterables.filter(
