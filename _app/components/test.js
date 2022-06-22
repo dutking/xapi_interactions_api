@@ -1,14 +1,14 @@
-import { QuestionMC } from './question_mc.js';
-import { QuestionMR } from './question_mr.js';
-import { QuestionRange } from './question_range.js';
-import { QuestionFillIn } from './question_fill-in.js';
-import { QuestionLongFillIn } from './question_long-fill-in.js';
-import { ChartHTML } from './chart_html.js';
-import { scoringFunctions } from '../scoringFunctions.js';
-import { AuxFunctions } from '../auxFunctions.js';
-import { Pool } from './pool.js';
+import { QuestionMC } from "./question_mc.js"
+import { QuestionMR } from "./question_mr.js"
+import { QuestionRange } from "./question_range.js"
+import { QuestionFillIn } from "./question_fill-in.js"
+import { QuestionLongFillIn } from "./question_long-fill-in.js"
+import { ChartHTML } from "./chart_html.js"
+import { scoringFunctions } from "../scoringFunctions.js"
+import { AuxFunctions } from "../auxFunctions.js"
+import { Pool } from "./pool.js"
 
-let testTemplate = document.createElement('template');
+let testTemplate = document.createElement("template")
 testTemplate.innerHTML = `
 <style>
 * {
@@ -373,82 +373,82 @@ testTemplate.innerHTML = `
         <button type='button' class='submitBtn btn off' disabled></button>
     </div>
 </div>
-`;
+`
 
 export class Test extends HTMLElement {
     constructor() {
-        super();
+        super()
         this.attachShadow({
-            mode: 'open',
-        });
+            mode: "open"
+        })
 
-        this.shadowRoot.appendChild(testTemplate.content.cloneNode(true));
+        this.shadowRoot.appendChild(testTemplate.content.cloneNode(true))
     }
 
     async init(placeholder, interaction, stateData = {}, parent) {
-        this.parent = parent;
-        this.placeholder = placeholder;
-        this.data = interaction;
-        this.attempt = 0;
-        this.questionsToTake = [];
-        this.state = stateData;
-        this.completed = false;
-        this.scores = [];
+        this.parent = parent
+        this.placeholder = placeholder
+        this.data = interaction
+        this.attempt = 0
+        this.questionsToTake = []
+        this.state = stateData
+        this.completed = false
+        this.scores = []
         /* this.processedScores = []; */
-        this.questionsOrder = [];
-        this.lastQuestionShownId = '';
-        this.resumed = false;
-        this.status = 'initial';
+        this.questionsOrder = []
+        this.lastQuestionShownId = ""
+        this.resumed = false
+        this.status = "initial"
 
-        placeholder.appendChild(this);
+        placeholder.appendChild(this)
 
-        if (!('isFake' in this.state)) {
-            this.resumed = true;
-            this.attempt = this.state.attempt;
-            this.completed = this.state.completed;
-            this.scores = this.state.scores;
+        if (!("isFake" in this.state)) {
+            this.resumed = true
+            this.attempt = this.state.attempt
+            this.completed = this.state.completed
+            this.scores = this.state.scores
             /* this.processedScores = this.state.processedScores; */
-            this.questionsOrder = this.state.questionsOrder;
-            this.lastQuestionShownId = this.state.lastQuestionShownId;
+            this.questionsOrder = this.state.questionsOrder
+            this.lastQuestionShownId = this.state.lastQuestionShownId
         }
 
         if (this.resumed === true) {
             if (this.data.resume.resume === true) {
-                if ('status' in this.state) {
-                    this.status = this.state.status;
+                if ("status" in this.state) {
+                    this.status = this.state.status
                 } else {
                     // to handle old version without statuses
                     if (this.completed) {
-                        this.status = 'completed';
+                        this.status = "completed"
                     } else {
-                        this.status = 'inProgress';
+                        this.status = "inProgress"
                     }
                     this.lastQuestionShownId =
-                        this.questionsOrder[this.questionsOrder.length - 1];
+                        this.questionsOrder[this.questionsOrder.length - 1]
                 }
             }
         }
 
-        this.setStaticContent();
+        this.setStaticContent()
         this.setDynamicContent(this.status).then(() => {
-            this.setClasses();
-            this.setListeners();
-            if (this.status === 'completed') {
-                this.showResumed();
+            this.setClasses()
+            this.setListeners()
+            if (this.status === "completed") {
+                this.showResumed()
             }
-            this.setGridTemplateAreas();
+            this.setGridTemplateAreas()
 
             /* this.setState('test started') */
-        });
+        })
     }
 
     setClasses() {
-        this.placeholder.classList.add(this.data.structure[0]);
+        this.placeholder.classList.add(this.data.structure[0])
 
         if (this.data?.classes) {
             this.data.classes
-                .split(',')
-                .forEach((cl) => this.placeholder.classList.add(cl));
+                .split(",")
+                .forEach((cl) => this.placeholder.classList.add(cl))
         }
     }
 
@@ -458,370 +458,368 @@ export class Test extends HTMLElement {
 
     get globalTestGridAreas() {
         return getComputedStyle(document.documentElement)
-            .getPropertyValue('--test-grid-template-areas')
+            .getPropertyValue("--test-grid-template-areas")
             .trim()
-            .replaceAll('"', '')
-            .replaceAll('  ', ' ')
-            .split(' ');
+            .replaceAll('"', "")
+            .replaceAll("  ", " ")
+            .split(" ")
     }
 
     setGridTemplateAreas() {
-        let testContainer = this.shadowRoot.querySelector('.testContainer');
+        let testContainer = this.shadowRoot.querySelector(".testContainer")
         let currentAreas = Array.from(testContainer.children)
             .map((element) => {
-                if (!element.className.includes('off')) {
-                    return element.className.split(' ')[0];
+                if (!element.className.includes("off")) {
+                    return element.className.split(" ")[0]
                 } else {
-                    return '';
+                    return ""
                 }
             })
-            .filter((i) => i !== '');
+            .filter((i) => i !== "")
 
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
                 if (currentAreas.includes(unit)) {
-                    return `"${unit}"`;
+                    return `"${unit}"`
                 } else {
-                    return '';
+                    return ""
                 }
             })
-            .filter((unit) => unit !== '')
-            .join(' ');
+            .filter((unit) => unit !== "")
+            .join(" ")
 
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
-            .filter((rule) => rule.selectorText === '.testContainer')[0]
-            .style.setProperty(
-                '--test-grid-template-areas',
-                currentAreasString
-            );
+            .filter((rule) => rule.selectorText === ".testContainer")[0]
+            .style.setProperty("--test-grid-template-areas", currentAreasString)
     }
 
     setStaticContent() {
-        let instructionDiv = this.shadowRoot.querySelector('.instruction');
+        let instructionDiv = this.shadowRoot.querySelector(".instruction")
         if (this.data?.instruction && this.data.instruction.length > 0) {
             instructionDiv.innerHTML = AuxFunctions.parseText(
                 this.data.instruction,
                 this
-            );
+            )
         } else {
-            instructionDiv.classList.add('off');
+            instructionDiv.classList.add("off")
         }
 
-        let commonQuestionDiv =
-            this.shadowRoot.querySelector('.commonQuestion');
+        let commonQuestionDiv = this.shadowRoot.querySelector(".commonQuestion")
         if (this.data?.commonQuestion && this.data.commonQuestion.length > 0) {
-            commonQuestionDiv.innerHTML = this.data.commonQuestion;
-            commonQuestionDiv.classList.remove('off');
+            commonQuestionDiv.innerHTML = this.data.commonQuestion
+            commonQuestionDiv.classList.remove("off")
         } else {
-            commonQuestionDiv.classList.add('off');
+            commonQuestionDiv.classList.add("off")
         }
 
         let buttonsContainer =
-            this.shadowRoot.querySelector('.buttonsContainer');
-        if (this.data.displayMode !== 'all_at_once') {
-            buttonsContainer.classList.add('off');
+            this.shadowRoot.querySelector(".buttonsContainer")
+        if (this.data.displayMode !== "all_at_once") {
+            buttonsContainer.classList.add("off")
         }
 
-        this.setButtons();
+        this.setButtons()
     }
 
     setButtons() {
         Object.keys(this.data.buttons).forEach((k) => {
-            let btn = this.shadowRoot.querySelector(`.${k}Btn`);
+            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
             if (btn) {
-                btn.innerHTML = this.data.buttons[k].initial;
+                btn.innerHTML = this.data.buttons[k].initial
                 if (this.data.buttons[k].icon === true) {
-                    btn.classList.add('icon');
+                    btn.classList.add("icon")
                 }
             }
-        });
+        })
     }
 
     get amountOfQuestions() {
-        let data = this.data.amountOfQuestions;
+        let data = this.data.amountOfQuestions
         if (!isNaN(data)) {
-            let val = Number(data);
+            let val = Number(data)
 
             if (val === 0) {
-                return this.data.iterables.length;
+                return this.data.iterables.length
             }
 
-            return val;
+            return val
         } else {
-            if (data.endsWith('%')) {
+            if (data.endsWith("%")) {
                 return Math.floor(
                     (this.data.iterables.length / 100) *
-                        Number(data.split(':')[1].split('%')[0])
-                );
+                        Number(data.split(":")[1].split("%")[0])
+                )
             }
-    
-            if (data.startsWith('groups')) {
-                let groups = data.split('groups:')[1].split("=")
+
+            if (data.startsWith("groups")) {
+                let groups = data.split("groups:")[1].split('</>').map(i => i.split("="))
                 return groups.reduce((sum, e) => {
-                    let key = e[0];
-                    let value = e[1];
-                    if(key.startsWith('http')) {
-                        key = 'group_' + window.XAPI.data.context.contextActivities?.grouping[0]?.definition.extensions[e[0]]
+                    let key = e[0]
+                    let value = e[1]
+                    if (key.startsWith("http")) {
+                        key =
+                            "group_" +
+                            window.XAPI.data.context.contextActivities
+                                ?.grouping[0]?.definition.extensions[e[0]]
                     }
                     if (Number(value) === 0) {
                         return (sum += this.data.iterables.filter(
                             (i) => i.group === key
-                        ).length);
+                        ).length)
                     } else if (Number(value) > 0) {
-                        return (sum += Number(value));
+                        return (sum += Number(value))
                     }
-                }, 0);
+                }, 0)
             }
         }
-
-        
     }
 
     setCurrentAttemptQuestions(restore = false) {
-        this.questionsToTake = [];
-        let that = this;
+        this.questionsToTake = []
+        let that = this
         if (restore === false) {
-            if (!this.data.amountOfQuestions.startsWith('groups')) {
+            if (!this.data.amountOfQuestions.startsWith("groups")) {
                 if (this.data?.shuffleQuestions === true) {
                     console.log(
-                        '%cQuestions shuffled',
-                        'color:blue;font-weight:bold;font-size:16px;'
-                    );
+                        "%cQuestions shuffled",
+                        "color:blue;font-weight:bold;font-size:16px;"
+                    )
                     this.questionsToTake = AuxFunctions.shuffleArray(
                         this.data.iterables.slice(0, this.amountOfQuestions)
-                    );
+                    )
                 } else {
                     this.questionsToTake = Array.from(
                         this.data.iterables.slice(0, this.amountOfQuestions)
-                    );
+                    )
                 }
             }
 
-            if (this.data.amountOfQuestions.startsWith('groups')) {
-                let groups = this.data.amountOfQuestions.split('groups:')[1].split("=")
+            if (this.data.amountOfQuestions.startsWith("groups")) {
+                let groups = this.data.amountOfQuestions.split("groups:")[1].split('</>').map(i => i.split("="))
                 groups.forEach((e) => {
-                    let group = e[0];
-                    if(group.startsWith('http')){
-                        group = 'group_' + window.XAPI.data.context.contextActivities?.grouping[0]?.extensions[e[0]]
+                    let group = e[0]
+                    if (group.startsWith("http")) {
+                        group =
+                            "group_" +
+                            window.XAPI.data.context.contextActivities
+                                ?.grouping[0]?.definition.extensions[e[0]]
                     }
-                    let questionsFromGroup = Number(e[1]);
+                    let questionsFromGroup = Number(e[1])
                     if (questionsFromGroup === 0) {
                         questionsFromGroup = that.data.iterables.filter(
                             (i) => i.group === group
-                        ).length;
+                        ).length
                     }
-                    let currentGroupQuestions = [];
+                    let currentGroupQuestions = []
                     if (this.data.shuffleQuestions === true) {
                         currentGroupQuestions = AuxFunctions.shuffleArray(
                             that.data.iterables.filter((i) => i.group === group)
-                        );
+                        )
                     } else {
                         currentGroupQuestions = that.data.iterables.filter(
                             (i) => i.group === group
-                        );
+                        )
                     }
 
                     that.questionsToTake = [
                         ...that.questionsToTake,
                         ...Array.from(
                             currentGroupQuestions.slice(0, questionsFromGroup)
-                        ),
-                    ];
-                });
+                        )
+                    ]
+                })
             }
 
-            this.questionsOrder = this.questionsToTake.map((q) => q.id);
-            this.lastQuestionShownId = this.questionsOrder[0];
+            this.questionsOrder = this.questionsToTake.map((q) => q.id)
+            this.lastQuestionShownId = this.questionsOrder[0]
         } else if (restore === true) {
             this.questionsToTake = this.questionsOrder.map((qId) => {
-                return this.data.iterables.filter((i) => i.id === qId)[0];
-            });
+                return this.data.iterables.filter((i) => i.id === qId)[0]
+            })
         }
     }
 
-    setState(msg = '') {
-        let that = this;
+    setState(msg = "") {
+        let that = this
         console.log(
             `%c...setting test state due to: ${msg}`,
-            'color:blue;font-weight:bold;'
-        );
-        this.state.date = new Date();
-        this.state.id = this.data.id;
-        this.state.completed = this.completed;
-        this.state.passed = this.passed;
-        this.state.result = this.result;
-        this.state.scores = this.scores;
+            "color:blue;font-weight:bold;"
+        )
+        this.state.date = new Date()
+        this.state.id = this.data.id
+        this.state.completed = this.completed
+        this.state.passed = this.passed
+        this.state.result = this.result
+        this.state.scores = this.scores
         /* this.state.processedScores = this.processedScores; */
-        this.state.userPoolsResult = this.userPoolsResult;
-        this.state.questionsOrder = this.questionsOrder;
-        this.state.lastQuestionShownId = this.lastQuestionShownId;
-        this.state.status = this.status;
-        this.state.attempt = this.attempt;
+        this.state.userPoolsResult = this.userPoolsResult
+        this.state.questionsOrder = this.questionsOrder
+        this.state.lastQuestionShownId = this.lastQuestionShownId
+        this.state.status = this.status
+        this.state.attempt = this.attempt
         this.state.duration = moment
             .duration(
                 Math.round((this.state.date - this.startTime) / 1000),
-                'seconds'
+                "seconds"
             )
-            .toISOString();
+            .toISOString()
 
-        if(this.data?.statements?.send){
+        if (this.data?.statements?.send) {
             this.state.sendStmtMessage = this.sendStmtMessage
         }
 
-        if ('isFake' in this.state) {
-            delete this.state.isFake;
+        if ("isFake" in this.state) {
+            delete this.state.isFake
         }
 
-        this.emitEvent('state_changed');
+        this.emitEvent("state_changed")
     }
 
     async setDynamicContent(status) {
-        let that = this;
+        let that = this
 
-        if (status === 'inProgress' || status === 'completed') {
+        if (status === "inProgress" || status === "completed") {
             // true parameter set to restore questions based on questionsOrder got from state
-            this.setCurrentAttemptQuestions(true);
+            this.setCurrentAttemptQuestions(true)
         } else {
-            this.setCurrentAttemptQuestions();
+            this.setCurrentAttemptQuestions()
         }
 
-        let createdQuestions = [];
+        let createdQuestions = []
 
-        if (this.data.displayMode === 'all_at_once') {
+        if (this.data.displayMode === "all_at_once") {
             this.questionsToTake.forEach((q, i) => {
-                createdQuestions.push(that.createQuestion(q.id));
-            });
+                createdQuestions.push(that.createQuestion(q.id))
+            })
         } else if (
-            this.data.displayMode === 'one_by_one' ||
-            this.data.displayMode === 'one_instead_another'
+            this.data.displayMode === "one_by_one" ||
+            this.data.displayMode === "one_instead_another"
         ) {
-            if (status === 'initial') {
+            if (status === "initial") {
                 createdQuestions.push(
                     this.createQuestion(this.questionsToTake[0].id)
-                );
+                )
             } else {
-                let index = 0;
+                let index = 0
                 while (
                     this.questionsToTake[index].id !== this.lastQuestionShownId
                 ) {
                     createdQuestions.push(
                         this.createQuestion(this.questionsToTake[index].id)
-                    );
-                    index++;
+                    )
+                    index++
                 }
 
                 // question with this.lastQuestionShownId
                 createdQuestions.push(
                     this.createQuestion(this.questionsToTake[index].id)
-                );
+                )
             }
         }
 
         return Promise.allSettled(createdQuestions).then(() => {
             if (
-                status !== 'initial' &&
+                status !== "initial" &&
                 this.questionsElements.length > 1 &&
-                this.data.displayMode === 'one_instead_another'
+                this.data.displayMode === "one_instead_another"
             ) {
                 // setting status to Completed for questions whose status is inProgress due to connection errors
                 this.questionsElements.forEach((q, i, arr) => {
-                    if (q.status === 'inProgress' && i < arr.length - 1) {
-                        q.status = 'completed';
-                        q.setState('not last question cannot be inProgress');
-                        q.emitEvent('continue');
+                    if (q.status === "inProgress" && i < arr.length - 1) {
+                        q.status = "completed"
+                        q.setState("not last question cannot be inProgress")
+                        q.emitEvent("continue")
                     }
-                });
+                })
 
                 this.questionsElements.slice(0, -1).forEach((i) => {
-                    i.classList.add('off');
-                });
+                    i.classList.add("off")
+                })
             }
 
-            this.submitBtn = this.shadowRoot.querySelector('.submitBtn');
-            if (this.data.submitMode === 'all_at_once') {
-                if (status !== 'completed') {
-                    this.submitBtn.classList.remove('off');
+            this.submitBtn = this.shadowRoot.querySelector(".submitBtn")
+            if (this.data.submitMode === "all_at_once") {
+                if (status !== "completed") {
+                    this.submitBtn.classList.remove("off")
                 }
             }
 
             if (this.allChecked) {
-                this.enableElement(this.submitBtn);
+                this.enableElement(this.submitBtn)
             }
 
-            return new Promise((resolve, reject) => resolve());
-        });
+            return new Promise((resolve, reject) => resolve())
+        })
     }
 
     get questionsElements() {
         return Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        );
+            this.shadowRoot.querySelector(".questionsContainer").children
+        )
     }
 
     get allChecked() {
         let questions = Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        );
+            this.shadowRoot.querySelector(".questionsContainer").children
+        )
 
         if (questions.length === this.questionsToTake.length) {
-            return questions.map((i) => i.checked).every((i) => i === true);
+            return questions.map((i) => i.checked).every((i) => i === true)
         } else {
-            return false;
+            return false
         }
     }
 
     getQuestionElement(id) {
         return Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        ).filter((e) => e.data.id === id)[0];
+            this.shadowRoot.querySelector(".questionsContainer").children
+        ).filter((e) => e.data.id === id)[0]
     }
 
     async createQuestion(id) {
-        let question = this.data.iterables.filter((q) => q.id === id)[0];
+        let question = this.data.iterables.filter((q) => q.id === id)[0]
         let questionElement = document.createElement(
             `question-${question.type}`
-        );
+        )
 
         this.shadowRoot
-            .querySelector('.questionsContainer')
-            .appendChild(questionElement);
+            .querySelector(".questionsContainer")
+            .appendChild(questionElement)
 
-        let qState = await window.XAPI.getState(this.iri + '/' + id);
+        let qState = await window.XAPI.getState(this.iri + "/" + id)
 
         questionElement.setFields(
             question,
             this.questionsOrder.indexOf(id),
             this,
             qState
-        );
+        )
 
         return new Promise((resolve, reject) => {
-            resolve(questionElement);
-        });
+            resolve(questionElement)
+        })
     }
 
     get lastQuestionIndex() {
         return (
             Array.from(
-                this.shadowRoot.querySelector('.questionsContainer').children
+                this.shadowRoot.querySelector(".questionsContainer").children
             ).length - 1
-        );
+        )
     }
 
     deleteQuestionsStates() {
-        this.data.iterables.forEach((i) =>
-            window.XAPI.deleteState(`${i.iri}`)
-        );
+        this.data.iterables.forEach((i) => window.XAPI.deleteState(`${i.iri}`))
     }
 
     restart() {
-        this.attempt += 1;
-        this.resumed = false;
-        this.status = 'initial';
+        this.attempt += 1
+        this.resumed = false
+        this.status = "initial"
         console.log(
             `%cTest restarted. Attempt ${this.attempt}`,
-            'color:blue;font-weight:bold;font-size:16px;'
-        );
+            "color:blue;font-weight:bold;font-size:16px;"
+        )
         /* this.shadowRoot
             .querySelector(".statisticsContainer")
             .classList.add("off");
@@ -829,205 +827,239 @@ export class Test extends HTMLElement {
         this.shadowRoot.querySelector(".userStatistics").classList.add("off");*/
 
         Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        ).forEach((child) => child.remove());
+            this.shadowRoot.querySelector(".questionsContainer").children
+        ).forEach((child) => child.remove())
 
-        this.deleteQuestionsStates();
+        this.deleteQuestionsStates()
 
-        let testContainer = this.shadowRoot.querySelector('.testContainer');
-        testContainer.classList.remove('resumed');
-        testContainer.classList.remove('correct');
-        testContainer.classList.remove('incorrect');
+        let testContainer = this.shadowRoot.querySelector(".testContainer")
+        testContainer.classList.remove("resumed")
+        testContainer.classList.remove("correct")
+        testContainer.classList.remove("incorrect")
 
         let buttonsContainer =
-            this.shadowRoot.querySelector('.buttonsContainer');
-        let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+            this.shadowRoot.querySelector(".buttonsContainer")
+        let tryAgainBtn = this.shadowRoot.querySelector(".tryAgainBtn")
+        let submitBtn = this.shadowRoot.querySelector(".submitBtn")
 
         this.shadowRoot
-            .querySelector('.questionsContainer')
-            .classList.remove('off');
+            .querySelector(".questionsContainer")
+            .classList.remove("off")
 
         let feedbackContainer =
-            this.shadowRoot.querySelector('.feedbackContainer');
-        feedbackContainer.classList.add('off');
+            this.shadowRoot.querySelector(".feedbackContainer")
+        feedbackContainer.classList.add("off")
 
-        if (this.data.displayMode !== 'all_at_once') {
-            buttonsContainer.classList.add('off');
-            submitBtn.classList.add('off');
+        if (this.data.displayMode !== "all_at_once") {
+            buttonsContainer.classList.add("off")
+            submitBtn.classList.add("off")
         }
 
-        tryAgainBtn.classList.add('off');
+        tryAgainBtn.classList.add("off")
 
-        this.disableElement(submitBtn);
-        this.questionsOrder = [];
-        this.completedQuestions = new Set();
-        this.emitEvent('interacted');
-        this.setStaticContent();
-        this.setDynamicContent('initial').then(() => {
-            this.setGridTemplateAreas();
-            this.startTime = new Date();
-            this.scrollIntoView();
-            this.setState('test restarted');
-        });
+        this.disableElement(submitBtn)
+        this.questionsOrder = []
+        this.completedQuestions = new Set()
+        this.emitEvent("interacted")
+        this.setStaticContent()
+        this.setDynamicContent("initial").then(() => {
+            this.setGridTemplateAreas()
+            this.startTime = new Date()
+            this.scrollIntoView()
+            this.setState("test restarted")
+        })
     }
 
     emitEvent(eventName) {
-        let that = this;
+        let that = this
         let event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
-                obj: that,
-            },
-        });
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`);
-        this.dispatchEvent(event);
+                obj: that
+            }
+        })
+        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
+        this.dispatchEvent(event)
     }
 
     submitAll() {
         if (this.allChecked) {
             if (this.data?.buttons?.submit?.completed?.text) {
                 this.submitBtn.innerHTML =
-                    this.data.buttons.submit.completed.text;
+                    this.data.buttons.submit.completed.text
             }
 
-            let that = this;
+            let that = this
             let questions = Array.from(
-                that.shadowRoot.querySelector('.questionsContainer').children
-            );
-            questions.forEach((q) => q.checkAnswer());
+                that.shadowRoot.querySelector(".questionsContainer").children
+            )
+            questions.forEach((q) => q.checkAnswer())
 
             if (this.attemptCompleted) {
-                this.completeTest();
+                this.completeTest()
             }
         }
     }
 
     get questionsElements() {
         return Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        );
+            this.shadowRoot.querySelector(".questionsContainer").children
+        )
     }
 
     markTestCorrectness() {
-        let testContainer = this.shadowRoot.querySelector('.testContainer');
+        let testContainer = this.shadowRoot.querySelector(".testContainer")
         if (this.passed) {
             console.log(
                 `%cTest "${this.data.id}" passed`,
-                'color:green;font-weight:bold;font-size:16px;'
-            );
+                "color:green;font-weight:bold;font-size:16px;"
+            )
 
-            testContainer.classList.add('correct');
-            testContainer.classList.remove('incorrect');
+            testContainer.classList.add("correct")
+            testContainer.classList.remove("incorrect")
         } else {
             console.log(
                 `%cTest "${this.data.id}" failed`,
-                'color:red;font-weight:bold;font-size:16px;'
-            );
-            testContainer.classList.remove('correct');
-            testContainer.classList.add('incorrect');
+                "color:red;font-weight:bold;font-size:16px;"
+            )
+            testContainer.classList.remove("correct")
+            testContainer.classList.add("incorrect")
         }
     }
 
     markQuestionsCorrectness(question = null) {
-        if(this.data.feedback?.markQuestionsCorrectness && this.data.feedback.markQuestionsCorrectness !== ''){
+        if (
+            this.data.feedback?.markQuestionsCorrectness &&
+            this.data.feedback.markQuestionsCorrectness !== ""
+        ) {
             if (
-                this.data.feedback.markQuestionsCorrectness === 'answer' &&
+                this.data.feedback.markQuestionsCorrectness === "answer" &&
                 question
             ) {
-                question.markQuestionCorrectness();
+                question.markQuestionCorrectness()
             } else if (
-                this.data.feedback.markQuestionsCorrectness === 'completed' &&
+                this.data.feedback.markQuestionsCorrectness === "completed" &&
                 (this.attemptCompleted ||
-                    (this.resumed && this.status === 'completed'))
+                    (this.resumed && this.status === "completed"))
             ) {
-                this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+                this.questionsElements.forEach((q) =>
+                    q.markQuestionCorrectness()
+                )
             } else if (
-                this.data.feedback.markQuestionsCorrectness === 'passingAttempt' &&
+                this.data.feedback.markQuestionsCorrectness ===
+                    "passingAttempt" &&
                 this.attempt + 1 === this.passingAttempt &&
                 (this.attemptCompleted ||
-                    (this.resumed && this.status === 'completed'))
+                    (this.resumed && this.status === "completed"))
             ) {
-                this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+                this.questionsElements.forEach((q) =>
+                    q.markQuestionCorrectness()
+                )
             } else if (
-                'markQuestionsCorrectness' in this.data.feedback &&
-                this.data.feedback.markQuestionsCorrectness.startsWith('attempt') &&
+                "markQuestionsCorrectness" in this.data.feedback &&
+                this.data.feedback.markQuestionsCorrectness.startsWith(
+                    "attempt"
+                ) &&
                 this.attempt + 1 ===
-                    Number(this.feedback.markQuestionsCorrectness.split(':')[1]) &&
+                    Number(
+                        this.feedback.markQuestionsCorrectness.split(":")[1]
+                    ) &&
                 (this.attemptCompleted ||
-                    (this.resumed && this.status === 'completed'))
+                    (this.resumed && this.status === "completed"))
             ) {
-                this.questionsElements.forEach((q) => q.markQuestionCorrectness());
+                this.questionsElements.forEach((q) =>
+                    q.markQuestionCorrectness()
+                )
             }
         }
     }
 
     showCorrectAnswers(question = null) {
-        if(this.data.feedback?.showCorrectAnswers && this.data.feedback.showCorrectAnswers !== ''){
-            if (this.data.feedback.showCorrectAnswers === 'answer') {
-                if(question){
-                    question.showCorrectAnswers();
+        if (
+            this.data.feedback?.showCorrectAnswers &&
+            this.data.feedback.showCorrectAnswers !== ""
+        ) {
+            if (this.data.feedback.showCorrectAnswers === "answer") {
+                if (question) {
+                    question.showCorrectAnswers()
                 }
-                if(this.resumed === true && this.completed === true) {
-                    this.questionsElements.forEach((q) => q.showCorrectAnswers());
+                if (this.resumed === true && this.completed === true) {
+                    this.questionsElements.forEach((q) =>
+                        q.showCorrectAnswers()
+                    )
                 }
             } else if (
-                this.data.feedback.showCorrectAnswers === 'completed' &&
+                this.data.feedback.showCorrectAnswers === "completed" &&
                 (this.attemptCompleted ||
-                    (this.resumed && this.status === 'completed'))
+                    (this.resumed && this.status === "completed"))
             ) {
-                this.questionsElements.forEach((q) => q.showCorrectAnswers());
+                this.questionsElements.forEach((q) => q.showCorrectAnswers())
             } else if (
-                this.data.feedback.showCorrectAnswers === 'passingAttempt' &&
+                this.data.feedback.showCorrectAnswers === "passingAttempt" &&
                 this.attempt + 1 === this.passingAttempt &&
                 (this.attemptCompleted ||
-                    (this.resumed && this.status === 'completed'))
+                    (this.resumed && this.status === "completed"))
             ) {
-                this.questionsElements.forEach((q) => q.showCorrectAnswers());
+                this.questionsElements.forEach((q) => q.showCorrectAnswers())
             } else if (
-                this.data.feedback.showCorrectAnswers.startsWith('attempt') &&
+                this.data.feedback.showCorrectAnswers.startsWith("attempt") &&
                 this.attempt + 1 ===
-                    Number(this.data.feedback.showCorrectAnswers.split(':')[1]) &&
+                    Number(
+                        this.data.feedback.showCorrectAnswers.split(":")[1]
+                    ) &&
                 (this.attemptCompleted ||
-                    (this.resumed && this.status === 'completed'))
+                    (this.resumed && this.status === "completed"))
             ) {
-                this.questionsElements.forEach((q) => q.showCorrectAnswers());
+                this.questionsElements.forEach((q) => q.showCorrectAnswers())
             }
         }
     }
 
     markResponsesCorrectness(question = null) {
-        if(this.data.feedback?.markResponsesCorrectness ?? this.data.feedback.markResponsesCorrectness !== ''){
-
         if (
-            this.data.feedback.markResponsesCorrectness === 'answer' &&
-            question
+            this.data.feedback?.markResponsesCorrectness ??
+            this.data.feedback.markResponsesCorrectness !== ""
         ) {
-            question.markResponsesCorrectness();
-        } else if (
-            this.data.feedback.markResponsesCorrectness === 'completed' &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.markResponsesCorrectness());
-        } else if (
-            this.data.feedback.markResponsesCorrectness === 'passingAttempt' &&
-            this.attempt + 1 === this.passingAttempt &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.markResponsesCorrectness());
-        } else if (
-            this.data.feedback.markResponsesCorrectness.startsWith('attempt') &&
-            this.attempt + 1 ===
-                Number(this.feedback.markResponsesCorrectness.split(':')[1]) &&
-            (this.attemptCompleted ||
-                (this.resumed && this.status === 'completed'))
-        ) {
-            this.questionsElements.forEach((q) => q.markResponsesCorrectness());
+            if (
+                this.data.feedback.markResponsesCorrectness === "answer" &&
+                question
+            ) {
+                question.markResponsesCorrectness()
+            } else if (
+                this.data.feedback.markResponsesCorrectness === "completed" &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === "completed"))
+            ) {
+                this.questionsElements.forEach((q) =>
+                    q.markResponsesCorrectness()
+                )
+            } else if (
+                this.data.feedback.markResponsesCorrectness ===
+                    "passingAttempt" &&
+                this.attempt + 1 === this.passingAttempt &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === "completed"))
+            ) {
+                this.questionsElements.forEach((q) =>
+                    q.markResponsesCorrectness()
+                )
+            } else if (
+                this.data.feedback.markResponsesCorrectness.startsWith(
+                    "attempt"
+                ) &&
+                this.attempt + 1 ===
+                    Number(
+                        this.feedback.markResponsesCorrectness.split(":")[1]
+                    ) &&
+                (this.attemptCompleted ||
+                    (this.resumed && this.status === "completed"))
+            ) {
+                this.questionsElements.forEach((q) =>
+                    q.markResponsesCorrectness()
+                )
+            }
         }
-    }
     }
 
     showResumed() {
@@ -1035,39 +1067,36 @@ export class Test extends HTMLElement {
             this.data.resume?.hideElements &&
             this.data.resume.hideElements.length > 0
         ) {
-            
-                this.data.resume.hideElements.forEach((element) => {
-                    this.shadowRoot
-                        .querySelector(`${element}`)
-                        .classList.add('off');
-                });
-            
+            this.data.resume.hideElements.forEach((element) => {
+                this.shadowRoot.querySelector(`${element}`).classList.add("off")
+            })
         }
 
-        if (this.data.displayMode === 'one_instead_another') {
-            this.shadowRoot.querySelector('.instruction').classList.add('off');
+        if (this.data.displayMode === "one_instead_another") {
+            this.shadowRoot.querySelector(".instruction").classList.add("off")
             this.shadowRoot
-                .querySelector('.commonQuestion')
-                .classList.add('off');
+                .querySelector(".commonQuestion")
+                .classList.add("off")
             this.shadowRoot
-                .querySelector('.questionsContainer')
-                .classList.add('off');
+                .querySelector(".questionsContainer")
+                .classList.add("off")
         }
 
         let feedbackContainer =
-            this.shadowRoot.querySelector('.feedbackContainer');
+            this.shadowRoot.querySelector(".feedbackContainer")
 
         if (
-            this.data.resume?.common !== '' ||
-            this.data.resume?.passed !== '' ||
-            this.data.resume?.failed !== '' ||
+            this.data.resume?.common !== "" ||
+            this.data.resume?.passed !== "" ||
+            this.data.resume?.failed !== "" ||
             (this.data.resume?.byScore &&
                 this.data.resume.byScore.length > 0) ||
-            this.data.resume?.showUserPoolsResult === true || this.data.feedback.chartFunction !== ''
+            this.data.resume?.showUserPoolsResult === true ||
+            this.data.feedback.chartFunction !== ""
         ) {
-            feedbackContainer.classList.remove('off');
+            feedbackContainer.classList.remove("off")
         } else {
-            feedbackContainer.classList.add('off');
+            feedbackContainer.classList.add("off")
         }
 
         if (
@@ -1075,220 +1104,214 @@ export class Test extends HTMLElement {
             this.data.resume.showUserPoolsResult === true &&
             this.userPoolsResult.length > 0
         ) {
-            let poolsContainer = document.createElement('div');
-            poolsContainer.classList.add('poolsContainer');
+            let poolsContainer = document.createElement("div")
+            poolsContainer.classList.add("poolsContainer")
 
             this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div');
-                poolContainer.classList.add('poolContainer');
+                let poolContainer = document.createElement("div")
+                poolContainer.classList.add("poolContainer")
 
-                let pool = new Pool();
-                pool.init(r.id);
-                poolContainer.append(pool);
+                let pool = new Pool()
+                pool.init(r.id)
+                poolContainer.append(pool)
 
-                let userPoolResult = document.createElement('div');
-                userPoolResult.classList.add('userPoolResult');
-                userPoolResult.innerText =
-                    r.value > 0 ? `+${r.value}` : r.value;
-                poolContainer.append(userPoolResult);
+                let userPoolResult = document.createElement("div")
+                userPoolResult.classList.add("userPoolResult")
+                userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
+                poolContainer.append(userPoolResult)
 
-                poolsContainer.append(poolContainer);
-            });
+                poolsContainer.append(poolContainer)
+            })
 
-            feedbackContainer.prepend(poolsContainer);
+            feedbackContainer.prepend(poolsContainer)
         }
 
-        if (this.data.resume?.common !== '') {
-            let text = document.createElement('p');
+        if (this.data.resume?.common !== "") {
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.common,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (
             this.passed &&
             this.data.resume.passed &&
-            this.data.resume.passed !== ''
+            this.data.resume.passed !== ""
         ) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.passed,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (
             !this.passed &&
             this.data.resume.failed &&
-            this.data.resume.failed !== ''
+            this.data.resume.failed !== ""
         ) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.failed,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (this.data?.resume?.byScore && this.data.resume.byScore.length > 0) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.byScore.filter((item) => {
                     return (
                         this.score >= Number(item.interval[0]) &&
                         this.score <= Number(item.interval[1])
-                    );
+                    )
                 })[0].text,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
-        this.setButtons();
-        this.showTryAgainBtn();
-        this.setGridTemplateAreas();
-        this.markResponsesCorrectness();
-        this.showCorrectAnswers();
-        this.markQuestionsCorrectness();
+        this.setButtons()
+        this.showTryAgainBtn()
+        this.setGridTemplateAreas()
+        this.markResponsesCorrectness()
+        this.showCorrectAnswers()
+        this.markQuestionsCorrectness()
     }
 
     showFeedback() {
-        this.markTestCorrectness();
+        this.markTestCorrectness()
 
         if (
             this.data.feedback?.hideElements &&
             this.data.feedback.hideElements.length > 0
         ) {
-            
-                this.data.feedback.hideElements.forEach((element) => {
-                    this.shadowRoot
-                        .querySelector(`${element}`)
-                        .classList.add('off');
-                });
-           
+            this.data.feedback.hideElements.forEach((element) => {
+                this.shadowRoot.querySelector(`${element}`).classList.add("off")
+            })
         }
 
-        if (this.data.displayMode === 'one_instead_another') {
-            this.shadowRoot.querySelector('.instruction').classList.add('off');
+        if (this.data.displayMode === "one_instead_another") {
+            this.shadowRoot.querySelector(".instruction").classList.add("off")
             this.shadowRoot
-                .querySelector('.commonQuestion')
-                .classList.add('off');
+                .querySelector(".commonQuestion")
+                .classList.add("off")
             this.shadowRoot
-                .querySelector('.questionsContainer')
-                .classList.add('off');
+                .querySelector(".questionsContainer")
+                .classList.add("off")
         }
 
         let feedbackContainer =
-            this.shadowRoot.querySelector('.feedbackContainer');
+            this.shadowRoot.querySelector(".feedbackContainer")
 
-        feedbackContainer.scrollIntoView();
+        feedbackContainer.scrollIntoView()
 
         if (
-            this.data.feedback?.common !== '' ||
-            this.data.feedback?.passed !== '' ||
-            this.data.feedback?.failed !== '' ||
-            this.data.feedback?.chartFunction !== '' ||
+            this.data.feedback?.common !== "" ||
+            this.data.feedback?.passed !== "" ||
+            this.data.feedback?.failed !== "" ||
+            this.data.feedback?.chartFunction !== "" ||
             (this.data.feedback?.byScore &&
                 this.data.feedback.byScore.length > 0) ||
             this.data.feedback?.showUserPoolsResult === true
         ) {
-            feedbackContainer.classList.remove('off');
+            feedbackContainer.classList.remove("off")
         } else {
-            feedbackContainer.classList.add('off');
+            feedbackContainer.classList.add("off")
         }
 
         Array.from(feedbackContainer.childNodes).forEach((node) =>
             node.remove()
-        );
+        )
 
         if (
             this.data.feedback?.showUserPoolsResult === true &&
             this.userPoolsResult.length > 0
         ) {
-            let poolsContainer = document.createElement('div');
-            poolsContainer.classList.add('poolsContainer');
+            let poolsContainer = document.createElement("div")
+            poolsContainer.classList.add("poolsContainer")
 
             this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div');
-                poolContainer.classList.add('poolContainer');
+                let poolContainer = document.createElement("div")
+                poolContainer.classList.add("poolContainer")
 
-                let pool = new Pool();
-                pool.init(r.id);
-                poolContainer.append(pool);
+                let pool = new Pool()
+                pool.init(r.id)
+                poolContainer.append(pool)
 
-                let userPoolResult = document.createElement('div');
-                userPoolResult.classList.add('userPoolResult');
-                userPoolResult.innerText =
-                    r.value > 0 ? `+${r.value}` : r.value;
-                poolContainer.append(userPoolResult);
+                let userPoolResult = document.createElement("div")
+                userPoolResult.classList.add("userPoolResult")
+                userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
+                poolContainer.append(userPoolResult)
 
-                poolsContainer.append(poolContainer);
-            });
+                poolsContainer.append(poolContainer)
+            })
 
-            feedbackContainer.prepend(poolsContainer);
+            feedbackContainer.prepend(poolsContainer)
         }
 
-        if (this.data.feedback?.common !== '') {
-            let text = document.createElement('p');
+        if (this.data.feedback?.common !== "") {
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.common,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (
             this.data?.feedback?.chartFunction &&
-            this.data.feedback.chartFunction !== ''
+            this.data.feedback.chartFunction !== ""
         ) {
-            let chart = document.createElement('chart-html');
-            feedbackContainer.appendChild(chart);
+            let chart = document.createElement("chart-html")
+            feedbackContainer.appendChild(chart)
             chart.init(
                 scoringFunctions[`${this.data.feedback.chartFunction}`](this)
-            );
+            )
         }
 
         if (
             this.passed &&
             this.data.feedback.passed &&
-            this.data.feedback.passed !== ''
+            this.data.feedback.passed !== ""
         ) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.passed,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (
             !this.passed &&
             this.data.feedback.failed &&
-            this.data.feedback.failed !== ''
+            this.data.feedback.failed !== ""
         ) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.failed,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (this.data?.feedback?.byScore.length > 0) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.byScore.filter((item) => {
                     return (
                         this.score >= Number(item.interval[0]) &&
                         this.score <= Number(item.interval[1])
-                    );
+                    )
                 })[0].text,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
         if (
@@ -1296,173 +1319,171 @@ export class Test extends HTMLElement {
             this.data.feedback.byAttempt.length > 0 &&
             this.data.feedback.byAttempt.filter((i) => {
                 if (
-                    (i.attempt === 'passingAttempt' &&
+                    (i.attempt === "passingAttempt" &&
                         this.passingAttempt === this.attempt + 1) ||
                     Number(i.attempt) === this.attempt + 1
                 ) {
-                    return true;
+                    return true
                 }
-                return false;
+                return false
             }).length > 0
         ) {
-            let text = document.createElement('p');
+            let text = document.createElement("p")
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.byAttempt.filter((i) => {
                     if (
-                        (i.attempt === 'passingAttempt' &&
+                        (i.attempt === "passingAttempt" &&
                             this.passingAttempt === this.attempt + 1) ||
                         Number(i.attempt) === this.attempt + 1
                     ) {
-                        return true;
+                        return true
                     }
-                    return false;
+                    return false
                 })[0].text,
                 this
-            );
-            feedbackContainer.appendChild(text);
+            )
+            feedbackContainer.appendChild(text)
         }
 
-        this.shadowRoot.querySelector('.submitBtn').classList.add('off');
-        this.showTryAgainBtn();
-        this.setGridTemplateAreas();
-        this.markResponsesCorrectness();
-        this.showCorrectAnswers();
-        this.markQuestionsCorrectness();
+        this.shadowRoot.querySelector(".submitBtn").classList.add("off")
+        this.showTryAgainBtn()
+        this.setGridTemplateAreas()
+        this.markResponsesCorrectness()
+        this.showCorrectAnswers()
+        this.markQuestionsCorrectness()
     }
 
     showTryAgainBtn() {
         let buttonsContainer =
-            this.shadowRoot.querySelector('.buttonsContainer');
-        let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');
+            this.shadowRoot.querySelector(".buttonsContainer")
+        let tryAgainBtn = this.shadowRoot.querySelector(".tryAgainBtn")
 
-        if (this.data.tryAgain === 'until_all_attempts') {
+        if (this.data.tryAgain === "until_all_attempts") {
             if (
                 Number(this.data.attemptsPerTest) === 0 ||
                 this.attempt + 1 < Number(this.data.attemptsPerTest)
             ) {
-                buttonsContainer.classList.remove('off');
-                tryAgainBtn.classList.remove('off');
-                this.enableElement(tryAgainBtn);
+                buttonsContainer.classList.remove("off")
+                tryAgainBtn.classList.remove("off")
+                this.enableElement(tryAgainBtn)
             } else {
-                buttonsContainer.classList.add('off');
-                tryAgainBtn.classList.add('off');
+                buttonsContainer.classList.add("off")
+                tryAgainBtn.classList.add("off")
             }
-        } else if (this.data.tryAgain === 'until_max_score') {
+        } else if (this.data.tryAgain === "until_max_score") {
             if (
                 (this.attempt + 1 < Number(this.data.attemptsPerTest) ||
                     Number(this.data.attemptsPerTest) === 0) &&
                 this.score < this.maxPossibleScore
             ) {
-                buttonsContainer.classList.remove('off');
-                tryAgainBtn.classList.remove('off');
-                this.enableElement(tryAgainBtn);
+                buttonsContainer.classList.remove("off")
+                tryAgainBtn.classList.remove("off")
+                this.enableElement(tryAgainBtn)
             } else {
-                buttonsContainer.classList.add('off');
-                tryAgainBtn.classList.add('off');
+                buttonsContainer.classList.add("off")
+                tryAgainBtn.classList.add("off")
             }
-        } else if (this.data.tryAgain === 'until_passed') {
+        } else if (this.data.tryAgain === "until_passed") {
             if (
                 (this.attempt + 1 < Number(this.data.attemptsPerTest) ||
                     Number(this.data.attemptsPerTest) === 0) &&
                 !this.passed
             ) {
-                buttonsContainer.classList.remove('off');
-                tryAgainBtn.classList.remove('off');
-                this.enableElement(tryAgainBtn);
+                buttonsContainer.classList.remove("off")
+                tryAgainBtn.classList.remove("off")
+                this.enableElement(tryAgainBtn)
             } else {
-                buttonsContainer.classList.add('off');
-                tryAgainBtn.classList.add('off');
+                buttonsContainer.classList.add("off")
+                tryAgainBtn.classList.add("off")
             }
         } else {
-            buttonsContainer.classList.add('off');
-            tryAgainBtn.classList.add('off');
+            buttonsContainer.classList.add("off")
+            tryAgainBtn.classList.add("off")
         }
     }
 
     get passingScore() {
-        if (typeof this.data.passingScore === 'string') {
-            if (this.data.passingScore.includes('%')) {
-                let multiplier = Number(
-                    this.data.passingScore.replace('%', '')
-                );
-                return Math.ceil((this.maxPossibleScore / 100) * multiplier);
+        if (typeof this.data.passingScore === "string") {
+            if (this.data.passingScore.includes("%")) {
+                let multiplier = Number(this.data.passingScore.replace("%", ""))
+                return Math.ceil((this.maxPossibleScore / 100) * multiplier)
             } else {
-                return Number(this.data.passingScore);
+                return Number(this.data.passingScore)
             }
-        } else if (typeof this.data.passingScore === 'number') {
-            return this.data.passingScore;
+        } else if (typeof this.data.passingScore === "number") {
+            return this.data.passingScore
         }
     }
 
     get attemptCompleted() {
         if (this.questionsElements.length === this.questionsToTake.length) {
             return this.questionsElements
-                .map((i) => i.status === 'completed')
-                .every((i) => i === true);
+                .map((i) => i.status === "completed")
+                .every((i) => i === true)
         }
 
-        return false;
+        return false
     }
 
     get amountOfQuestionsToPass() {
-        if (this.data.scoring === 'questions') {
-            let singleWeight = this.data.iterables[0].weight;
+        if (this.data.scoring === "questions") {
+            let singleWeight = this.data.iterables[0].weight
             let sameWeights = this.data.iterables.every(
                 (q) => q.weight === singleWeight
-            );
+            )
             if (sameWeights) {
-                let value = this.passingScore / Number(singleWeight);
+                let value = this.passingScore / Number(singleWeight)
                 // attempt to remove floating point calculation deviations
                 if (value - Math.round(value) < 0.01) {
-                    return Math.round(value);
+                    return Math.round(value)
                 } else {
-                    return Math.ceil(value);
+                    return Math.ceil(value)
                 }
             } else {
                 console.log(
-                    'amountOfQuestionsToPass. Unable to count - weights are not the same.'
-                );
-                return null;
+                    "amountOfQuestionsToPass. Unable to count - weights are not the same."
+                )
+                return null
             }
         }
     }
 
     get correctlyAnsweredQuestions() {
         let questions = Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        );
+            this.shadowRoot.querySelector(".questionsContainer").children
+        )
 
-        return questions.filter((i) => i.result === true).length;
+        return questions.filter((i) => i.result === true).length
     }
 
     setScore() {
-        let currentAttemptScore = 0;
+        let currentAttemptScore = 0
         let completedQuestions = Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        ).filter((i) => i.status === 'completed');
+            this.shadowRoot.querySelector(".questionsContainer").children
+        ).filter((i) => i.status === "completed")
 
-        if (this.data?.scoring === 'questions') {
+        if (this.data?.scoring === "questions") {
             completedQuestions.forEach((q) => {
                 if (q.result) {
                     currentAttemptScore =
-                        currentAttemptScore + Number(q.data.weight);
+                        currentAttemptScore + Number(q.data.weight)
                 }
-            });
-        } else if (this.data?.scoring === 'answers') {
+            })
+        } else if (this.data?.scoring === "answers") {
             completedQuestions.forEach((q) => {
-                currentAttemptScore = currentAttemptScore + q.score;
-            });
-        } else if (this.data?.scoring === 'userInput') {
+                currentAttemptScore = currentAttemptScore + q.score
+            })
+        } else if (this.data?.scoring === "userInput") {
             completedQuestions.forEach((q) => {
                 currentAttemptScore =
-                    currentAttemptScore + Number(q.exactUserAnswer);
-            });
+                    currentAttemptScore + Number(q.exactUserAnswer)
+            })
         }
 
         this.scores[this.attempt] = AuxFunctions.roundAccurately(
             currentAttemptScore,
             2
-        );
+        )
 
         /* if (this.data?.scoringFunction) {
             this.processedScores =
@@ -1472,46 +1493,46 @@ export class Test extends HTMLElement {
         } */
     }
 
-    get processedScores(){
+    get processedScores() {
         if (this.data?.scoringFunction) {
-            return scoringFunctions[this.data.scoringFunction](this);
+            return scoringFunctions[this.data.scoringFunction](this)
         } else {
-            return Array.from(this.scores);
+            return Array.from(this.scores)
         }
     }
 
     get hasFeedback() {
-        let that = this;
+        let that = this
 
         if (this.data.showPoolsInFeedback) {
-            return true;
+            return true
         }
 
-        if (this.data?.feedback?.common && this.data.feedback.common !== '') {
-            return true;
+        if (this.data?.feedback?.common && this.data.feedback.common !== "") {
+            return true
         }
 
         if (
             this.result &&
             this.data?.feedback?.correct &&
-            this.data.feedback.correct !== ''
+            this.data.feedback.correct !== ""
         ) {
-            return true;
+            return true
         }
 
         if (
             !this.result &&
             this.data?.feedback?.incorrect &&
-            this.data.feedback.incorrect !== ''
+            this.data.feedback.incorrect !== ""
         ) {
-            return true;
+            return true
         }
 
         if (
             this.data?.feedback?.byScore &&
             this.data.feedback.byScore.length > 0
         ) {
-            return true;
+            return true
         }
 
         if (
@@ -1519,108 +1540,112 @@ export class Test extends HTMLElement {
             this.data.feedback.byAttempt.length > 0 &&
             this.data.feedback.byAttempt.filter((i) => {
                 if (
-                    i.attempt === 'passingAttempt' &&
+                    i.attempt === "passingAttempt" &&
                     that.passingAttempt === that.attempt + 1
                 ) {
-                    return true;
+                    return true
                 }
 
                 if (Number(i.attempt) === that.attempt + 1) {
-                    return true;
+                    return true
                 }
 
-                return false;
+                return false
             }).length > 0
         ) {
-            return true;
+            return true
         }
 
-        return false;
+        return false
     }
 
     get score() {
-        return this.scores[this.scores.length - 1];
+        return this.scores[this.scores.length - 1]
     }
     get processedScore() {
-        return this.processedScores[this.processedScores.length - 1];
+        return this.processedScores[this.processedScores.length - 1]
     }
 
     get passed() {
         if (this.score >= this.passingScore) {
-            return true;
+            return true
         } else if (this.score < this.passingScore) {
-            return false;
+            return false
         }
     }
 
     get sendStmtMessage() {
-        if(this.data?.statements?.send){
-            return AuxFunctions.parseText(this.data.statements.send.message, this)
+        if (this.data?.statements?.send) {
+            return AuxFunctions.parseText(
+                this.data.statements.send.message,
+                this
+            )
         }
     }
 
     get passingAttempt() {
-        if (this.data.requiredState.startsWith('attempt')) {
-            let passingAttempt = Number(this.data.requiredState.split(':')[1]);
-            return passingAttempt;
+        if (this.data.requiredState.startsWith("attempt")) {
+            let passingAttempt = Number(this.data.requiredState.split(":")[1])
+            return passingAttempt
         }
 
-        return undefined;
+        return undefined
     }
 
     get result() {
-        if (this.data.requiredState.startsWith('attempt')) {
+        if (this.data.requiredState.startsWith("attempt")) {
             if (this.passed) {
-                return true;
+                return true
             }
-            let requiredAttempt = Number(this.data.requiredState.split(':')[1]) - 1;
+            let requiredAttempt =
+                Number(this.data.requiredState.split(":")[1]) - 1
             if (this.attempt >= requiredAttempt) {
-                return true;
+                return true
             }
-            return false;
+            return false
         }
 
-        if (this.data.requiredState === 'passed') {
+        if (this.data.requiredState === "passed") {
             if (this.passed) {
-                return true;
+                return true
             } else {
-                return false;
+                return false
             }
         }
 
-        if (this.data.requiredState === 'completed') {
+        if (this.data.requiredState === "completed") {
             if (this.completed) {
-                return true;
+                return true
             } else {
-                return false;
+                return false
             }
         }
 
-        if (this.data.requiredState === 'none') {
-            return true;
+        if (this.data.requiredState === "none") {
+            return true
         }
     }
 
     get maxPossibleScore() {
-        if (this.data.scoring === 'questions') {
+        if (this.data.scoring === "questions") {
             return this.questionsToTake.reduce((sum, item) => {
-                return (sum += Number(item.weight));
-            }, 0);
-        } else if (this.data.scoring === 'answers') {
-            let sum = 0;
+                return (sum += Number(item.weight))
+            }, 0)
+        } else if (this.data.scoring === "answers") {
+            let sum = 0
             this.questionsToTake.forEach((q) => {
-                if (q.type === 'mc' || q.type === 'fill-in') {
-                    sum += Math.max(...q.answers.map((a) => Number(a.weight)));
-                } else if (q.type === 'mr') {
+                if (q.type === "mc" || q.type === "fill-in") {
+                    sum += Math.max(...q.answers.map((a) => Number(a.weight)))
+                } else if (q.type === "mr") {
                     q.answers.forEach((a) => {
-                        sum += Number(a.weight);
-                    });
-                } else if (q.type === 'range') {
-                    sum += Number(q.range[1]);
+                        sum += Number(a.weight)
+                    })
+                } else if (q.type === "range") {
+                    sum += Number(q.range[1])
                 }
-            });
+            })
 
-            return sum;
+            return sum
         }
     }
 
@@ -1629,129 +1654,126 @@ export class Test extends HTMLElement {
     }
 
     completeTest() {
-        let that = this;
-        this.completed = true;
-        this.status = 'completed';
+        let that = this
+        this.completed = true
+        this.status = "completed"
 
         console.log(
             `%cTest "${that.data.id}" completed`,
-            'color:green;font-weight:bold;font-size:16px;'
-        );
+            "color:green;font-weight:bold;font-size:16px;"
+        )
 
-        this.setState('test completed');
+        this.setState("test completed")
 
         if (this.result) {
-            that.emitEvent('completed');
-            that.emitEvent('passed');
+            that.emitEvent("completed")
+            that.emitEvent("passed")
         } else {
-            that.emitEvent('completed');
-            that.emitEvent('failed');
+            that.emitEvent("completed")
+            that.emitEvent("failed")
         }
 
-        this.showFeedback();
+        this.showFeedback()
     }
 
     setListeners() {
-        let that = this;
-        this.addEventListener('continue', (e) => {
-            if (that.data.displayMode === 'one_instead_another') {
-                e.detail.obj.classList.add('off');
+        let that = this
+        this.addEventListener("continue", (e) => {
+            if (that.data.displayMode === "one_instead_another") {
+                e.detail.obj.classList.add("off")
             }
 
             if (
-                that.data.displayMode === 'one_by_one' ||
-                that.data.displayMode === 'one_instead_another'
+                that.data.displayMode === "one_by_one" ||
+                that.data.displayMode === "one_instead_another"
             ) {
                 if (that.lastQuestionIndex + 1 < that.questionsToTake.length) {
                     that.createQuestion(
                         that.questionsToTake[that.lastQuestionIndex + 1].id
                     ).then((qElement) => {
                         that.lastQuestionShownId =
-                            that.questionsToTake[that.lastQuestionIndex].id;
-                        that.setState('lastQuestionShownId changed');
+                            that.questionsToTake[that.lastQuestionIndex].id
+                        that.setState("lastQuestionShownId changed")
                         /* if (that.data.displayMode === 'one_by_one') {
                             qElement.scrollIntoView();
                         } */
-                        if (that.data.displayMode === 'one_instead_another') {
-                            that.scrollIntoView();
+                        if (that.data.displayMode === "one_instead_another") {
+                            that.scrollIntoView()
                         }
-                    });
+                    })
                 }
             }
 
             if (that.attemptCompleted) {
-                that.completeTest();
+                that.completeTest()
             }
 
-            this.markQuestionsCorrectness();
-            this.markResponsesCorrectness();
-            this.showCorrectAnswers();
-        });
+            this.markQuestionsCorrectness()
+            this.markResponsesCorrectness()
+            this.showCorrectAnswers()
+        })
 
-        this.addEventListener('answered', (e) => {
-            this.setScore();
+        this.addEventListener("answered", (e) => {
+            this.setScore()
             this.showCorrectAnswers(e.detail.obj)
-        });
+        })
 
-        let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn');
-        tryAgainBtn.addEventListener('click', this.restart.bind(this));
+        let tryAgainBtn = this.shadowRoot.querySelector(".tryAgainBtn")
+        tryAgainBtn.addEventListener("click", this.restart.bind(this))
 
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
-        submitBtn.addEventListener('click', this.submitAll.bind(this));
+        let submitBtn = this.shadowRoot.querySelector(".submitBtn")
+        submitBtn.addEventListener("click", this.submitAll.bind(this))
 
-        this.addEventListener(
-            'questionInProgress',
-            this.processTest.bind(this)
-        );
+        this.addEventListener("questionInProgress", this.processTest.bind(this))
     }
 
     get userPoolsResult() {
         let questions = Array.from(
-            this.shadowRoot.querySelector('.questionsContainer').children
-        );
+            this.shadowRoot.querySelector(".questionsContainer").children
+        )
 
         return questions
             .map((q) => q.userPoolsResult)
             .reduce((accum, arr) => {
                 if (arr.length > 0) {
                     arr.forEach((item) => {
-                        let pool = accum.filter((i) => i.id === item.id);
+                        let pool = accum.filter((i) => i.id === item.id)
 
                         if (pool.length === 0) {
-                            accum.push(Object.assign({}, item));
+                            accum.push(Object.assign({}, item))
                         } else {
-                            pool[0].value = pool[0].value + item.value;
+                            pool[0].value = pool[0].value + item.value
                         }
-                    });
+                    })
                 }
-                return accum;
-            }, []);
+                return accum
+            }, [])
     }
 
     processTest() {
-        if (this.status === 'initial') {
-            this.status = 'inProgress';
-            this.setState('test status changed to inProgress');
+        if (this.status === "initial") {
+            this.status = "inProgress"
+            this.setState("test status changed to inProgress")
         }
 
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+        let submitBtn = this.shadowRoot.querySelector(".submitBtn")
 
         if (this.allChecked) {
-            this.enableElement(submitBtn);
+            this.enableElement(submitBtn)
         } else {
-            this.disableElement(submitBtn);
+            this.disableElement(submitBtn)
         }
     }
 
     disableElement(element) {
-        element.disabled = true;
-        element.classList.add('inactive');
+        element.disabled = true
+        element.classList.add("inactive")
     }
 
     enableElement(element) {
-        element.disabled = false;
-        element.classList.remove('inactive');
+        element.disabled = false
+        element.classList.remove("inactive")
     }
 }
 
-window.customElements.define('test-unit', Test);
+window.customElements.define("test-unit", Test)
