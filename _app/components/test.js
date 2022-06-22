@@ -556,7 +556,7 @@ export class Test extends HTMLElement {
             }
     
             if (data.startsWith('groups')) {
-                let groups = data.split('groups:')[1].split("=")
+                let groups = this.data.split('groups:')[1].split("=")
                 return groups.reduce((sum, e) => {
                     let key = e[0];
                     let value = e[1];
@@ -598,7 +598,7 @@ export class Test extends HTMLElement {
             }
 
             if (this.data.amountOfQuestions.startsWith('groups')) {
-                let groups = data.split('groups:')[1].split("=")
+                let groups = this.data.split('groups:')[1].split("=")
                 groups.forEach((e) => {
                     let group = e[0];
                     if(group.startsWith('http')){
