@@ -149,7 +149,7 @@ testTemplate.innerHTML = `
         border-color: var(--questionsContainer-border-color);
         border-radius: var(--questionsContainer-border-radius);
 
-        width: var(--test-best-width);
+        width: 100%;
     }
 
     .testContainer .feedbackContainer {
@@ -180,7 +180,7 @@ testTemplate.innerHTML = `
         border-color: var(--feedbackContainer-border-color);
         border-radius: var(--feedbackContainer-border-radius);
 
-        width: var(--test-best-width);
+        width: calc(var(--test-best-width) - calc(var(--test-padding) * 2));;
     }
 
     .feedbackContainer .poolsContainer {
@@ -242,7 +242,7 @@ testTemplate.innerHTML = `
         border-color: var(--test-buttonsContainer-border-color);
         border-radius: var(--test-buttonsContainer-border-radius);
 
-        width: var(--test-best-width);
+        width: calc(var(--test-best-width) - calc(var(--test-padding) * 2));;
     }
     /* grid settings -> */
 
