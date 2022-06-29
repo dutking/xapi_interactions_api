@@ -582,7 +582,7 @@ export class Test extends HTMLElement {
                 if (this.data?.shuffleQuestions === true) {
                     console.log(
                         "%cQuestions shuffled",
-                        "color:blue;font-weight:bold;font-size:16px;"
+                        "color:lightblue;font-weight:bold;font-size:16px;"
                     )
                     this.questionsToTake = AuxFunctions.shuffleArray(
                         this.data.iterables.slice(0, this.amountOfQuestions)
@@ -643,7 +643,7 @@ export class Test extends HTMLElement {
         let that = this
         console.log(
             `%c...setting test state due to: ${msg}`,
-            "color:blue;font-weight:bold;"
+            "color:lightblue;font-weight:bold;"
         )
         this.state.date = new Date()
         this.state.id = this.data.id
@@ -821,7 +821,7 @@ export class Test extends HTMLElement {
         this.status = "initial"
         console.log(
             `%cTest restarted. Attempt ${this.attempt}`,
-            "color:blue;font-weight:bold;font-size:16px;"
+            "color:lightblue;font-weight:bold;font-size:16px;"
         )
 
         Array.from(
