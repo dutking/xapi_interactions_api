@@ -824,8 +824,8 @@ export class App {
                         'Content-Type': 'application/json; charset=utf-8',
                     },
                 });
-                console.log(`%cState deleted: ${res.ok}`, 'color:gray;');
-                return res.ok;
+                console.log(`%c${stateId} state deleted: ${res.ok}`, 'color:gray;');
+                return res;
             }
         }
 
@@ -842,15 +842,16 @@ export class App {
 
             App.currentInteractions.forEach((i) => {
                 deleted.push(XAPI.deleteState(i.iri));
-                if (i.type === 'test') {
+                if (i.data.type === 'test') {
                     // надо ли чистить остальные объекты
-                    i.iterables.forEach(
+                    i.data.iterables.forEach(
                         (q) => {
-                            deleted.push(XAPI.deleteState(q.iri));
+                            deleted.push(XAPI.deleteState(`${i.iri}/${q.id}`));
                         }
                     );
                 }
             });
+
 
             Promise.allSettled(deleted).then(() =>
                 console.log(
