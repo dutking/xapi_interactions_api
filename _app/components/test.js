@@ -701,15 +701,17 @@ export class Test extends HTMLElement {
                 )
             } else {
                 let index = 0
+                
                 while (
                     this.questionsToTake[index].id !== this.lastQuestionShownId
                 ) {
+                    
                     createdQuestions.push(
                         this.createQuestion(this.questionsToTake[index].id)
                     )
                     index++
                 }
-
+                
                 // question with this.lastQuestionShownId
                 createdQuestions.push(
                     this.createQuestion(this.questionsToTake[index].id)
@@ -808,11 +810,12 @@ export class Test extends HTMLElement {
         )
     }
 
-    deleteQuestionsStates() {
-        this.data.iterables.forEach((i) => window.XAPI.deleteState(`${i.iri}`))
+    async deleteQuestionsStates() {
+        let deleted = this.data.iterables.map((i) => window.XAPI.deleteState(`${this.iri}/${i.id}`))
+        return await Promise.allSettled(deleted)
     }
 
-    restart() {
+    async restart() {
         this.attempt += 1
         this.resumed = false
         this.status = "initial"
@@ -820,17 +823,12 @@ export class Test extends HTMLElement {
             `%cTest restarted. Attempt ${this.attempt}`,
             "color:blue;font-weight:bold;font-size:16px;"
         )
-        /* this.shadowRoot
-            .querySelector(".statisticsContainer")
-            .classList.add("off");
-
-        this.shadowRoot.querySelector(".userStatistics").classList.add("off");*/
 
         Array.from(
             this.shadowRoot.querySelector(".questionsContainer").children
         ).forEach((child) => child.remove())
 
-        this.deleteQuestionsStates()
+        await this.deleteQuestionsStates()
 
         let testContainer = this.shadowRoot.querySelector(".testContainer")
         testContainer.classList.remove("resumed")
