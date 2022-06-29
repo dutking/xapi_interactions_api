@@ -447,7 +447,7 @@ export class Test extends HTMLElement {
 
         if (this.data?.classes) {
             this.data.classes
-                .split(",")
+                .split(" ")
                 .forEach((cl) => this.placeholder.classList.add(cl))
         }
     }
