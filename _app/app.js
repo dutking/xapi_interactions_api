@@ -46,7 +46,7 @@ export class App {
                 App.createCourseObject(data);
                 console.log(
                     `%cCourse ${App.course.data.nameRus} is launched.`,
-                    'color:blue;font-size:18px;font-weight:bold;'
+                    'color:lightblue;font-size:18px;font-weight:bold;'
                 );
                 XAPI.sendStatement(
                     new Statement(App.course, 'launched').statement
@@ -134,7 +134,7 @@ export class App {
     static createCourseObject(state = {}) {
         console.log(
             '%cCOURSE STATE',
-            'font-size:18px;font-weight:bold;color:blue;'
+            'font-size:18px;font-weight:bold;color:lightblue;'
         );
         console.log(state);
         if (state?.date) {
@@ -217,7 +217,7 @@ export class App {
 
         console.log(
             '%c...posting course state',
-            'font-size: 18px; color: blue; font-weight: bold;'
+            'font-size: 18px; color: lightblue; font-weight: bold;'
         );
         console.log(App.course.state);
         XAPI.postState(App.course.iri, App.course.state);
@@ -225,7 +225,7 @@ export class App {
         if (App.course.data?.metrics && App.course.data?.metrics.length > 0) {
             console.log(
                 '%c...posting metrics',
-                'font-size: 18px; color: blue; font-weight: bold;'
+                'font-size: 18px; color: lightblue; font-weight: bold;'
             );
             let currentMetric = config.globalMetrics.filter((metric) =>
                 App.course.data.metrics.includes(metric.iri)
@@ -400,7 +400,7 @@ export class App {
     static returnToTrack() {
         console.log(
             '%cRETURN TO TRACK',
-            'color:blue; font-weight: bold; font-size: 18px;'
+            'color:lightblue; font-weight: bold; font-size: 18px;'
         );
         (function () {
             if (window.top) {
@@ -869,7 +869,7 @@ export class App {
                 ) {
                     console.log(
                         '%cxAPI Launch found',
-                        'color:blue;font-size:16px;font-weight: bold;'
+                        'color:lightblue;font-size:16px;font-weight: bold;'
                     );
 
                     let queryParams = XAPI.parseQuery(window.location.search);
@@ -1441,10 +1441,10 @@ export class App {
     }
 
     window.onYouTubeIframeAPIReady = () => {
-        console.log('%cYT iFrame API ready', 'color:blue;');
+        console.log('%cYT iFrame API ready', 'color:lightblue;');
         setTimeout(function () {
             let vidDivs = document.querySelectorAll('ytvideo-unit');
-            console.log(`%c${vidDivs.length} videos to be loaded`, 'color:blue;');
+            console.log(`%c${vidDivs.length} videos to be loaded`, 'color:lightblue;');
             vidDivs.forEach((div) => {
                 div.setPlayer();
             });
