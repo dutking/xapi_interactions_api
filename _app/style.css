@@ -260,6 +260,16 @@
     --questionContainer-border-width: 0;
     --questionContainer-border-color: transparent;
     --questionContainer-border-radius: 0;
+
+    /* for 'columns' subtype */
+    --questionContainerColumns-color-shift: 20%;
+    --questionContainerColumns-color-odd-h: 200;
+    --questionContainerColumns-color-odd-s: 90%;
+    --questionContainerColumns-color-odd-l: 60%;
+    --questionContainerColumns-color-even-h: 275;
+    --questionContainerColumns-color-even-s: 85%;
+    --questionContainerColumns-color-even-l: 75%;
+
     /* questionContainer settings ->*/
 
     /* <- questionContainer subHeader settings */

@@ -75,6 +75,20 @@ templateMC.innerHTML = `
             border-radius: var(--questionContainer-border-radius);
         }
 
+        .questionContainer.columns {
+            --questionContainer-grid-template-columns: 1fr 2fr;
+            --questionContainer-grid-template-areas: 
+            'question answersContainer';
+        }
+
+        .questionContainer.columns.odd {
+            background: hsl(var(--questionContainerColumns-color-odd-h), var(--questionContainerColumns-color-odd-s), var(--questionContainerColumns-color-odd-l))
+        }
+
+        .questionContainer.columns.even {
+            background: hsl(var(--questionContainerColumns-color-even-h), var(--questionContainerColumns-color-even-s), var(--questionContainerColumns-color-even-l))
+        }
+
         .questionContainer.feedbackOnly {
             --questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
         }
@@ -268,6 +282,10 @@ templateMC.innerHTML = `
             border-radius: var(--answersContainer-border-radius);
         }
 
+        .questionContainer.columns .answersContainer {
+            --answersContainer-grid-template-columns: auto;
+        }
+
         .questionContainer .answersContainer.image {
             grid-template-columns: var(--answersContainerImage-grid-template-columns);
             width: 100%;
@@ -329,6 +347,19 @@ templateMC.innerHTML = `
             border-radius: var(--answerContainer-label-border-radius);
         }
 
+        .questionContainer.columns .answersContainer .answerContainer label {
+            --answerContainer-label-grid-template-columns: 1fr;
+            --answerContainer-label-grid-template-areas: 'text' 'inputMarker';
+            --answerContainer-justify-items: center;
+            --answerContainer-align-items: center;
+            --answerContainer-justify-content: center;
+            --answerContainer-align-content: center;
+
+            filter: brightness(var(--questionContainerColumns-color-shift));
+        }
+
+        
+
         .questionContainer .answersContainer.image .answerContainer{
             width: var(--image-width);
         }        
@@ -379,6 +410,10 @@ templateMC.innerHTML = `
 
         .questionContainer .answersContainer .answerContainer label .text{
             grid-area: text;            
+        }
+
+        .questionContainer.columns .answersContainer .answerContainer label .text{
+            text-align: center;           
         }
 
         .questionContainer .answersContainer.image .answerContainer label .text{            
@@ -788,8 +823,16 @@ templateMC.innerHTML = `
         }
     }
 
-    @media screen and (max-width: 800px) {
-        
+    @media screen and (max-width: 640px) {
+        .questionContainer.columns {
+            --questionContainer-grid-template-columns: 1fr;
+            --questionContainer-grid-template-areas: 
+            'question' 'answersContainer';
+        }
+
+        .questionContainer.columns .answersContainer .answerContainer label .text.off{
+            display: block !important;          
+        }
     }
 
     @media screen and (max-width: 370px) {
@@ -891,6 +934,14 @@ export class QuestionMC extends HTMLElement {
         // for statements only ->
 
         let that = this;
+        
+        // adding subtype as a class
+        this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
+        if (this.data.subtype !== "") {
+            this.classList.add(this.data.subtype)
+            this.questionContainer.classList.add(this.data.subtype)
+        }
+
 
         if (this.parent.data?.counter && this.amountOfQuestions > 1) {
             let subHeader = this.shadowRoot.querySelector('.subHeader');
@@ -956,7 +1007,30 @@ export class QuestionMC extends HTMLElement {
             newAnswer.querySelector('label span.text').innerHTML = a.text;
             let feedback = newAnswer.querySelector('.answerFeedback');
             feedback.dataset.id = a.id;
+
+            if(i%2 === 1) {
+                newAnswer.classList.add('even')
+            } else {
+                newAnswer.classList.add('odd')
+            }
         });
+
+        if(this.data.subtype === 'columns'){
+        Array.from(this.shadowRoot.styleSheets[0].cssRules)
+            .filter((rule) => rule.selectorText === ".questionContainer.columns .answersContainer")[0]
+            .style.setProperty("--answersContainer-grid-template-columns", `repeat(${this.data.answers.length}, 1fr)`)
+
+            if(this.index%2 === 1) {
+                this.questionContainer.classList.add('even')
+            } else {
+                this.questionContainer.classList.add('odd')
+            }
+            
+        }
+
+        if(this.data.subtype === 'columns' && this.index > 0) {
+            Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
+        }
 
         if (this.submitMode === 'all_at_once') {
             this.shadowRoot.querySelector('.submitBtn').classList.add('off');
@@ -1060,7 +1134,7 @@ export class QuestionMC extends HTMLElement {
     setState(msg = '') {
         console.log(
             `%c...setting question ${this.data.id} state due to: ${msg}`,
-            'color:blue;font-weight:bold;'
+            'color:lightblue;font-weight:bold;'
         );
         this.state.date = new Date();
         this.state.status = this.status;
