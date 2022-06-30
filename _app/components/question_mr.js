@@ -643,7 +643,7 @@ strong {
         border-color: var(--inputbox-border-color);
         border-width: var(--inputbox-border-width);
         background: var(--inputbox-bg-color);
-        border-radius: var(--input-box-border-radius-mr);
+        border-radius: var(--inputbox-border-radius-mr);
         z-index:1;
     } 
 
@@ -664,7 +664,7 @@ strong {
         box-sizing: border-box;
         width: var(--inputbox-dimension);
         height: var(--inputbox-dimension);
-        border-radius: var(--input-box-border-radius-mr);
+        border-radius: var(--inputbox-border-radius-mr);
         z-index: 2;
     } 
 

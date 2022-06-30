@@ -771,9 +771,9 @@
     --inputbox-dimension: calc(30px * var(--multiplier));
     --inputbox-dimension-alternative: calc(30px * var(--multiplier));
     /* mc */
-    --input-box-border-radius-mc: 50%;
+    --inputbox-border-radius-mc: 50%;
     /* mr */
-    --input-box-border-radius-mr: 1px;
+    --inputbox-border-radius-mr: 1px;
 
     /* mc/mr input settings -> */
 

@@ -674,7 +674,7 @@ templateMC.innerHTML = `
         border-style: solid;
         border-color: var(--inputbox-border-color);
         border-width: var(--inputbox-border-width);
-        border-radius: var(--input-box-border-radius-mc);
+        border-radius: var(--inputbox-border-radius-mc);
         background: var(--inputbox-bg-color);
     } 
 
@@ -695,7 +695,7 @@ templateMC.innerHTML = `
         box-sizing: border-box;
         width: var(--inputbox-dimension);
         height: var(--inputbox-dimension);
-        border-radius: var(--input-box-border-radius-mc);
+        border-radius: var(--inputbox-border-radius-mc);
     } 
 
     input:checked + label > span.inputMarker:after {
