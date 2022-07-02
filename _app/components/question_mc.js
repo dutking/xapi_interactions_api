@@ -355,7 +355,7 @@ templateMC.innerHTML = `
             --answerContainer-justify-content: center;
             --answerContainer-align-content: center;
 
-            filter: brightness(var(--questionContainerColumns-color-shift));
+            
         }
 
         
