@@ -123,32 +123,17 @@ export class AuxFunctions {
         }
 
         if (parsedText.includes('<minResponses>')) {
-            if('min' in object.data.validation && object.data.validation.min !== null){
-                parsedText = parsedText.replace(
-                    /<minResponses>/g,
-                    object.data.validation.min
-                );
-
-            } else {
-                parsedText = parsedText.replace(
-                    /<minResponses>/g,
-                    1
-                );
-            }
+            parsedText = parsedText.replace(
+                /<minResponses>/g,
+                object.validation.min
+            );
         }
 
         if (parsedText.includes('<maxResponses>')) {
-            if('max' in object.data.validation && object.data.validation.max !== null){
-                parsedText = parsedText.replace(
-                    /<maxResponses>/g,
-                    object.data.validation.max
-                );
-            } else {
-                parsedText = parsedText.replace(
-                    /<maxResponses>/g,
-                    object.data.answers.length
-                );
-            }
+            parsedText = parsedText.replace(
+                /<maxResponses>/g,
+                object.validation.max
+            );
         }
 
         if (parsedText.includes('<qId:')){

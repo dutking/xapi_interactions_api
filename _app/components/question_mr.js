@@ -1126,6 +1126,27 @@ export class QuestionMR extends HTMLElement {
         }
     }
 
+    get validation() {
+        let result = {
+            min: null,
+            max: null
+        }
+
+        if(this.data.validation !== null && 'max' in this.data.validation && this.data.validation.max !== null){
+            result.max = this.data.validation.max
+        } else {
+            result.max = this.data.answers.length
+        }
+
+        if(this.data.validation !== null && 'min' in this.data.validation && this.data.validation.min !== null){
+            result.min = this.data.validation.min
+        } else {
+            result.min = 1
+        }
+
+        return result
+    }
+
     get checked() {
         let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
         let checkedItems = inputs.filter((input) => input.checked).length;
