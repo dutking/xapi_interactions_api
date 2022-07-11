@@ -1025,6 +1025,8 @@ export class QuestionMC extends HTMLElement {
             } else {
                 this.questionContainer.classList.add('odd')
             }
+        
+            this.shadowRoot.querySelector('.instruction').classList.add('off')
             
         }
 
