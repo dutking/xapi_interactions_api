@@ -82,11 +82,11 @@ templateMC.innerHTML = `
         }
 
         .questionContainer.columns.odd {
-            background: hsl(var(--questionContainerColumns-color-odd-h), var(--questionContainerColumns-color-odd-s), var(--questionContainerColumns-color-odd-l))
+            background: hsla(var(--questionContainerColumns-color-odd-h), var(--questionContainerColumns-color-odd-s), var(--questionContainerColumns-color-odd-l), var(--questionContainerColumns-color-odd-a))
         }
 
         .questionContainer.columns.even {
-            background: hsl(var(--questionContainerColumns-color-even-h), var(--questionContainerColumns-color-even-s), var(--questionContainerColumns-color-even-l))
+            background: hsla(var(--questionContainerColumns-color-even-h), var(--questionContainerColumns-color-even-s), var(--questionContainerColumns-color-even-l), var(--questionContainerColumns-color-even-a))
         }
 
         .questionContainer.feedbackOnly {

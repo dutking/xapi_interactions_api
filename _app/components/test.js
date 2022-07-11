@@ -58,7 +58,7 @@ testTemplate.innerHTML = `
         border-color: var(--test-border-color);
         border-radius: var(--test-border-radius);
         
-        width: var(--test-max-width);
+        width: var(--test-best-width);
     }    
 
     .testContainer .instruction {
@@ -88,7 +88,7 @@ testTemplate.innerHTML = `
         border-width: var(--test-instruction-border-width);
         border-color: var(--test-instruction-border-color);
         border-radius: var(--test-instruction-border-radius);
-        width: var(--test-best-width);
+        width: 100%;
     }
 
     .testContainer .commonQuestion{
@@ -118,7 +118,7 @@ testTemplate.innerHTML = `
         border-width: var(--commonQuestion-border-width);
         border-color: var(--commonQuestion-border-color);
         border-radius: var(--commonQuestion-border-radius);
-        width: var(--test-best-width);
+        width: 100%;
     }
 
     .testContainer .questionsContainer {

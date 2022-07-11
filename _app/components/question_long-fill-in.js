@@ -724,6 +724,13 @@ export class QuestionLongFillIn extends HTMLElement {
 
         let that = this;
 
+        // adding subtype as a class
+        this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
+        if (this.data.subtype !== "") {
+            this.classList.add(this.data.subtype)
+            this.questionContainer.classList.add(this.data.subtype)
+        }
+
         if (this.parent.data?.counter && this.amountOfQuestions > 1) {
             let subHeader = this.shadowRoot.querySelector('.subHeader');
             let counter = this.shadowRoot.querySelector('.counter');

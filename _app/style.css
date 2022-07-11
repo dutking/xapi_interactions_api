@@ -266,9 +266,11 @@
     --questionContainerColumns-color-odd-h: 200;
     --questionContainerColumns-color-odd-s: 90%;
     --questionContainerColumns-color-odd-l: 60%;
+    --questionContainerColumns-color-odd-a: 1;
     --questionContainerColumns-color-even-h: 275;
     --questionContainerColumns-color-even-s: 85%;
     --questionContainerColumns-color-even-l: 75%;
+    --questionContainerColumns-color-even-a: 1;
 
     /* questionContainer settings ->*/
 
@@ -719,6 +721,8 @@
     --fillin-bg-color: transparent;
     --fillin-padding: 16px;
     --fillin-padding-focus: calc(var(--fillin-padding) - 1px);
+    --fillin-text-align: left;
+    --fillin-line-height: var(--line-height-primary);
     /* fill-in ->*/
 
     /* <- button settings */

@@ -3,7 +3,7 @@ import { AuxFunctions } from '../auxFunctions.js';
 const answerTemplateFillIn = document.createElement('template');
 answerTemplateFillIn.innerHTML = `
         <div class='answerContainer'>
-            <input type='text' placeholder='Поле ввода'/>        
+            <input type='text' placeholder=''/>        
             <div class='answerFeedback off'></div>
         </div>
 `;
@@ -28,6 +28,7 @@ strong {
     /* <- grid settings */
         .questionContainer {
             --questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
+            
             display: grid;
             grid-template-columns: var(--questionContainer-grid-template-columns);
             grid-template-rows: var(--questionContainer-grid-template-rows);
@@ -54,6 +55,9 @@ strong {
             border-width: var(--questionContainer-border-width);
             border-color: var(--questionContainer-border-color);
             border-radius: var(--questionContainer-border-radius);
+        }
+        .questionContainer.shortFillIn {
+            grid-template-columns: var(--questionContainer-shortFillIn-grid-template-columns);
         }
 
         .questionContainer.feedbackOnly {
@@ -90,6 +94,8 @@ strong {
 
             transform: var(--subHeader-transform);
         }
+
+        
 
         .questionContainer .subHeader .counter{
             grid-area: counter;
@@ -285,6 +291,8 @@ strong {
             padding: var(--fillin-padding);
             font-size: var(--fillin-font-size);
             font-family: var(--fillin-font-family);
+            text-align: var(--fillin-text-align);
+            line-height: var(--fillin-line-height);
             outline: none;
             color: black;
         }
@@ -725,6 +733,13 @@ export class QuestionFillIn extends HTMLElement {
 
         let that = this;
 
+        // adding subtype as a class
+        this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
+        if (this.data.subtype !== "") {
+            this.classList.add(this.data.subtype)
+            this.questionContainer.classList.add(this.data.subtype)
+        }
+
         if (this.parent.data?.counter && this.amountOfQuestions > 1) {
             let subHeader = this.shadowRoot.querySelector('.subHeader');
             let counter = this.shadowRoot.querySelector('.counter');
@@ -742,8 +757,13 @@ export class QuestionFillIn extends HTMLElement {
             story.classList.remove('off');
         }
 
-        this.shadowRoot.querySelector('.instruction').innerHTML =
+        if(this.data.subtype !== 'shortFillIn') {
+            this.shadowRoot.querySelector('.instruction').innerHTML =
             AuxFunctions.parseText(this.data.instruction, this);
+        } else {
+            this.shadowRoot.querySelector('.instruction').classList.add('off')
+        }
+        
 
         this.shadowRoot.querySelector('.questionText').innerHTML =
             this.data.question;
@@ -761,8 +781,12 @@ export class QuestionFillIn extends HTMLElement {
         let newAnswer = answerTemplateFillIn.content.cloneNode(true);
         answers.appendChild(newAnswer);
 
+        if (this.data.answers.filter(a => a.feedback === "").length === this.data.answers.length){
+            this.shadowRoot.querySelector('.answerFeedback').classList.add('off');
+        }
+
         if (this.submitMode === 'all_at_once') {
-            this.shadowRoot.querySelector('.submitBtn').classList.add('off');
+            this.shadowRoot.querySelector('.buttonsContainer').classList.add('off');
         }
 
         this.setButtons();
@@ -820,6 +844,7 @@ export class QuestionFillIn extends HTMLElement {
             .map((i) => i.replaceAll('"', ''));
     }
 
+
     setGridTemplateAreas() {
         let questionContainer =
             this.shadowRoot.querySelector('.questionContainer');
@@ -844,6 +869,78 @@ export class QuestionFillIn extends HTMLElement {
             })
             .filter((unit) => unit !== '')
             .join(' ');
+
+        if(this.data.subtype === 'shortFillIn') {
+            let areas = ''
+            let cols = 3
+            if(currentAreasString.indexOf('subHeader') !== -1) {
+                areas = `"subHeader answersContainer question"`
+            } else {
+                cols = 2
+                areas = `"answersContainer question"`
+            }
+
+            
+            if(currentAreasString.indexOf('questionFeedback') !== -1) {
+                if (cols === 3) {
+                    areas = `${areas} "questionFeedback questionFeedback questionFeedback"`
+                }
+
+                if (cols === 2) {
+                    areas = `${areas} "questionFeedback questionFeedback"`
+                }
+            }
+
+            if(currentAreasString.indexOf('buttonsContainer') !== -1) {
+                if (cols === 3) {
+                areas = `${areas} "buttonsContainer buttonsContainer buttonsContainer"`
+                }
+
+                if (cols === 2) {
+                    areas = `${areas} "buttonsContainer buttonsContainer"`
+                }
+            }
+
+            currentAreasString = areas
+
+            Array.from(this.shadowRoot.styleSheets[0].cssRules)
+            .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
+            .style.setProperty(
+                '--questionContainer-grid-template-areas',
+                currentAreasString
+            );
+
+            let headerCol = Array.from(document.styleSheets[1].cssRules)
+            .filter((rule) => String(rule.selectorText).includes('.shortFillIn'))[0]
+            .style.getPropertyValue('--headerCol')
+            
+            let inputCol = Array.from(document.styleSheets[1].cssRules)
+            .filter((rule) => String(rule.selectorText).includes('.shortFillIn'))[0]
+            .style.getPropertyValue('--inputCol')
+
+            let questionCol = Array.from(document.styleSheets[1].cssRules)
+            .filter((rule) => String(rule.selectorText).includes('.shortFillIn'))[0]
+            .style.getPropertyValue('--questionCol')
+
+            if (cols === 3) {
+                
+                Array.from(this.shadowRoot.styleSheets[0].cssRules)
+                .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
+                .style.setProperty(
+                    '--questionContainer-shortFillIn-grid-template-columns',
+                    `${headerCol} ${inputCol} ${questionCol}`
+                );
+            }
+    
+            if (cols === 2) {
+                Array.from(this.shadowRoot.styleSheets[0].cssRules)
+                .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
+                .style.setProperty(
+                    '--questionContainer-shortFillIn-grid-template-columns',
+                    `${inputCol} ${questionCol}`
+                );
+            }
+        }
 
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
