@@ -16,7 +16,7 @@ longreadTemplate.innerHTML = `
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    grid-template-rows: var(--longread-grid-template-rows);
     justify-items: var(--longread-justify-items);
     align-items: var(--longread-align-items);
     justify-content: var(--longread-justify-content);

@@ -865,6 +865,7 @@
     --longread-align-content: center;
     --longread-min-height: 50px;
     --longread-bg-color: transparent;
+    --longread-grid-template-rows: auto;
     /* Longread -> */
 }
 
