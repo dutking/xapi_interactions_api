@@ -27,13 +27,13 @@ testTemplate.innerHTML = `
     }
 
     .testContainer {
-        --test-grid-template-areas: var(--test-grid-template-areas);
+        --this-test-grid-template-areas: var(--test-grid-template-areas);
         --z-index-base: 900;
         z-index: var(--z-index-base);
         display: grid;
         grid-template-columns: var(--test-grid-template-columns);
         grid-template-rows: var(--test-grid-template-rows);
-        grid-template-areas: var(--test-grid-template-areas);
+        grid-template-areas: var(--this-test-grid-template-areas);
         row-gap: var(--test-row-gap);
         column-gap: var(--test-column-gap);
         justify-items: var(--test-justify-items);
@@ -488,9 +488,11 @@ export class Test extends HTMLElement {
             .filter((unit) => unit !== "")
             .join(" ")
 
+        console.log(`TEST AREAS ARE: ${currentAreasString}`)
+
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === ".testContainer")[0]
-            .style.setProperty("--test-grid-template-areas", currentAreasString)
+            .style.setProperty("--this-test-grid-template-areas", currentAreasString)
     }
 
     setStaticContent() {
