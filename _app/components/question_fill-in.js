@@ -27,12 +27,12 @@ strong {
 
     /* <- grid settings */
         .questionContainer {
-            --questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
+            --this-questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
             
             display: grid;
             grid-template-columns: var(--questionContainer-grid-template-columns);
             grid-template-rows: var(--questionContainer-grid-template-rows);
-            grid-template-areas: var(--questionContainer-grid-template-areas);
+            grid-template-areas: var(--this-questionContainer-grid-template-areas);
             row-gap: var(--questionContainer-row-gap);
             column-gap: var(--questionContainer-column-gap);
             justify-items: var(--questionContainer-justify-items);
@@ -61,7 +61,7 @@ strong {
         }
 
         .questionContainer.feedbackOnly {
-            --questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
+            --this-questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
         }
 
         .questionContainer .subHeader {
@@ -903,10 +903,12 @@ export class QuestionFillIn extends HTMLElement {
 
             currentAreasString = areas
 
+            console.log(`FILL-IN AREAS ARE: ${currentAreasString}`)
+
             Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
             .style.setProperty(
-                '--questionContainer-grid-template-areas',
+                '--this-questionContainer-grid-template-areas',
                 currentAreasString
             );
 
@@ -945,7 +947,7 @@ export class QuestionFillIn extends HTMLElement {
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
             .style.setProperty(
-                '--questionContainer-grid-template-areas',
+                '--this-questionContainer-grid-template-areas',
                 currentAreasString
             );
     }
