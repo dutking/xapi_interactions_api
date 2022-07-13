@@ -383,7 +383,7 @@ strong {
             align-items: center;
             justify-items: center;
             background: color: var(--answerContainer-labelImage-background);
-            white-space: nowrap;
+            /* white-space: nowrap; */
         }
 
         .questionContainer .answersContainer .answerContainer .answerFeedback {
