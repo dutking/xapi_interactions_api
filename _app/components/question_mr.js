@@ -1152,8 +1152,8 @@ export class QuestionMR extends HTMLElement {
         let checkedItems = inputs.filter((input) => input.checked).length;
 
         if (
-            checkedItems >= this.data.validation.min &&
-            checkedItems <= this.data.validation.max
+            checkedItems >= this.validation.min &&
+            checkedItems <= this.validation.max
         ) {
             return true;
         }
