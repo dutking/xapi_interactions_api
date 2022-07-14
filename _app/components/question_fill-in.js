@@ -28,9 +28,9 @@ strong {
     /* <- grid settings */
         .questionContainer {
             --this-questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
-            
+            --this-questionContainer-grid-template-columns: var(--questionContainer-grid-template-columns);
             display: grid;
-            grid-template-columns: var(--questionContainer-grid-template-columns);
+            grid-template-columns: var(--this-questionContainer-grid-template-columns);
             grid-template-rows: var(--questionContainer-grid-template-rows);
             grid-template-areas: var(--this-questionContainer-grid-template-areas);
             row-gap: var(--questionContainer-row-gap);
@@ -56,9 +56,7 @@ strong {
             border-color: var(--questionContainer-border-color);
             border-radius: var(--questionContainer-border-radius);
         }
-        .questionContainer.shortFillIn {
-            grid-template-columns: var(--questionContainer-shortFillIn-grid-template-columns);
-        }
+        
 
         .questionContainer.feedbackOnly {
             --this-questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
@@ -881,6 +879,7 @@ export class QuestionFillIn extends HTMLElement {
             }
 
             
+            
             if(currentAreasString.indexOf('questionFeedback') !== -1) {
                 if (cols === 3) {
                     areas = `${areas} "questionFeedback questionFeedback questionFeedback"`
@@ -903,42 +902,45 @@ export class QuestionFillIn extends HTMLElement {
 
             currentAreasString = areas
 
-            console.log(`FILL-IN AREAS ARE: ${currentAreasString}`)
 
             Array.from(this.shadowRoot.styleSheets[0].cssRules)
-            .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
+            .filter((rule) => rule.selectorText === '.questionContainer')[0]
             .style.setProperty(
                 '--this-questionContainer-grid-template-areas',
                 currentAreasString
             );
 
-            let headerCol = Array.from(document.styleSheets[1].cssRules)
+            let stylesheet = Array.from(document.styleSheets).filter(ss => {
+                return ss.href !== null && ss.href.includes('_app/custom.css')
+            })[0]
+
+            let headerCol = Array.from(stylesheet.cssRules)
             .filter((rule) => String(rule.selectorText).includes('.shortFillIn'))[0]
             .style.getPropertyValue('--headerCol')
             
-            let inputCol = Array.from(document.styleSheets[1].cssRules)
+            let inputCol = Array.from(stylesheet.cssRules)
             .filter((rule) => String(rule.selectorText).includes('.shortFillIn'))[0]
             .style.getPropertyValue('--inputCol')
 
-            let questionCol = Array.from(document.styleSheets[1].cssRules)
+            let questionCol = Array.from(stylesheet.cssRules)
             .filter((rule) => String(rule.selectorText).includes('.shortFillIn'))[0]
             .style.getPropertyValue('--questionCol')
 
             if (cols === 3) {
                 
                 Array.from(this.shadowRoot.styleSheets[0].cssRules)
-                .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
+                .filter((rule) => rule.selectorText === '.questionContainer')[0]
                 .style.setProperty(
-                    '--questionContainer-shortFillIn-grid-template-columns',
+                    '--this-questionContainer-grid-template-columns',
                     `${headerCol} ${inputCol} ${questionCol}`
                 );
             }
     
             if (cols === 2) {
                 Array.from(this.shadowRoot.styleSheets[0].cssRules)
-                .filter((rule) => rule.selectorText === '.questionContainer.shortFillIn')[0]
+                .filter((rule) => rule.selectorText === '.questionContainer')[0]
                 .style.setProperty(
-                    '--questionContainer-shortFillIn-grid-template-columns',
+                    '--this-questionContainer-grid-template-columns',
                     `${inputCol} ${questionCol}`
                 );
             }
