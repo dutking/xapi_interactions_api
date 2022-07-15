@@ -93,6 +93,15 @@ templateMC.innerHTML = `
             --questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
         }
 
+        .questionContainer.columns.first {
+            --question-row-gap: 1rem;
+        }
+
+        .questionContainer.columns.first .story:after {
+            content: '_';
+            opacity: 0;
+        }
+
         .questionContainer .subHeader {
             grid-area: subHeader;
             display: grid;
@@ -358,9 +367,7 @@ templateMC.innerHTML = `
             
         }
 
-        
-
-        .questionContainer .answersContainer.image .answerContainer{
+        questionContainer .answersContainer.image .answerContainer{
             width: var(--image-width);
         }        
 
@@ -811,6 +818,10 @@ templateMC.innerHTML = `
         display:none !important;
     }
 
+    .first .story.off {
+        display:revert !important;
+    }
+
     .offTotal {
         display: none !important;
     }
@@ -828,6 +839,10 @@ templateMC.innerHTML = `
             --questionContainer-grid-template-columns: 1fr;
             --questionContainer-grid-template-areas: 
             'question' 'answersContainer';
+        }
+
+        .questionContainer.columns.first .story.off {
+            display: none !important;
         }
 
         .questionContainer.columns .answersContainer .answerContainer label .text.off{
@@ -1027,11 +1042,23 @@ export class QuestionMC extends HTMLElement {
             }
         
             this.shadowRoot.querySelector('.instruction').classList.add('off')
-            
-        }
 
-        if(this.data.subtype === 'columns' && this.index > 0) {
-            Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
+            if(this.index === 0) {
+                this.questionContainer.classList.add('first')
+                /* let story = this.shadowRoot.querySelector('.story')
+                story.classList.remove('off')
+                if(this.data.story.length === 0) {
+
+                    story.innerHTML = '_'
+                    story.style.opacity = 0
+                } */
+            }
+
+            if(this.index > 0){
+                Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
+
+            }
+            
         }
 
         if (this.submitMode === 'all_at_once') {
