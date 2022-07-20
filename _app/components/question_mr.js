@@ -958,7 +958,7 @@ export class QuestionMR extends HTMLElement {
             answersData = AuxFunctions.shuffleArray(this.data.answers);
         }
 
-        answersData.forEach((a, i) => {
+        answersData.forEach(async (a, i) => {
             let newAnswer;
 
             if (that.data?.subtype !== '') {
@@ -966,12 +966,17 @@ export class QuestionMR extends HTMLElement {
                 if (that.data.subtype === 'image') {
                     newAnswer = answerTemplateMRImage.content.cloneNode(true);
                     let folder = this.data.id.split('_').slice(0, 2).join('_');
-                    newAnswer
-                        .querySelector('img')
-                        .setAttribute(
-                            'src',
-                            `./_app/img/${folder}/${a.id}.svg`
-                        );
+                    let svg = await fetch(`./_app/img/${folder}/${a.id}.svg`, { method: 'HEAD' })
+                
+                    if (svg.ok) {
+                        newAnswer
+                            .querySelector('img')
+                            .setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
+                    } else {
+                        newAnswer
+                            .querySelector('img')
+                            .setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+                    }
                 } else {
                     newAnswer = answerTemplateMR.content.cloneNode(true);
                 }
