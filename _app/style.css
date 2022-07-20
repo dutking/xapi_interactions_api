@@ -442,13 +442,12 @@
     /* questionContainer question instruction settings ->*/
 
     /* <- questionContainer answersContainer settings */
-    --answersContainer-grid-template-columns: 1fr;
+    --answersContainer-grid-template-columns: 1fr; /* repeat(auto-fill, minmax(350px, 1fr)); */
     --answersContainerImage-grid-template-columns: repeat(
         auto-fill,
         var(--image-width)
     );
 
-    --answersContainer-grid-template-columns: 1fr;
     --answersContainer-grid-template-rows: auto;
     --answersContainer-row-gap: var(--spacing_lvl_3);
     --answersContainer-column-gap: var(--spacing_lvl_3);
@@ -484,9 +483,9 @@
     --answerContainer-row-gap: var(--spacing_lvl_2);
     --answerContainer-column-gap: var(--spacing_lvl_2);
     --answerContainer-justify-items: stretch;
-    --answerContainer-align-items: center;
+    --answerContainer-align-items: start;
     --answerContainer-justify-content: start;
-    --answerContainer-align-content: center;
+    --answerContainer-align-content: start;
 
     /* font */
     --answerContainer-color: var(--color-dark-primary);
