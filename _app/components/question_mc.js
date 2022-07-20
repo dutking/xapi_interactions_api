@@ -75,29 +75,29 @@ templateMC.innerHTML = `
             border-radius: var(--questionContainer-border-radius);
         }
 
-        .questionContainer.columns {
+        .questionContainer.likert {
             --questionContainer-grid-template-columns: 1fr 2fr;
             --questionContainer-grid-template-areas: 
             'question answersContainer';
         }
 
-        .questionContainer.columns.odd {
-            background: hsla(var(--questionContainerColumns-color-odd-h), var(--questionContainerColumns-color-odd-s), var(--questionContainerColumns-color-odd-l), var(--questionContainerColumns-color-odd-a))
+        .questionContainer.likert.odd {
+            background: hsla(var(--questionContainerLikert-color-odd-h), var(--questionContainerLikert-color-odd-s), var(--questionContainerLikert-color-odd-l), var(--questionContainerLikert-color-odd-a))
         }
 
-        .questionContainer.columns.even {
-            background: hsla(var(--questionContainerColumns-color-even-h), var(--questionContainerColumns-color-even-s), var(--questionContainerColumns-color-even-l), var(--questionContainerColumns-color-even-a))
+        .questionContainer.likert.even {
+            background: hsla(var(--questionContainerLikert-color-even-h), var(--questionContainerLikert-color-even-s), var(--questionContainerLikert-color-even-l), var(--questionContainerLikert-color-even-a))
         }
 
         .questionContainer.feedbackOnly {
             --questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
         }
 
-        .questionContainer.columns.first {
+        .questionContainer.likert.first {
             --question-row-gap: 1rem;
         }
 
-        .questionContainer.columns.first .story:after {
+        .questionContainer.likert.first .story:after {
             content: '_';
             opacity: 0;
         }
@@ -291,7 +291,7 @@ templateMC.innerHTML = `
             border-radius: var(--answersContainer-border-radius);
         }
 
-        .questionContainer.columns .answersContainer {
+        .questionContainer.likert .answersContainer {
             --answersContainer-grid-template-columns: auto;
         }
 
@@ -356,7 +356,7 @@ templateMC.innerHTML = `
             border-radius: var(--answerContainer-label-border-radius);
         }
 
-        .questionContainer.columns .answersContainer .answerContainer label {
+        .questionContainer.likert .answersContainer .answerContainer label {
             --answerContainer-label-grid-template-columns: 1fr;
             --answerContainer-label-grid-template-areas: 'text' 'inputMarker';
             --answerContainer-justify-items: center;
@@ -419,7 +419,7 @@ templateMC.innerHTML = `
             grid-area: text;            
         }
 
-        .questionContainer.columns .answersContainer .answerContainer label .text{
+        .questionContainer.likert .answersContainer .answerContainer label .text{
             text-align: center;           
         }
 
@@ -835,17 +835,17 @@ templateMC.innerHTML = `
     }
 
     @media screen and (max-width: 640px) {
-        .questionContainer.columns {
+        .questionContainer.likert {
             --questionContainer-grid-template-columns: 1fr;
             --questionContainer-grid-template-areas: 
             'question' 'answersContainer';
         }
 
-        .questionContainer.columns.first .story.off {
+        .questionContainer.likert.first .story.off {
             display: none !important;
         }
 
-        .questionContainer.columns .answersContainer .answerContainer label .text.off{
+        .questionContainer.likert .answersContainer .answerContainer label .text.off{
             display: block !important;          
         }
     }
@@ -1030,9 +1030,9 @@ export class QuestionMC extends HTMLElement {
             }
         });
 
-        if(this.data.subtype === 'columns'){
+        if(this.data.subtype === 'likert'){
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
-            .filter((rule) => rule.selectorText === ".questionContainer.columns .answersContainer")[0]
+            .filter((rule) => rule.selectorText === ".questionContainer.likert .answersContainer")[0]
             .style.setProperty("--answersContainer-grid-template-columns", `repeat(${this.data.answers.length}, 1fr)`)
 
             if(this.index%2 === 1) {
