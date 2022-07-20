@@ -18,10 +18,11 @@ answerTemplateMCImage.innerHTML = `
             <div>
                 <input type='radio'/>
                 <label>
-                <span class='imageContainer'>
-                <img src='' alt='picture' class='img'>
-                </span>
-                <span class='text'></span></label>
+                    <span class='imageContainer'>
+                        <img src='' alt='picture' class='img'>
+                    </span>
+                    <span class='text'></span>
+                </label>
                 <div class='answerFeedback off'></div>
             </div>
         </div>
@@ -1003,19 +1004,7 @@ export class QuestionMC extends HTMLElement {
             if (that.data?.subtype === 'image') {
                 answers.classList.add('image');
                 newAnswer = answerTemplateMCImage.content.cloneNode(true);
-                let folder = this.data.id.split('_').slice(0, 2).join('_');
-
-                let svg = await fetch(`./_app/img/${folder}/${a.id}.svg`, { method: 'HEAD' })
                 
-                if (svg.ok) {
-                    newAnswer
-                        .querySelector('img')
-                        .setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
-                } else {
-                    newAnswer
-                        .querySelector('img')
-                        .setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
-                }
             } else {
                 newAnswer = answerTemplateMC.content.cloneNode(true);
             }
@@ -1023,6 +1012,27 @@ export class QuestionMC extends HTMLElement {
             answers.appendChild(newAnswer);
 
             newAnswer = Array.from(answers.children)[i];
+
+            
+
+            if (that.data?.subtype === 'image') {
+                let folder = this.data.id.split('_').slice(0, 2).join('_');
+                try {
+                    let svg = await fetch(`./_app/img/${folder}/${a.id}.svg`, { method: 'HEAD' })
+                    
+                    if (svg.ok) {
+                        newAnswer
+                            .querySelector('img')
+                            .setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
+                    } else {
+                        newAnswer
+                            .querySelector('img')
+                            .setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            }
 
             newAnswer.setAttribute('data-id', a.id);
             newAnswer.querySelector('input').setAttribute('id', a.id);
@@ -1086,6 +1096,7 @@ export class QuestionMC extends HTMLElement {
                 this.restoreState();
             }
         }
+
     }
 
     setButtons() {
