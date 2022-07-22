@@ -1018,7 +1018,7 @@ export class QuestionMC extends HTMLElement {
                             img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
                             console.log(`PNG: ${img.naturalWidth}`)
                         }
-                    },1)
+                    },1000)
                     
                     
                     
