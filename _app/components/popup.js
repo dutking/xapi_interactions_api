@@ -33,6 +33,7 @@ popupTemplate.innerHTML = `
     align-content: center;
     justify-content: center;
     background: var(--popup-shade-background);
+    backdrop-filter: var(--popup-shade-backdrop-filter);
 }
 
 .modal {
@@ -91,7 +92,7 @@ popupTemplate.innerHTML = `
 }
 
 </style>
-    <div class="popupContainer">
+    <div class="popupContainer shade">
         <div class="modal">
             <header>
                 <p class="header">Header</p>
