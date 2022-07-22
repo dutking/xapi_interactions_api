@@ -869,6 +869,8 @@
 
     /* <- Popup */
     --popup-shade-background: rgba(0,0,0,0.5);
+    --popup-shade-backdrop-filter: blur(1px);
+
     --popup-modal-background: #fff;
     --popup-modal-padding: 3rem;
     --popup-modal-min-width: 290px;
