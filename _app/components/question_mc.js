@@ -1012,15 +1012,21 @@ export class QuestionMC extends HTMLElement {
 
                     img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
 
-                    if(img.naturalWidth === 0) {
-                        img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
-                    }
+                    setTimeout(() => {
+                        console.log(`SVG: ${img.naturalWidth}`)
+                        if(img.naturalWidth === 0) {
+                            img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+                            console.log(`PNG: ${img.naturalWidth}`)
+                        }
+                    },1)
+                    
+                    
                     
                 } else {
-                    newAnswer = answerTemplateMR.content.cloneNode(true);
+                    newAnswer = answerTemplateMC.content.cloneNode(true);
                 }
             } else {
-                newAnswer = answerTemplateMR.content.cloneNode(true);
+                newAnswer = answerTemplateMC.content.cloneNode(true);
             }
 
             answers.appendChild(newAnswer);
