@@ -1,5 +1,6 @@
 import { AuxFunctions } from '../auxFunctions.js';
 import { Pool } from './pool.js';
+import { Popup } from './popup.js';
 
 const answerTemplateMC = document.createElement('template');
 answerTemplateMC.innerHTML = `
@@ -998,42 +999,55 @@ export class QuestionMC extends HTMLElement {
             answersData = AuxFunctions.shuffleArray(this.data.answers);
         }
 
-        answersData.forEach(async (a, i) => {
+        answersData.forEach((a, i) => {
             let newAnswer;
 
-            if (that.data?.subtype === 'image') {
-                answers.classList.add('image');
-                newAnswer = answerTemplateMCImage.content.cloneNode(true);
-                
+            if (that.data?.subtype !== '') {
+                answers.classList.add(that.data.subtype);
+                if (that.data.subtype === 'image') {
+                    newAnswer = answerTemplateMCImage.content.cloneNode(true);
+                    let img = newAnswer.querySelector('img')
+
+                    let folder = this.data.id.split('_').slice(0, 2).join('_');
+
+                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
+
+                    if(img.naturalWidth === 0) {
+                        img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+                    }
+                    
+                } else {
+                    newAnswer = answerTemplateMR.content.cloneNode(true);
+                }
             } else {
-                newAnswer = answerTemplateMC.content.cloneNode(true);
+                newAnswer = answerTemplateMR.content.cloneNode(true);
             }
 
             answers.appendChild(newAnswer);
 
             newAnswer = Array.from(answers.children)[i];
 
-            
-
-            if (that.data?.subtype === 'image') {
-                let folder = this.data.id.split('_').slice(0, 2).join('_');
-                try {
-                    let svg = await fetch(`./_app/img/${folder}/${a.id}.svg`, { method: 'HEAD' })
-                    
-                    if (svg.ok) {
-                        newAnswer
-                            .querySelector('img')
-                            .setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
-                    } else {
-                        newAnswer
-                            .querySelector('img')
-                            .setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+            // TO DO ON CLICK
+                /* if(that.data?.subtype === 'imagePlus'){
+                    try {
+                        let svg = await fetch(`./_app/img/${folder}/${a.id}_large.svg`, { method: 'HEAD' })
+                        
+                        if (svg.ok) {
+                            img.addEventListener('click', () => {
+                                let pp = document.createElement('popup-unit')
+                                pp.init(`<img src="./_app/img/${folder}/${a.id}_large.svg" style="min-width:200px;">`, a.text)
+                            })
+                        } else {
+                            img.addEventListener('click', () => {
+                                let pp = document.createElement('popup-unit')
+                                pp.init(`<img src="./_app/img/${folder}/${a.id}_large.png" style="min-width:200px;">`, a.text)
+                            })
+                        }
+                    } catch (e) {
+                        console.log(e)
                     }
-                } catch (e) {
-                    console.log(e)
-                }
-            }
-
+                } */
+                
             newAnswer.setAttribute('data-id', a.id);
             newAnswer.querySelector('input').setAttribute('id', a.id);
             newAnswer.querySelector('input').setAttribute('name', that.data.id);
