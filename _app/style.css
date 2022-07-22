@@ -866,6 +866,41 @@
     --longread-bg-color: transparent;
     --longread-grid-template-rows: auto;
     /* Longread -> */
+
+    /* <- Popup */
+    --popup-shade-background: rgba(0,0,0,0.5);
+    --popup-modal-background: #fff;
+    --popup-modal-padding: 3rem;
+    --popup-modal-min-width: 290px;
+    --popup-modal-max-width: var(--test-best-width);
+    --popup-modal-row-gap: 2rem;
+
+    --popup-modal-header-font-weight: var(--font-weight-bold);
+    --popup-modal-header-font-size: var(--font-size-primary);
+    --popup-modal-header-color: var(--color-dark-primary);
+
+    --popup-modal-content-font-weight: var(--font-weight-normal);
+    --popup-modal-content-font-size: var(--font-size-primary);
+    --popup-modal-content-color: var(--color-dark-primary);
+
+    --popup-modal-closeBtn-width: 30px;
+    --popup-modal-closeBtn-height: 30px;
+    --popup-modal-closeBtn-top: 5px;
+    --popup-modal-closeBtn-right: 5px;
+    --popup-modal-closeBtn-border-width: 0;
+    --popup-modal-closeBtn-border-color: transparent;
+    --popup-modal-closeBtn-border-style: solid;
+    --popup-modal-closeBtn-background: rgb(219, 219, 219);
+    --popup-modal-closeBtn-background-hover: grey;
+    --popup-modal-closeBtn-color: black;
+    /* Popup -> */
+
+    /* <- Popup opener icon*/
+    --popupOpenerIcon-width: 30px;
+    --popupOpenerIcon-height: 30px;
+    --popupOpenerIcon-background: rgb(219, 219, 219);
+    --popupOpenerIcon-background-hover: grey;
+    /* Popup opener icon -> */
 }
 
 #allrecords .placeholder {
