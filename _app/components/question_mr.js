@@ -958,7 +958,7 @@ export class QuestionMR extends HTMLElement {
             answersData = AuxFunctions.shuffleArray(this.data.answers);
         }
 
-        answersData.forEach(async (a, i) => {
+        answersData.forEach((a, i) => {
             let newAnswer;
 
             if (that.data?.subtype !== '') {
