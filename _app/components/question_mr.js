@@ -914,9 +914,13 @@ export class QuestionMR extends HTMLElement {
 
         // adding subtype as a class
         this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
+
         if (this.data.subtype !== "") {
-            this.classList.add(this.data.subtype)
-            this.questionContainer.classList.add(this.data.subtype)
+            let classes = this.data.subtype.split(' ')
+            classes.forEach((c) => {
+                that.classList.add(c)
+                that.questionContainer.classList.add(c)
+            })
         }
 
         if (this.parent.data?.counter && this.amountOfQuestions > 1) {
@@ -962,10 +966,37 @@ export class QuestionMR extends HTMLElement {
             let newAnswer;
 
             if (that.data?.subtype !== '') {
-                answers.classList.add(that.data.subtype);
-                if (that.data.subtype === 'image') {
+                let classes = that.data.subtype.split(' ')
+                classes.forEach(c => answers.classList.add(c))
+                
+                if (that.data.subtype.includes('image')) {
                     newAnswer = answerTemplateMRImage.content.cloneNode(true);
-                    
+                    let img = newAnswer.querySelector('img')
+
+                    let folder = this.data.id.split('_').slice(0, 2).join('_');
+
+                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
+
+                    setTimeout(() => {
+                        
+                        if(img.naturalWidth === 0) {
+                            img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+                            
+                        }
+                    },1000)
+
+                    if(that.data.subtype.includes('zoom')){
+                        const popup = document.createElement('popup-unit')
+                        popup.init(`pp_${a.id}`, '', `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
+                        img.addEventListener('click', () => {
+                            popup.showPopup()
+                            let img = popup.shadowRoot.querySelector('img')
+                            if(img.naturalWidth === 0) {
+                                img.setAttribute('src', `./_app/img/${folder}/${a.id}_large.png`);
+                                
+                            }
+                        })
+                    }
                 } else {
                     newAnswer = answerTemplateMR.content.cloneNode(true);
                 }

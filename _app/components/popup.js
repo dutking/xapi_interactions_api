@@ -1,8 +1,16 @@
+import { AuxFunctions } from '../auxFunctions.js';
+
 const popupTemplate = document.createElement('template');
 
 const popupOpenerTemplate = document.createElement('template');
 
 popupOpenerTemplate.innerHTML = `
+<style>
+    .popupOpenerContainer {
+        cursor: pointer;
+    }
+</style>
+
 <div class="popupOpenerContainer">
 </div>
 `
@@ -34,6 +42,10 @@ popupTemplate.innerHTML = `
     justify-content: center;
     background: var(--popup-shade-background);
     backdrop-filter: var(--popup-shade-backdrop-filter);
+}
+
+.popupContainer.hidden {
+    display: none;
 }
 
 .modal {
@@ -95,7 +107,7 @@ popupTemplate.innerHTML = `
     <div class="popupContainer shade">
         <div class="modal">
             <header>
-                <p class="header">Header</p>
+                <p class="header"></p>
                 
             </header>
             <div class="content">
@@ -113,25 +125,31 @@ export class Popup extends HTMLElement {
         this.shadowRoot.appendChild(popupTemplate.content.cloneNode(true));
     }
 
-    init(content, header = null) {
-        this.content = content
+    init(id, header, content) {
+        this.id = id
         this.header = header
+        this.content = content
         this.setContent();
         this.setListeners();
         this.append();
     }
 
     append() {
+        this.shadowRoot.querySelector('.popupContainer').classList.add('hidden')
+        this.setAttribute("id", this.id)
         document.querySelector('body').append(this)
-        document.querySelector('body').style.overflow = "hidden";
+
     }
 
     setContent(){
         let headerElement = this.shadowRoot.querySelector('.header')
         let contentElement = this.shadowRoot.querySelector('.content')
 
-        headerElement.innerHTML = this.header
-        contentElement.innerHTML = this.content
+        if(this.header){
+            headerElement.innerHTML = AuxFunctions.parseText(this.header)
+        }
+        console.log(this.content)
+        contentElement.innerHTML = AuxFunctions.parseText(this.content)
     }
 
     setListeners() {
@@ -139,11 +157,54 @@ export class Popup extends HTMLElement {
         closeBtn.addEventListener('click', this.closePopup.bind(this))
     }
 
+    showPopup(){
+        document.querySelector('body').style.overflow = "hidden";
+        this.shadowRoot.querySelector('.popupContainer').classList.remove('hidden')
+    }
+
     closePopup() {
         document.querySelector('body').style.overflow = "auto";
-        this.remove()
+        this.shadowRoot.querySelector('.popupContainer').classList.add('hidden')
     }
 
 }
 
+export class PopupOpener extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+
+        this.shadowRoot.appendChild(popupOpenerTemplate.content.cloneNode(true));
+    }
+
+    connectedCallback() {
+        this.text = this.dataset.text || ""
+        this.ref = this.dataset.ref || `pp_${window.crypto.randomUUID()}`
+
+        if(!document.querySelector(`#${this.ref}`)){
+            let popup = document.createElement('popup-unit')
+            popup.init(this.ref, this.header, this.content)
+
+        }
+
+        this.addListeners()
+        this.setContent()
+    }
+
+    addListeners(){
+        this.shadowRoot.querySelector(".popupOpenerContainer").addEventListener("click", this.openPopup.bind(this))
+    }
+
+    openPopup() {
+        document.querySelector(`#${this.ref}`).showPopup()
+    }
+
+    setContent(){
+        if(this.text){
+            this.shadowRoot.querySelector(".popupOpenerContainer").innerHTML = AuxFunctions.parseText(this.text)
+        }
+    }
+}
+
 window.customElements.define('popup-unit', Popup);
+window.customElements.define('popup-opener-unit', PopupOpener);

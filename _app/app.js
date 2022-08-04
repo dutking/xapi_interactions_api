@@ -14,6 +14,9 @@ import {
     YTVideo
 } from './components/ytvideo.js';
 import {
+    Popup, PopupOpener
+} from './components/popup.js';
+import {
     scoringFunctions
 } from './scoringFunctions.js';
 import {
@@ -77,11 +80,20 @@ export class App {
                     App.recalculateGlobalPools();
                 }
                 
+                App.setPopups()
                 App.setListeners();
                 App.createCourse();
                 App.setSidebar();
             })
             .then(() => App.setIntersectionObserver());
+    }
+
+    static setPopups(){
+        config.popups.forEach(pp => {
+            console.log(pp)
+            const popup = document.createElement('popup-unit')
+            popup.init(pp.id, pp.header, pp.content)
+        })
     }
 
     static setSidebar() {
