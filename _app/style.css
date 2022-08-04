@@ -905,6 +905,14 @@
     /* Popup opener icon -> */
 }
 
+#allrecords strong {
+    font-weight: var(--font-weight-bold);
+}
+
+#allrecords em {
+    font-style: italic;
+}
+
 #allrecords .placeholder {
     position: relative;
     box-sizing: border-box;
@@ -914,12 +922,10 @@
     z-index: calc(var(--z-index-base) + 5);
 }
 
-#allrecords strong {
-    font-weight: var(--font-weight-bold);
-}
-
-#allrecords em {
-    font-style: italic;
+#allrecords .placeholder longread-unit {
+    --longread-justify-items: start;
+    --longread-align-items: start;
+    --longread-justify-content: start;
 }
 
 #allrecords .placeholder ytvideo-unit {
@@ -927,6 +933,59 @@
     justify-content: center;
 }
 
+#allrecords .placeholder.test.likert {
+    --questionsContainer-row-gap: 0;
+    
+    --questionContainerColumns-color-odd-a: 0;
+    --questionContainerColumns-color-even-a: 0;
+
+    --questionContainer-padding: 0 0 2rem 0;
+
+    --questionText-font-weight: var(--font-weight-normal);
+    --answerContainer-label-font-weight: var(--font-weight-bold);
+}
+
+#allrecords .placeholder.test.shortFillIn {
+    --fillin-padding: 7px;
+    --fillin-padding-focus: var(--fillin-padding);
+    --fillin-font-size: 14px;
+    --subHeader-padding: 5px 0 0 0;
+    --question-padding: 5px 0 0 0;
+    --fillin-text-align: center;
+    --headerCol: 30px;
+    --inputCol: 70px;
+    --questionCol: 1fr;
+    --questionContainer-column-gap: 1rem;
+    --fillin-line-height: 1;
+    --fillin-border-color-normal: #CBDFE6 !important;
+    --fillin-border-color-focus: #2F80ED;
+    --fillin-border-width-normal: 2px;
+    --fillin-border-width-focus: 2px;
+}
+
+#allrecords .placeholder.longread.up {
+    --longread-min-height: 0px;
+    position: relative;
+    height: 0px !important;
+    overflow: visible;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0;
+    width: 100%;
+    background-color: transparent;
+    z-index: calc(var(--z-index-base) + 100);
+    --button-transform-normal: translateY(-90px);
+    --button-transform-hover: translateY(-90px);
+    --longread-grid-template-rows: 0px;
+}
+
 #allrecords .off {
     display: none;
+}
+
+@media screen and (max-width: 640px) {
+    #allrecords .placeholder.test.likert {
+        --questionsContainer-row-gap: 3rem;
+        --questionContainer-row-gap: 0.5rem;
+    }
 }
