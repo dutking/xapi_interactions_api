@@ -28,7 +28,7 @@ testTemplate.innerHTML = `
 
     .testContainer {
         --this-test-grid-template-areas: var(--test-grid-template-areas);
-        --z-index-base: 900;
+        --z-index-base: 100;
         z-index: var(--z-index-base);
         display: grid;
         grid-template-columns: var(--test-grid-template-columns);
