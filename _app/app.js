@@ -347,8 +347,8 @@ export class App {
         };
 
         let optionsLongread = {
-            root: null,
-            rootMargin: '300px',
+            root: document,
+            rootMargin: '500px',
             threshold: 0,
         };
 
