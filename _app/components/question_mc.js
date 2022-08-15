@@ -954,7 +954,7 @@ export class QuestionMC extends HTMLElement {
         
         // adding subtype as a class
         this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
-        
+
         if (this.data.subtype !== "") {
             let classes = this.data.subtype.split(' ')
             classes.forEach((c) => {
@@ -1028,7 +1028,7 @@ export class QuestionMC extends HTMLElement {
 
                     if(that.data.subtype.includes('zoom')){
                         const popup = document.createElement('popup-unit')
-                        popup.init(`pp_${a.id}`, '', `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
+                        popup.init(`pp_${a.id}`, a.text, `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
                         img.addEventListener('click', () => {
                             popup.showPopup()
                             let img = popup.shadowRoot.querySelector('img')

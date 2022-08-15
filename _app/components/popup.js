@@ -32,7 +32,6 @@ popupTemplate.innerHTML = `
     box-sizing: border-box;
     position: fixed;
     inset: 0;
-    z-index: 10000;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
@@ -40,15 +39,27 @@ popupTemplate.innerHTML = `
     justify-items: center;
     align-content: center;
     justify-content: center;
-    background: var(--popup-shade-background);
-    backdrop-filter: var(--popup-shade-backdrop-filter);
 }
 
 .popupContainer.hidden {
     display: none;
 }
 
-.modal {
+.popupContainer .shade {
+    grid-area: 1 / 1 / 2 / 2;
+    background: var(--popup-shade-background);
+    /*backdrop-filter: var(--popup-shade-backdrop-filter);*/
+    min-width: 100%;
+    min-height: 100%;
+    z-index: 1;
+}
+
+.popupContainer .shade:hover{
+    cursor: pointer;
+}
+
+.popupContainer .modal {
+    grid-area: 1 / 1 / 2 / 2;
     box-sizing: border-box;
     background: var(--popup-modal-background);
     padding: var(--popup-modal-padding);
@@ -58,7 +69,9 @@ popupTemplate.innerHTML = `
     grid-template-columns: 1fr;
     grid-template-rows: auto;
     row-gap: var(--popup-modal-row-gap);
-    position:relative;
+    pointer-events: none;
+    cursor: auto;
+    z-index: 2;
 }
 
 .modal header {
@@ -82,40 +95,69 @@ popupTemplate.innerHTML = `
     color: var(--popup-modal-content-color);
 }
 
-.modal .closeBtn {
+.popupContainer .closeBtn {
+    grid-area: 1 / 1 / 2 / 2;
     position: absolute;
-    top: var(--popup-modal-closeBtn-top);
-    right: var(--popup-modal-closeBtn-right);
     box-sizing: border-box;
+    border-width: 0;
+    top: var(--popup-closeBtn-top);
+    right: var(--popup-closeBtn-right);
+    width: var(--popup-closeBtn-width);
+    height: var(--popup-closeBtn-height);
+    background: transparent;
     outline: none;
-    border-width: var(--popup-modal-closeBtn-border-width);
-    border-color: var(--popup-modal-closeBtn-border-color);
-    border-style: var(--popup-modal-closeBtn-border-style);
-    background: var(--popup-modal-closeBtn-background);
-    color: var(--popup-modal-closeBtn-color);
-    width: var(--popup-modal-closeBtn-width);
-    height: var(--popup-modal-closeBtn-height);
     cursor: pointer;
     transition: all 300ms linear;
+    z-index: 1;
 }
 
-.modal .closeBtn:hover {
-    background: var(--popup-modal-closeBtn-background-hover);
+.popupContainer .closeBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 29px;
+    background: #fff;
+    transform-origin: 50% 0;
+    transform: rotate(-45deg);
+    transition: background 150ms linear;
+    pointer-events: none;
+}
+
+.popupContainer .closeBtn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 29px;
+    background: #fff;
+    transform-origin: 50% 0;
+    transform: rotate(45deg);
+    transition: background 150ms linear;
+    pointer-events: none;
+}
+
+.popupContainer .closeBtn:hover::after, .popupContainer .closeBtn:hover::before {
+    background: #ccc;
 }
 
 </style>
-    <div class="popupContainer shade">
+
+    <div class="popupContainer">
+        <div class="shade"></div>
         <div class="modal">
             <header>
                 <p class="header"></p>
-                
             </header>
             <div class="content">
-            
             </div>
-            <button class="closeBtn" type="button"></button>
         </div>
+        
+        <button class="closeBtn" type="button"></button>
     </div>
+
 `;
 export class Popup extends HTMLElement {
     constructor() {
@@ -148,13 +190,16 @@ export class Popup extends HTMLElement {
         if(this.header){
             headerElement.innerHTML = AuxFunctions.parseText(this.header)
         }
-        console.log(this.content)
+
         contentElement.innerHTML = AuxFunctions.parseText(this.content)
     }
 
     setListeners() {
         let closeBtn = this.shadowRoot.querySelector('.closeBtn')
         closeBtn.addEventListener('click', this.closePopup.bind(this))
+
+        let shade = this.shadowRoot.querySelector('.shade')
+        shade.addEventListener('click', this.closePopup.bind(this))
     }
 
     showPopup(){
