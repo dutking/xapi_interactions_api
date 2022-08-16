@@ -667,7 +667,7 @@ export class Test extends HTMLElement {
             .toISOString()
 
         if (this.data?.statements?.send) {
-            this.state.sendStmtMessage = this.sendStmtMessage
+            this.state.sendStmtMessage = AuxFunctions.clearFromTags(this.sendStmtMessage)
         }
 
         if ("isFake" in this.state) {
@@ -1576,10 +1576,10 @@ export class Test extends HTMLElement {
 
     get sendStmtMessage() {
         if (this.data?.statements?.send) {
-            return AuxFunctions.parseText(
+            return AuxFunctions.clearFromTags(AuxFunctions.parseText(
                 this.data.statements.send.message,
                 this
-            )
+            ))
         }
     }
 

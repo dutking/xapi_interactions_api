@@ -997,7 +997,7 @@ export class App {
                 object.object.id = `${this.obj.iri}/message_${AuxFunctions.uuid()}`;
                 object.object.definition = {
                     name: {
-                        'ru-RU': this.extraData.message,
+                        'ru-RU': AuxFunctions.clearFromTags(this.extraData.message),
                     },
                     type: 'http://id.tincanapi.com/activitytype/chat-message',
                 };
@@ -1028,15 +1028,15 @@ export class App {
 
                 object.object.definition = {
                     name: {
-                        'en-US': this.obj.data?.nameRus || this.obj.iri,
-                        'ru-RU': this.obj.data?.nameRus || this.obj.iri,
+                        'en-US': AuxFunctions.clearFromTags(this.obj.data?.nameRus) || this.obj.iri,
+                        'ru-RU': AuxFunctions.clearFromTags(this.obj.data?.nameRus) || this.obj.iri,
                     },
                     description: {
-                        'en-US': this.obj.data?.description ||
-                            this.obj.data?.nameRus ||
+                        'en-US': AuxFunctions.clearFromTags(this.obj.data?.description) ||
+                        AuxFunctions.clearFromTags(this.obj.data?.nameRus) ||
                             this.obj.iri,
-                        'ru-RU': this.obj.data?.description ||
-                            this.obj.data?.nameRus ||
+                        'ru-RU': AuxFunctions.clearFromTags(this.obj.data?.description) ||
+                        AuxFunctions.clearFromTags(this.obj.data?.nameRus) ||
                             this.obj.iri,
                     },
                 };
@@ -1336,8 +1336,8 @@ export class App {
                     return {
                         id: a.id,
                         description: {
-                            'en-US': a.text,
-                            'ru-RU': a.text,
+                            'en-US': AuxFunctions.clearFromTags(a.text),
+                            'ru-RU': AuxFunctions.clearFromTags(a.text),
                         },
                     };
                 });
@@ -1379,7 +1379,7 @@ export class App {
                 this.obj.data.type === 'long-fill-in'
             ) {
                 let arr = [];
-                this.obj.data.answers.forEach((a) => arr.push(a.text));
+                this.obj.data.answers.forEach((a) => arr.push(AuxFunctions.clearFromTags(a.text)));
                 return arr;
             }
         }

@@ -945,7 +945,7 @@ export class QuestionMC extends HTMLElement {
             question = data.question;
         }
 
-        this.data.description = data.story !== '' ? data.story : question;
+        this.data.description = data.story !== '' ? AuxFunctions.clearFromTags(data.story) : AuxFunctions.clearFromTags(question);
         this.data.nameRus = question;
 
         // for statements only ->
@@ -1380,7 +1380,7 @@ export class QuestionMC extends HTMLElement {
                     (ans) => ans.id === a[0]
                 )[0];
 
-                exactUserAnswer.push(answer.text);
+                exactUserAnswer.push(AuxFunctions.clearFromTags(answer.text));
             });
 
         return exactUserAnswer.map((a, ind) => `${ind + 1}) ${a}`).join('   ');

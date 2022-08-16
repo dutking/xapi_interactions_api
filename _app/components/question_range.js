@@ -829,7 +829,7 @@ export class QuestionRange extends HTMLElement {
             question = data.question;
         }
 
-        this.data.description = data.story !== '' ? data.story : question;
+        this.data.description = data.story !== '' ? AuxFunctions.clearFromTags(data.story) : AuxFunctions.clearFromTags(question);
         this.data.nameRus = question;
 
         // for statements only ->

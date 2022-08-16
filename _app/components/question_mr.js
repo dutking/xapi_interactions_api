@@ -905,7 +905,7 @@ export class QuestionMR extends HTMLElement {
             question = data.question;
         }
 
-        this.data.description = data.story !== '' ? data.story : question;
+        this.data.description = data.story !== '' ? AuxFunctions.clearFromTags(data.story) : AuxFunctions.clearFromTags(question);
         this.data.nameRus = question;
 
         // for statements only ->
@@ -1329,9 +1329,9 @@ export class QuestionMR extends HTMLElement {
                 )[0];
 
                 if (this.data.subtype === 'order') {
-                    exactUserAnswer.push(`${a[2]}. ${answer.text}`);
+                    exactUserAnswer.push(`${a[2]}. ${AuxFunctions.clearFromTags(answer.text)}`);
                 } else {
-                    exactUserAnswer.push(answer.text);
+                    exactUserAnswer.push(AuxFunctions.clearFromTags(answer.text));
                 }
             });
 
