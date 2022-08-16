@@ -755,7 +755,7 @@ export class QuestionFillIn extends HTMLElement {
             story.classList.remove('off');
         }
 
-        if(this.data.subtype !== 'shortFillIn') {
+        if(this.data.subtype !== 'shortFillIn' && this.data.instruction !== ' ') {
             this.shadowRoot.querySelector('.instruction').innerHTML =
             AuxFunctions.parseText(this.data.instruction, this);
         } else {

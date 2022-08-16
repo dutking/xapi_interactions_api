@@ -940,8 +940,12 @@ export class QuestionMR extends HTMLElement {
             story.classList.remove('off');
         }
 
-        this.shadowRoot.querySelector('.instruction').innerHTML =
+        if(this.data.instruction !== ' ') {
+            this.shadowRoot.querySelector('.instruction').innerHTML =
             AuxFunctions.parseText(this.data.instruction, this);
+        } else {
+            this.shadowRoot.querySelector('.instruction').classList.add('off')
+        }
 
         this.shadowRoot.querySelector('.questionText').innerHTML =
             this.data.question;
