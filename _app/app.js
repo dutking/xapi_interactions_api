@@ -89,11 +89,14 @@ export class App {
     }
 
     static setPopups(){
-        config.popups.forEach(pp => {
-            console.log(pp)
-            const popup = document.createElement('popup-unit')
-            popup.init(pp.id, pp.header, pp.content)
-        })
+        if('popups' in config) {
+            config.popups.forEach(pp => {
+                console.log(pp)
+                const popup = document.createElement('popup-unit')
+                popup.init(pp.id, pp.header, pp.content)
+            })
+
+        }
     }
 
     static setSidebar() {
