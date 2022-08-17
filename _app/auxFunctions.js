@@ -153,6 +153,13 @@ export class AuxFunctions {
         return parsedText;
     }
 
+    static clearFromTags(text) {
+        let element = document.createElement('div')
+        element.innerHTML = text
+
+        return element.textContent
+    }
+
     static uuid() {
         // get sixteen unsigned 8 bit random values
         let u = window.crypto.getRandomValues(new Uint8Array(16));
