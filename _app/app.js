@@ -36,6 +36,8 @@ export class App {
             .then(() => {
                 console.log("XAPI.data", XAPI.data)
                 /* ADL.XAPIWrapper.changeConfig(XAPI.data); */
+                App.postedStates = []
+                App.sentStatements = []
                 App.container = document.querySelector('body');
                 App.placeholders = document.querySelectorAll('.placeholder');
 
@@ -51,9 +53,9 @@ export class App {
                     `%cCourse ${App.course.data.nameRus} is launched.`,
                     'color:lightblue;font-size:18px;font-weight:bold;'
                 );
-                XAPI.sendStatement(
+                App.sentStatements.push(XAPI.sendStatement(
                     new Statement(App.course, 'launched').statement
-                );
+                ));
             })
             .then(() => XAPI.getState(`${config.trackIRI}/globalPools`))
             .then((data) => {
@@ -235,7 +237,7 @@ export class App {
             'font-size: 18px; color: lightblue; font-weight: bold;'
         );
         console.log(App.course.state);
-        XAPI.postState(App.course.iri, App.course.state);
+        App.postedStates.push(XAPI.postState(App.course.iri, App.course.state));
 
         if (App.course.data?.metrics && App.course.data?.metrics.length > 0) {
             console.log(
@@ -438,7 +440,7 @@ export class App {
                     }
                 );
 
-                return Promise.allSettled(statements);
+                return Promise.all(statements);
             })
             .then((resp) =>
                 XAPI.sendStatement(
@@ -515,7 +517,9 @@ export class App {
             );
         }
 
-        return Promise.allSettled(statements);
+        const results = await Promise.all([...App.postedStates, ...App.sentStatements, ...statements]);
+
+        return Promise.resolve(results)
     }
 
     static checkCourseCompleted() {
@@ -535,9 +539,9 @@ export class App {
         App.container.addEventListener('completed', (e) => {
             App.completedInteractions.add(e.detail.obj);
             if (e.detail.obj.data?.evaluated === true) {
-                XAPI.sendStatement(
+                App.sentStatements.push(XAPI.sendStatement(
                     new Statement(e.detail.obj, 'completed').statement
-                );
+                ));
             } else {
                 console.log(
                     `%c${e.detail.obj.iri} is not evaluated. No statement was sent.`,
@@ -550,7 +554,7 @@ export class App {
 
         App.container.addEventListener('state_changed', (e) => {
                 if (e.detail.obj.iri.startsWith(App.course.data.trackIRI)) {
-                    XAPI.postState(e.detail.obj.iri, e.detail.obj.state);
+                    App.postedStates.push(XAPI.postState(e.detail.obj.iri, e.detail.obj.state));
                 }
 
                 // add prop to decide which results to use.
@@ -574,9 +578,9 @@ export class App {
 
                     if (globalPoolsUpdated) {
                         App.recalculateGlobalPools();
-                        XAPI.postState(`${config.trackIRI}/globalPools`, {
+                        App.postedStates(XAPI.postState(`${config.trackIRI}/globalPools`, {
                             globalPools: App.course.data.globalPools,
-                        });
+                        }));
                     }
                 }
 
@@ -596,11 +600,11 @@ export class App {
 
                     App.processMetric(currentMetric, e.detail.obj);
 
-                    XAPI.sendStatement(
+                    App.sentStatements.push(XAPI.sendStatement(
                         new Statement(e.detail.obj, 'calculated', {
                             metric: currentMetric,
                         }).statement
-                    );
+                    ));
                 } else if (
                     config.globalMetrics.length > 0 &&
                     'metrics' in e.detail.obj.data &&
@@ -620,20 +624,20 @@ export class App {
                         ) {
                             App.processMetric(currentMetric, e.detail.obj);
 
-                            XAPI.sendStatement(
+                            App.sentStatements.push(XAPI.sendStatement(
                                 new Statement(e.detail.obj, 'calculated', {
                                     metric: currentMetric,
                                 }).statement
-                            );
+                            ));
                         }
                     } else {
                         App.processMetric(currentMetric, e.detail.obj);
 
-                        XAPI.sendStatement(
+                        App.sentStatements.push(XAPI.sendStatement(
                             new Statement(e.detail.obj, 'calculated', {
                                 metric: currentMetric,
                             }).statement
-                        );
+                        ));
                     }
                 }
 
@@ -644,11 +648,11 @@ export class App {
                     console.log('%cSENDING MESSAGE', 'font-size:20px;color:red;')
                     if (e.detail.obj.data.statements.send.requiredState === 'completed' || (e.detail.obj.data.statements.send.requiredState === 'passed' && e.detail.obj.passed)) {
 
-                        XAPI.sendStatement(
+                        App.sentStatements.push(XAPI.sendStatement(
                             new Statement(e.detail.obj, 'send', {
                                 message: e.detail.obj.sendStmtMessage
                             }).statement
-                        );
+                        ));
                     }
 
                 }
@@ -660,22 +664,22 @@ export class App {
             });
 
             App.container.addEventListener('played', (e) => {
-                XAPI.sendStatement(new Statement(e.detail.obj, 'played').statement);
+                App.sentStatements.push(XAPI.sendStatement(new Statement(e.detail.obj, 'played').statement));
             });
 
             App.container.addEventListener('paused', (e) => {
-                XAPI.sendStatement(new Statement(e.detail.obj, 'paused').statement);
+                App.sentStatements.push(XAPI.sendStatement(new Statement(e.detail.obj, 'paused').statement));
             });
 
             App.container.addEventListener('seeked', (e) => {
-                XAPI.sendStatement(new Statement(e.detail.obj, 'seeked').statement);
+                App.sentStatements.push(XAPI.sendStatement(new Statement(e.detail.obj, 'seeked').statement));
             });
 
             App.container.addEventListener('passed', (e) => {
                 if (e.detail.obj.data?.evaluated === true) {
-                    XAPI.sendStatement(
+                    App.sentStatements.push(XAPI.sendStatement(
                         new Statement(e.detail.obj, 'passed').statement
-                    );
+                    ));
                 } else {
                     console.log(
                         `%c${e.detail.obj.iri} is not evaluated. No statement was sent.`,
@@ -686,9 +690,9 @@ export class App {
 
             App.container.addEventListener('interacted', (e) => {
                 if (e.detail.obj.data?.evaluated === true) {
-                    XAPI.sendStatement(
+                    App.sentStatements.push(XAPI.sendStatement(
                         new Statement(e.detail.obj, 'interacted').statement
-                    );
+                    ));
                 } else {
                     console.log(
                         `%c${e.detail.obj.data.iri} is not evaluated. No statement was sent.`,
@@ -699,9 +703,9 @@ export class App {
 
             App.container.addEventListener('failed', (e) => {
                 if (e.detail.obj.data?.evaluated === true) {
-                    XAPI.sendStatement(
+                    App.sentStatements.push(XAPI.sendStatement(
                         new Statement(e.detail.obj, 'failed').statement
-                    );
+                    ));
                 } else {
                     console.log(
                         `%c${e.detail.obj.data.iri} is not evaluated. No statement was sent.`,
@@ -712,9 +716,9 @@ export class App {
 
             App.container.addEventListener('answered', (e) => {
                 if (e.detail.obj.parent.data?.evaluated === true) {
-                    XAPI.sendStatement(
+                    App.sentStatements.push(XAPI.sendStatement(
                         new Statement(e.detail.obj, 'answered').statement
-                    );
+                    ));
                 } else {
                     console.log(
                         `%c${e.detail.obj.data.iri} is not evaluated. No statement was sent.`,
@@ -826,7 +830,7 @@ export class App {
                     body: JSON.stringify(obj),
                 });
                 console.log(`%cState posted: ${res.ok}`, 'color:gray;');
-                return res.ok;
+                return Promise.resolve(res.ok)
             }
         }
 
@@ -842,7 +846,7 @@ export class App {
                     },
                 });
                 console.log(`%c${stateId} state deleted: ${res.ok}`, 'color:gray;');
-                return res;
+                return Promise.resolve(res.ok)
             }
         }
 
@@ -971,7 +975,8 @@ export class App {
                     body: JSON.stringify(stmt),
                 });
 
-                return await response.json();
+                const result = await response.json();
+                return Promise.resolve(result)
             }
         }
     }
