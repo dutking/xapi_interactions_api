@@ -581,6 +581,7 @@ export class App {
                 }
 
                 if (
+                    config.globalMetrics.length > 0 &&
                     e.detail.obj.parent instanceof Test &&
                     'questionsSettings' in e.detail.obj.parent.data &&
                     'metrics' in e.detail.obj.parent.data.questionsSettings &&
@@ -601,6 +602,7 @@ export class App {
                         }).statement
                     );
                 } else if (
+                    config.globalMetrics.length > 0 &&
                     'metrics' in e.detail.obj.data &&
                     e.detail.obj.data.metrics.length > 0 &&
                     e.detail.obj.status === 'completed'
