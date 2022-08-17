@@ -240,7 +240,7 @@
     --questionContainer-grid-template-columns: 1fr;
     --questionContainer-grid-template-rows: auto;
     --questionContainer-grid-template-areas: 'subHeader' 'question'
-        'answersContainer' 'questionFeedback' 'buttonsContainer';
+        'answersContainer' 'questionFeedback' 'tipsContainer' 'buttonsContainer';
     --questionContainer-row-gap: var(--spacing_lvl_2);
     --questionContainer-column-gap: 0;
     --questionContainer-justify-items: stretch;
