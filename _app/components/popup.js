@@ -93,6 +93,10 @@ popupTemplate.innerHTML = `
     font-weight: var(--popup-modal-content-font-weight);
     font-size: var(--popup-modal-content-font-size);
     color: var(--popup-modal-content-color);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    row-gap: 2rem;
 }
 
 .popupContainer .closeBtn {
@@ -181,6 +185,12 @@ export class Popup extends HTMLElement {
         this.setAttribute("id", this.id)
         document.querySelector('body').append(this)
 
+    }
+
+    updateContent(header, content) {
+        this.header = header
+        this.content = content
+        this.setContent()
     }
 
     setContent(){

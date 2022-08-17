@@ -519,6 +519,19 @@ templateMC.innerHTML = `
             border-radius: var(--tipText-border-radius);
         }
 
+        .questionContainer .tipsContainer .tipBtn {
+            padding: 0;
+            background: transparent;
+            color: black;
+            font-style: italic;
+            text-decoration: underline;
+            transition: all 300ms linear;
+        }
+
+        .questionContainer .tipsContainer .tipBtn:hover {
+            text-decoration: none;
+        }
+
         .questionContainer .questionFeedback {
             grid-area: questionFeedback;
             display: grid;
@@ -997,8 +1010,28 @@ export class QuestionMC extends HTMLElement {
             let tipsContainer = this.shadowRoot.querySelector('.tipsContainer');
             tipsContainer.classList.remove('off');
             this.tipBtn = this.shadowRoot.querySelector('.tipBtn');
-            this.tipBtn.innerHTML = `${this.data.help.length} tip(s) available`;
+            this.tipBtn.dataset.tipnum = 1
+            this.tipBtn.innerHTML = `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
             //дописать логику показа подсказок
+            this.tipBtn.addEventListener('click', () => {
+                let currentTip = Number(this.tipBtn.dataset.tipnum)
+                if(currentTip === 1) {
+                    let pp = document.createElement('popup-unit')
+                    pp.init(`tips_for_${that.data.id}`, 'Подсказки', `<div><p>Подсказка 1.</p><p>${this.data.help[currentTip-1]}</p></div>`)
+                    pp.showPopup()
+                } else {
+                    let pp = document.querySelector(`#tips_for_${that.data.id}`)
+                    let tips = this.data.help.filter((t,i) => i < currentTip).map((h,i) => `<div><p>Подсказка ${i + 1}.</p><p>${h}</p></div>`).join('')
+                    pp.updateContent('Подсказки', tips)
+                    pp.showPopup()
+
+                }
+                let nextTip = currentTip + 1 > this.data.help.length ? this.data.help.length : (currentTip + 1)
+                this.tipBtn.dataset.tipnum = nextTip
+                this.tipBtn.innerHTML = `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
+
+            
+            })
         }
 
         let answers = this.shadowRoot.querySelector('.answersContainer');
