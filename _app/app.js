@@ -469,7 +469,7 @@ export class App {
         }
     }
 
-    static finishCourse() {
+    static async finishCourse() {
         App.checkCourseCompleted();
         let statements = [];
         if (App.course.completed) {
@@ -517,9 +517,9 @@ export class App {
             );
         }
 
-        const results = await Promise.all([...App.postedStates, ...App.sentStatements, ...statements]);
+        let res = await Promise.all([...App.postedStates, ...App.sentStatements, ...statements]);
 
-        return Promise.resolve(results)
+        return Promise.resolve(res)
     }
 
     static checkCourseCompleted() {
@@ -584,7 +584,7 @@ export class App {
                     }
                 }
 
-                if (
+                if ('globalMetrics' in config &&
                     config.globalMetrics.length > 0 &&
                     e.detail.obj.parent instanceof Test &&
                     'questionsSettings' in e.detail.obj.parent.data &&
@@ -606,6 +606,7 @@ export class App {
                         }).statement
                     ));
                 } else if (
+                    'globalMetrics' in config &&
                     config.globalMetrics.length > 0 &&
                     'metrics' in e.detail.obj.data &&
                     e.detail.obj.data.metrics.length > 0 &&
