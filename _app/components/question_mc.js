@@ -1011,24 +1011,24 @@ export class QuestionMC extends HTMLElement {
             tipsContainer.classList.remove('off');
             this.tipBtn = this.shadowRoot.querySelector('.tipBtn');
             this.tipBtn.dataset.tipnum = 1
-            this.tipBtn.innerHTML = `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
+            this.tipBtn.innerHTML = this.data.help.length === 1 ? 'Показать подсказку' : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
             //дописать логику показа подсказок
             this.tipBtn.addEventListener('click', () => {
                 let currentTip = Number(this.tipBtn.dataset.tipnum)
                 if(currentTip === 1) {
                     let pp = document.createElement('popup-unit')
-                    pp.init(`tips_for_${that.data.id}`, 'Подсказки', `<div><p>Подсказка 1.</p><p>${this.data.help[currentTip-1]}</p></div>`)
+                    pp.init(`tips_for_${that.data.id}`, 'Подсказки', `<div class='tip'><p class='tipHeader'>Подсказка 1:</p><p>${this.data.help[currentTip-1]}</p></div>`)
                     pp.showPopup()
                 } else {
                     let pp = document.querySelector(`#tips_for_${that.data.id}`)
-                    let tips = this.data.help.filter((t,i) => i < currentTip).map((h,i) => `<div><p>Подсказка ${i + 1}.</p><p>${h}</p></div>`).join('')
+                    let tips = this.data.help.filter((t,i) => i < currentTip).map((h,i) => `<div class='tip'><p class='tipHeader'>Подсказка ${i + 1}:</p><p>${h}</p></div>`).join('')
                     pp.updateContent('Подсказки', tips)
                     pp.showPopup()
 
                 }
                 let nextTip = currentTip + 1 > this.data.help.length ? this.data.help.length : (currentTip + 1)
                 this.tipBtn.dataset.tipnum = nextTip
-                this.tipBtn.innerHTML = `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
+                this.tipBtn.innerHTML = this.data.help.length === 1 ? 'Показать подсказку' : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
 
             
             })

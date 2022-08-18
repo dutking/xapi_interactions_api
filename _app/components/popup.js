@@ -72,6 +72,13 @@ popupTemplate.innerHTML = `
     pointer-events: none;
     cursor: auto;
     z-index: 2;
+    animation-name: popup;
+    animation-duration: 300ms;
+    animation-delay: 0;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
 }
 
 .modal header {
@@ -97,6 +104,28 @@ popupTemplate.innerHTML = `
     grid-template-columns: 1fr;
     grid-template-rows: auto;
     row-gap: 2rem;
+}
+
+.modal .content .tip {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+}
+
+.modal .content .tipHeader {
+    display: grid;
+    grid-template-columns: 47px 1fr;
+    column-gap: 1rem;
+    align-content: center;
+    align-items: center;
+    font-style: italic;
+}
+
+.modal .content .tipHeader::before {
+    content: url(_app/components/img/bulb.svg);
+    display: inline-block;
+    width: 47px;
+    height: 46px;
 }
 
 .popupContainer .closeBtn {
@@ -145,6 +174,18 @@ popupTemplate.innerHTML = `
 
 .popupContainer .closeBtn:hover::after, .popupContainer .closeBtn:hover::before {
     background: #ccc;
+}
+
+@keyframes popup {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0px);
+        opacity: 1;
+    }
 }
 
 </style>
