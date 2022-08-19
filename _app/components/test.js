@@ -1406,7 +1406,7 @@ export class Test extends HTMLElement {
         if (typeof this.data.passingScore === "string") {
             if (this.data.passingScore.includes("%")) {
                 let multiplier = Number(this.data.passingScore.replace("%", ""))
-                return Math.ceil((this.maxPossibleScore / 100) * multiplier)
+                return Math.round((this.maxPossibleScore / 100) * multiplier)
             } else {
                 return Number(this.data.passingScore)
             }
