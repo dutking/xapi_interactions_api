@@ -150,6 +150,16 @@ export class AuxFunctions {
             })
         }
 
+        if(parsedText.includes('<likert:')){
+            let regex = /(\<likert:(text|score):a\d+\>)/g
+            let matches = parsedText.match(regex)
+            matches.forEach(m => {
+                let property = m.split(":")[1]
+                let answerIndex = Number(m.split(":")[2].replace('>', '').split("a")[1]) - 1
+                parsedText = parsedText.replace(m, object.likertData[answerIndex][property])
+            })
+        }
+
         return parsedText;
     }
 

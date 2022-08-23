@@ -756,6 +756,21 @@ export class Test extends HTMLElement {
         })
     }
 
+    get likertData() {
+        if(this.data.classes.includes('likert')){
+            let answers = this.questionsElements[0].data.answers.map(a => a.text)
+            console.log(answers)
+           return this.questionsElements.map(e => e.userAnswer).map(a => a.filter(i => i[1] === true)).map(a => a[0]).map(a => a[0]).reduce((accum, item) => {
+            accum[Number(item.split('a')[1]) - 1]++
+            return accum
+           }, Array(answers.length).fill(0)).map((i, index) => {
+            return {text: answers[index],
+                    score: i}
+        })
+        }
+        return undefined
+    }
+
     get questionsElements() {
         return Array.from(
             this.shadowRoot.querySelector(".questionsContainer").children
