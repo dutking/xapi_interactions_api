@@ -1,6 +1,54 @@
 import { AuxFunctions } from './auxFunctions.js';
 
 export const scoringFunctions = {
+    adaptor_innovator_survey: function(obj){
+        let score = obj.score
+        if (window.gender === "male") {
+            if (score >= 0 && score <= 108) {
+              return 1;
+            } else if (score >= 109 && score <= 116) {
+              return 2;
+            } else if (score >= 117 && score <= 123) {
+              return 3;
+            } else if (score >= 124 && score <= 131) {
+              return 4;
+            } else if (score >= 132 && score <= 139) {
+              return 5;
+            } else if (score >= 140 && score <= 146) {
+              return 6;
+            } else if (score >= 147 && score <= 154) {
+              return 7;
+            } else if (score >= 155 && score <= 161) {
+              return 8;
+            } else if (score >= 162 && score <= 169) {
+              return 9;
+            } else if (score >= 170) {
+              return 10;
+            }
+          } else if (window.gender === "female") {
+            if (score >= 0 && score <= 106) {
+              return 1;
+            } else if (score >= 107 && score <= 113) {
+              return 2;
+            } else if (score >= 114 && score <= 120) {
+              return 3;
+            } else if (score >= 121 && score <= 127) {
+              return 4;
+            } else if (score >= 128 && score <= 134) {
+              return 5;
+            } else if (score >= 135 && score <= 141) {
+              return 6;
+            } else if (score >= 142 && score <= 148) {
+              return 7;
+            } else if (score >= 149 && score <= 155) {
+              return 8;
+            } else if (score >= 156 && score <= 162) {
+              return 9;
+            } else if (score >= 163) {
+              return 10;
+            }
+        }
+    },
     adaptation_asp_survey: function (obj) {
         const options = [2, 1, -2];
         const scales = [
