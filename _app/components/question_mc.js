@@ -37,9 +37,6 @@ templateMC.innerHTML = `
         padding: 0;
         line-height: var(--line-height-primary);
         box-sizing: border-box;
-        font-family: var(--font-family-primary);
-        font-size: var(--font-size-primary);
-        color: var(--color-dark-primary);
     }
 
     strong {
@@ -526,6 +523,7 @@ templateMC.innerHTML = `
             font-style: italic;
             text-decoration: underline;
             transition: all 300ms linear;
+            border-width: 0;
         }
 
         .questionContainer .tipsContainer .tipBtn:hover {

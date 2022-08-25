@@ -6,10 +6,7 @@ poolTemplate.innerHTML = `
     padding: 0;
     line-height: var(--line-height);
     box-sizing: border-box;
-    font-family: var(--font-family-primary);
-    font-weight: var(--font-weight-regular);
-    font-size: var(--font-size-primary);
-    color: var(--color-font-dark-primary);
+    
 }
 
 .pool {
@@ -19,6 +16,10 @@ poolTemplate.innerHTML = `
     height: var(--pool-height);
     grid-template-columns: var(--pool-grid-template-columns);
     grid-template-rows: var(--pool-grid-template-rows);
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-primary);
+    color: var(--color-font-dark-primary);
 }
 
 .pool .char {

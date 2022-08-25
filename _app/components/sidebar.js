@@ -8,10 +8,7 @@ sidebarTemplate.innerHTML = `
     padding: 0;
     line-height: var(--line-height);
     box-sizing: border-box;
-    font-family: var(--font-family-primary);
-    font-weight: var(--font-weight-regular);
-    font-size: var(--font-size-primary);
-    color: var(--color-font-dark-primary);
+    
 }
 
 .sidebar{
@@ -32,6 +29,10 @@ sidebarTemplate.innerHTML = `
     transform: var(--sidebar-transform);
     transition: var(--sidebar-transition);
     z-index: var(--z-index-base);
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-primary);
+    color: var(--color-font-dark-primary);
 }
 
 .sidebar.opened {

@@ -35,9 +35,6 @@ templateMR.innerHTML = `
     padding: 0;
     line-height: var(--line-height-primary);
     box-sizing: border-box;
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-primary);
-    color: var(--color-dark-primary);
 }
 
 strong {
@@ -466,6 +463,20 @@ strong {
             border-width: var(--tipText-border-width);
             border-color: var(--tipText-border-color);
             border-radius: var(--tipText-border-radius);
+        }
+
+        .questionContainer .tipsContainer .tipBtn {
+            padding: 0;
+            background: transparent;
+            color: black;
+            font-style: italic;
+            text-decoration: underline;
+            transition: all 300ms linear;
+            border-width: 0;
+        }
+
+        .questionContainer .tipsContainer .tipBtn:hover {
+            text-decoration: none;
         }
 
         .questionContainer .questionFeedback {
