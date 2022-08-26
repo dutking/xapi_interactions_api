@@ -25,6 +25,7 @@ import {
 import {
     AuxFunctions
 } from './auxFunctions.js';
+import { STATUS } from './enums.js';
 
 export class App {
     constructor() {}

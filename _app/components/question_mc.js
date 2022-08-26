@@ -2,6 +2,7 @@ import { AuxFunctions } from '../auxFunctions.js';
 import { Pool } from './pool.js';
 import { Popup } from './popup.js';
 
+
 const answerTemplateMC = document.createElement('template');
 answerTemplateMC.innerHTML = `
         <div class='answerContainer'>
