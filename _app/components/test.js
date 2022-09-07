@@ -803,7 +803,7 @@ export class Test extends HTMLElement {
 
         let qState = await window.XAPI.getState(this.iri + "/" + id)
 
-        questionElement.setFields(
+        questionElement.init(
             question,
             this.questionsOrder.indexOf(id),
             this,
@@ -813,6 +813,10 @@ export class Test extends HTMLElement {
         return new Promise((resolve, reject) => {
             resolve(questionElement)
         })
+    }
+
+    get metricData(){
+        
     }
 
     get lastQuestionIndex() {

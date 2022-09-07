@@ -23,8 +23,6 @@ export class QuestionOriginal extends HTMLElement {
         this.state = {};
     }
 
-    
-
     get amountOfQuestions() {
         return this.parent.amountOfQuestions;
     }
@@ -66,88 +64,167 @@ export class QuestionOriginal extends HTMLElement {
        2) Или организовать это все в классе Statement - там сейчас каша из-за типов вопросов
     */
 
-    get stmt_nameRus () {
-        let question = '';
-        if (parent.data?.commonQuestion !== '') {
-            question = `${parent.data.commonQuestion} ${data.question}`;
-        } else {
-            question = data.question;
+    get nameRus () {
+        if (this.data.story !== '') {
+            return AuxFunctions.clearFromTags(`${this.data.story} ${this.data.question}`);
         }
+        
+        return AuxFunctions.clearFromTags(this.data.question);
 
-        return question
+    }
+
+    get description () {
+        if(this.parent.data.commonQuestion !== '') {
+            return AuxFunctions.clearFromTags(this.parent.data.commonQuestion)
+        }
+        return this.nameRus;
     }
 
     /* STATEMENTS PARTS GETTERS end */
 
-    setFields(data, index, parent, state) {
+    init(data, index, parent, state) {
+        
         this.parent = parent;
         this.data = data;
         this.index = index;
         this.data.evaluated = parent.data.evaluated;
-
-
-
         this.state = state;
-
-        // <- for statements only
-
-        
-
-        this.data.description = data.story !== '' ? AuxFunctions.clearFromTags(data.story) : AuxFunctions.clearFromTags(question);
-        this.data.nameRus = question;
-
-        // for statements only ->
-
-        let that = this;
-        
-        // adding subtype as a class
         this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
 
-        if (this.data.subtype !== "") {
-            let classes = this.data.subtype.split(' ')
-            classes.forEach((c) => {
-                that.classList.add(c)
-                that.questionContainer.classList.add(c)
-            })
+        this.addClasses()
+        this.setCounter()
+        this.setStory()
+        this.setInstruction()
+        this.setQuestion()
+        this.setHelp()
+        this.setAnswers()
+
+        // вынести LIKERT в отдельный компонент!
+        this.setLikert()
+
+        this.setButtons();
+        this.setGridTemplateAreas();
+        this.emitEvent('created');
+        this.setListeners();
+
+        if (!('isFake' in this.state)) {
+            if (this.resume === true) {
+                this.restoreState();
+            }
+        }
+    }
+
+    setLikert(){
+        if(this.data.subtype === 'likert'){
+            Array.from(this.shadowRoot.styleSheets[0].cssRules)
+                .filter((rule) => rule.selectorText === ".questionContainer.likert .answersContainer")[0]
+                .style.setProperty("--answersContainer-grid-template-columns", `repeat(${this.data.answers.length}, 1fr)`)
+    
+                if(this.index%2 === 1) {
+                    this.questionContainer.classList.add('even')
+                } else {
+                    this.questionContainer.classList.add('odd')
+                }
+            
+                this.shadowRoot.querySelector('.instruction').classList.add('off')
+    
+                if(this.index === 0) {
+                    this.questionContainer.classList.add('first')
+                    let story = this.shadowRoot.querySelector('.story')
+                    story.classList.remove('off')
+                    if(this.data.story.length === 0) {
+    
+                        story.innerHTML = '_'
+                        story.style.opacity = 0
+                    }
+                }
+    
+                if(this.index > 0){
+                    Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
+    
+                }
+                
+            }
+    }
+
+    setAnswers() {
+        let answers = this.shadowRoot.querySelector('.answersContainer');
+
+        let answersData = this.data.answers;
+
+        if (this.data.shuffle) {
+            answersData = AuxFunctions.shuffleArray(this.data.answers);
         }
 
+        answersData.forEach((a, i) => {
+            let newAnswer;
 
-        if (this.parent.data?.counter && this.amountOfQuestions > 1) {
-            let subHeader = this.shadowRoot.querySelector('.subHeader');
-            let counter = this.shadowRoot.querySelector('.counter');
-            counter.innerHTML = AuxFunctions.parseText(
-                parent.data.counter,
-                this
-            );
-            counter.classList.remove('off');
-            subHeader.classList.remove('off');
-        }
+            if (that.data?.subtype !== '') {
+                let classes = this.data.subtype.split(' ')
+                classes.forEach(c => answers.classList.add(c))
+                
+                // выделить IMAGE в отдельный компонент!
+                if (that.data.subtype.includes('image')) {
+                    newAnswer = answerTemplate.content.cloneNode(true);
+                    let img = newAnswer.querySelector('img')
 
-        if (this.data.story.length > 0) {
-            let story = this.shadowRoot.querySelector('.story');
-            story.innerHTML = this.data.story;
-            story.classList.remove('off');
-        }
+                    let folder = this.data.id.split('_').slice(0, 2).join('_');
 
-        if(this.data.instruction !== ' ') {
-            this.shadowRoot.querySelector('.instruction').innerHTML =
-            AuxFunctions.parseText(this.data.instruction, this);
-        } else {
-            this.shadowRoot.querySelector('.instruction').classList.add('off')
-        }
+                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
 
-        
+                    setTimeout(() => {
+                        
+                        if(img.naturalWidth === 0) {
+                            img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
+                            
+                        }
+                    },1000)
 
-        this.shadowRoot.querySelector('.questionText').innerHTML =
-            this.data.question;
+                    if(this.data.subtype.includes('zoom')){
+                        const popup = document.createElement('popup-unit')
+                        popup.init(`pp_${a.id}`, a.text, `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
+                        img.addEventListener('click', () => {
+                            popup.showPopup()
+                            let img = popup.shadowRoot.querySelector('img')
+                            if(img.naturalWidth === 0) {
+                                img.setAttribute('src', `./_app/img/${folder}/${a.id}_large.png`);
+                                
+                            }
+                        })
+                    }
+                } else {
+                    newAnswer = answerTemplate.content.cloneNode(true);
+                }
+            } else {
+                newAnswer = answerTemplate.content.cloneNode(true);
+            }
 
+            answers.appendChild(newAnswer);
+
+            newAnswer = Array.from(answers.children)[i];
+            newAnswer.setAttribute('data-id', a.id);
+            newAnswer.querySelector('input').setAttribute('id', a.id);
+            newAnswer.querySelector('input').setAttribute('name', this.data.id);
+            newAnswer.querySelector('label').setAttribute('for', a.id);
+            newAnswer.querySelector('label span.text').innerHTML = a.text;
+            let feedback = newAnswer.querySelector('.answerFeedback');
+            feedback.dataset.id = a.id;
+
+            if(i%2 === 1) {
+                newAnswer.classList.add('even')
+            } else {
+                newAnswer.classList.add('odd')
+            }
+        });
+    }
+
+    setHelp() {
         if (this.data.help.length !== 0 && this.data.help[0] !== '') {
             let tipsContainer = this.shadowRoot.querySelector('.tipsContainer');
             tipsContainer.classList.remove('off');
             this.tipBtn = this.shadowRoot.querySelector('.tipBtn');
             this.tipBtn.dataset.tipnum = 1
             this.tipBtn.innerHTML = this.data.help.length === 1 ? 'Показать подсказку' : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
-            //дописать логику показа подсказок
             this.tipBtn.addEventListener('click', () => {
                 let currentTip = Number(this.tipBtn.dataset.tipnum)
                 if(currentTip === 1) {
@@ -164,154 +241,61 @@ export class QuestionOriginal extends HTMLElement {
                 let nextTip = currentTip + 1 > this.data.help.length ? this.data.help.length : (currentTip + 1)
                 this.tipBtn.dataset.tipnum = nextTip
                 this.tipBtn.innerHTML = this.data.help.length === 1 ? 'Показать подсказку' : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
-
-            
             })
         }
+    }
 
-        let answers = this.shadowRoot.querySelector('.answersContainer');
+    setQuestion() {
+        this.shadowRoot.querySelector('.questionText').innerHTML =
+            this.data.question;
+    }
 
-        let answersData = this.data.answers;
-
-        if (this.data.shuffle) {
-            answersData = AuxFunctions.shuffleArray(this.data.answers);
-        }
-
-        answersData.forEach((a, i) => {
-            let newAnswer;
-
-            if (that.data?.subtype !== '') {
-                let classes = that.data.subtype.split(' ')
-                classes.forEach(c => answers.classList.add(c))
-                
-                if (that.data.subtype.includes('image')) {
-                    newAnswer = answerTemplateMCImage.content.cloneNode(true);
-                    let img = newAnswer.querySelector('img')
-
-                    let folder = this.data.id.split('_').slice(0, 2).join('_');
-
-                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
-
-                    setTimeout(() => {
-                        
-                        if(img.naturalWidth === 0) {
-                            img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
-                            
-                        }
-                    },1000)
-
-                    if(that.data.subtype.includes('zoom')){
-                        const popup = document.createElement('popup-unit')
-                        popup.init(`pp_${a.id}`, a.text, `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
-                        img.addEventListener('click', () => {
-                            popup.showPopup()
-                            let img = popup.shadowRoot.querySelector('img')
-                            if(img.naturalWidth === 0) {
-                                img.setAttribute('src', `./_app/img/${folder}/${a.id}_large.png`);
-                                
-                            }
-                        })
-                    }
-                } else {
-                    newAnswer = answerTemplateMC.content.cloneNode(true);
-                }
-            } else {
-                newAnswer = answerTemplateMC.content.cloneNode(true);
-            }
-
-            answers.appendChild(newAnswer);
-
-            newAnswer = Array.from(answers.children)[i];
-
-            // TO DO ON CLICK
-                /* if(that.data?.subtype === 'imagePlus'){
-                    try {
-                        let svg = await fetch(`./_app/img/${folder}/${a.id}_large.svg`, { method: 'HEAD' })
-                        
-                        if (svg.ok) {
-                            img.addEventListener('click', () => {
-                                let pp = document.createElement('popup-unit')
-                                pp.init(`<img src="./_app/img/${folder}/${a.id}_large.svg" style="min-width:200px;">`, a.text)
-                            })
-                        } else {
-                            img.addEventListener('click', () => {
-                                let pp = document.createElement('popup-unit')
-                                pp.init(`<img src="./_app/img/${folder}/${a.id}_large.png" style="min-width:200px;">`, a.text)
-                            })
-                        }
-                    } catch (e) {
-                        console.log(e)
-                    }
-                } */
-                
-            newAnswer.setAttribute('data-id', a.id);
-            newAnswer.querySelector('input').setAttribute('id', a.id);
-            newAnswer.querySelector('input').setAttribute('name', that.data.id);
-            newAnswer.querySelector('label').setAttribute('for', a.id);
-            newAnswer.querySelector('label span.text').innerHTML = a.text;
-            let feedback = newAnswer.querySelector('.answerFeedback');
-            feedback.dataset.id = a.id;
-
-            if(i%2 === 1) {
-                newAnswer.classList.add('even')
-            } else {
-                newAnswer.classList.add('odd')
-            }
-        });
-
-        if(this.data.subtype === 'likert'){
-        Array.from(this.shadowRoot.styleSheets[0].cssRules)
-            .filter((rule) => rule.selectorText === ".questionContainer.likert .answersContainer")[0]
-            .style.setProperty("--answersContainer-grid-template-columns", `repeat(${this.data.answers.length}, 1fr)`)
-
-            if(this.index%2 === 1) {
-                this.questionContainer.classList.add('even')
-            } else {
-                this.questionContainer.classList.add('odd')
-            }
+    setInstruction() {
+        if(this.data.instruction !== ' ') {
+            this.shadowRoot.querySelector('.instruction').innerHTML =
+            AuxFunctions.parseText(this.data.instruction, this);
+            return
+        } 
         
-            this.shadowRoot.querySelector('.instruction').classList.add('off')
+        this.shadowRoot.querySelector('.instruction').classList.add('off')
+    }
 
-            if(this.index === 0) {
-                this.questionContainer.classList.add('first')
-                /* let story = this.shadowRoot.querySelector('.story')
-                story.classList.remove('off')
-                if(this.data.story.length === 0) {
-
-                    story.innerHTML = '_'
-                    story.style.opacity = 0
-                } */
-            }
-
-            if(this.index > 0){
-                Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
-
-            }
-            
+    setStory() {
+        if (this.data.story.length > 0) {
+            let story = this.shadowRoot.querySelector('.story');
+            story.innerHTML = this.data.story;
+            story.classList.remove('off');
         }
+    }
 
-        if (this.submitMode === 'all_at_once') {
-            this.shadowRoot.querySelector('.submitBtn').classList.add('off');
+    setCounter() {
+        if (this.parent.data?.counter && this.amountOfQuestions > 1) {
+            let subHeader = this.shadowRoot.querySelector('.subHeader');
+            let counter = this.shadowRoot.querySelector('.counter');
+            counter.innerHTML = AuxFunctions.parseText(
+                parent.data.counter,
+                this
+            );
+            counter.classList.remove('off');
+            subHeader.classList.remove('off');
         }
-        this.setButtons();
-        this.setGridTemplateAreas();
-        this.emitEvent('created');
-        this.setListeners();
-        if (!('isFake' in this.state)) {
-            if (this.resume === true) {
-                if (!('status' in this.state)) {
-                    // to handle old version without states
-                    this.state.status = 'completed';
-                }
-                this.restoreState();
-            }
-        }
+    }
 
+    addClasses(){
+        if (this.data.subtype !== "") {
+            let classes = this.data.subtype.split(' ')
+            classes.forEach((cl) => {
+                this.classList.add(cl)
+                this.questionContainer.classList.add(cl)
+            })
+        }
     }
 
     setButtons() {
+
         let continueBtn = this.shadowRoot.querySelector('.continueBtn');
         let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+
         Object.keys(this.parent.data.buttons).forEach((k) => {
             let btn = this.shadowRoot.querySelector(`.${k}Btn`);
             if (btn) {
@@ -335,19 +319,12 @@ export class QuestionOriginal extends HTMLElement {
             this.shadowRoot
                 .querySelector('.buttonsContainer')
                 .classList.add('off');
+
+                submitBtn.classList.add('off');
         }
 
         submitBtn.classList.remove('invisible');
     }
-
-    /* get globalTestGridAreas() {
-        return getComputedStyle(document.documentElement)
-            .getPropertyValue('--questionContainer-grid-template-areas')
-            .trim()
-            .replaceAll('"', '')
-            .replaceAll('  ', ' ')
-            .split(' ');
-    } */
 
     get globalTestGridAreas() {
         return getComputedStyle(document.documentElement)
