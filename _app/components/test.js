@@ -830,27 +830,21 @@ export class Test extends HTMLElement {
     }
 
     get questionsElements() {
-        return Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        )
+        let children = Array.from(this.shadowRoot.querySelector(".questionsContainer").children)
+        let filtered = children.filter(c => !c.className.includes('likertHeader'))
+        return filtered
     }
 
     get allChecked() {
-        let questions = Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        )
-
-        if (questions.length === this.questionsToTake.length) {
-            return questions.map((i) => i.checked).every((i) => i === true)
+        if (this.questionsElements.length === this.questionsToTake.length) {
+            return this.questionsElements.map((i) => i.checked).every((i) => i === true)
         } else {
             return false
         }
     }
 
     getQuestionElement(id) {
-        return Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        ).filter((e) => e.data.id === id)[0]
+        return this.questionsElements.filter((e) => e.data.id === id)[0]
     }
 
     async createQuestion(id) {
@@ -879,9 +873,7 @@ export class Test extends HTMLElement {
 
     get lastQuestionIndex() {
         return (
-            Array.from(
-                this.shadowRoot.querySelector(".questionsContainer").children
-            ).length - 1
+            this.questionsElements.length - 1
         )
     }
 
@@ -899,9 +891,7 @@ export class Test extends HTMLElement {
             "color:lightblue;font-weight:bold;font-size:16px;"
         )
 
-        Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        ).forEach((child) => child.remove())
+        this.questionsElements.forEach((child) => child.remove())
 
         await this.deleteQuestionsStates()
 
@@ -964,21 +954,12 @@ export class Test extends HTMLElement {
             }
 
             let that = this
-            let questions = Array.from(
-                that.shadowRoot.querySelector(".questionsContainer").children
-            )
-            questions.forEach((q) => q.checkAnswer())
+            this.questionsElements.forEach((q) => q.checkAnswer())
 
             if (this.attemptCompleted) {
                 this.completeTest()
             }
         }
-    }
-
-    get questionsElements() {
-        return Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        )
     }
 
     markTestCorrectness() {
@@ -1490,9 +1471,12 @@ export class Test extends HTMLElement {
 
     get attemptCompleted() {
         if (this.questionsElements.length === this.questionsToTake.length) {
-            return this.questionsElements
-                .map((i) => i.status === "completed")
-                .every((i) => i === true)
+            let statuses = this.questionsElements.map((i) => i.status)
+/*             if(this.data.submitMode === 'all_at_once'){
+                return statuses.every(i => i === 'inProgress')
+            } */
+
+            return statuses.every((i) => i === "completed")
         }
 
         return false
@@ -1522,18 +1506,12 @@ export class Test extends HTMLElement {
     }
 
     get correctlyAnsweredQuestions() {
-        let questions = Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        )
-
-        return questions.filter((i) => i.result === true).length
+        return this.questionsElements.filter((i) => i.result === true).length
     }
 
     setScore() {
         let currentAttemptScore = 0
-        let completedQuestions = Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        ).filter((i) => i.status === "completed")
+        let completedQuestions = this.questionsElements.filter((i) => i.status === "completed")
 
         if (this.data?.scoring === "questions") {
             completedQuestions.forEach((q) => {
@@ -1801,9 +1779,7 @@ export class Test extends HTMLElement {
     }
 
     get userPoolsResult() {
-        let questions = Array.from(
-            this.shadowRoot.querySelector(".questionsContainer").children
-        )
+        let questions = this.questionsElements.filter(child => !child.className.includes('likertHeader'))
 
         return questions
             .map((q) => q.userPoolsResult)
