@@ -158,7 +158,15 @@ testTemplate.innerHTML = `
         grid-template-columns: 1fr 2fr;
         padding: 2rem 0;
         background: rgba(255,255,255,0.8);
+        font-size: 14px;
+        line-height: 1.2;
         z-index: calc(var(--z-index-base) + 11);
+        margin-bottom: 1rem;
+    }
+
+    .testContainer.likert .questionsContainer .likertHeader .statement {
+        padding-left: 2rem;
+        align-self: center;
     }
 
     .testContainer.likert .questionsContainer .likertHeader .answers {
@@ -170,6 +178,10 @@ testTemplate.innerHTML = `
 
     .testContainer.likert .questionsContainer .likertHeader .answers div {
         text-align: center;
+    }
+
+    .testContainer.likert .questionsContainer .likertHeader .answers div:last-child{
+        padding-right: 5px;
     }
 
     .testContainer .feedbackContainer {
