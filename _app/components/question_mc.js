@@ -95,15 +95,6 @@ templateMC.innerHTML = `
             --questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
         }
 
-        .questionContainer.likert.first {
-            --question-row-gap: 1rem;
-        }
-
-        .questionContainer.likert.first .story:after {
-            content: '_';
-            opacity: 0;
-        }
-
         .questionContainer .subHeader {
             grid-area: subHeader;
             display: grid;
@@ -837,9 +828,7 @@ templateMC.innerHTML = `
         display:none !important;
     }
 
-    .first .story.off {
-        display:revert !important;
-    }
+
 
     .offTotal {
         display: none !important;
@@ -858,20 +847,11 @@ templateMC.innerHTML = `
             --questionContainer-grid-template-columns: 1fr;
             --questionContainer-grid-template-areas: 
             'question' 'answersContainer';
+            --questionContainer-row-gap: 2rem;
         }
 
         .questionContainer.likert .question .story {
             font-size: 1rem;
-        }
-
-        .questionContainer.likert.first .story.off {
-            display: none !important;
-        }
-
-        .questionContainer.likert.first .story:after {
-            content: '';
-            opacity: 0;
-            display: none;
         }
 
         .questionContainer.likert .answersContainer .answerContainer label .text.off{
@@ -1157,6 +1137,9 @@ export class QuestionMC extends HTMLElement {
         });
 
         if(this.data.subtype === 'likert'){
+            
+
+        
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === ".questionContainer.likert .answersContainer")[0]
             .style.setProperty("--answersContainer-grid-template-columns", `repeat(${this.data.answers.length}, 1fr)`)
@@ -1169,21 +1152,12 @@ export class QuestionMC extends HTMLElement {
         
             this.shadowRoot.querySelector('.instruction').classList.add('off')
 
-            if(this.index === 0) {
-                this.questionContainer.classList.add('first')
-                /* let story = this.shadowRoot.querySelector('.story')
-                story.classList.remove('off')
-                if(this.data.story.length === 0) {
-
-                    story.innerHTML = '_'
-                    story.style.opacity = 0
-                } */
-            }
-
-            if(this.index > 0){
+            Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
+            /* if(this.index > 0){
                 Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
+            } */
 
-            }
+
             
         }
 

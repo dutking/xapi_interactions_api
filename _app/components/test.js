@@ -118,6 +118,7 @@ testTemplate.innerHTML = `
     }
 
     .testContainer .questionsContainer {
+        position: relative;
         z-index: calc(var(--z-index-base) + 10);
         grid-area: questionsContainer;
         display: grid;
@@ -146,6 +147,29 @@ testTemplate.innerHTML = `
         border-radius: var(--questionsContainer-border-radius);
 
         width: 100%;
+    }
+
+    .testContainer.likert .questionsContainer .likertHeader{
+        box-sizing: border-box;
+        position: sticky;
+        top: 0;
+        left: 0;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        padding: 2rem 0;
+        background: rgba(255,255,255,0.8);
+        z-index: calc(var(--z-index-base) + 11);
+    }
+
+    .testContainer.likert .questionsContainer .likertHeader .answers {
+        --amount-of-answers: 3;
+        display: grid;
+        grid-template-columns: repeat(var(--amount-of-answers), 1fr);
+        column-gap: 1.5rem;
+    }
+
+    .testContainer.likert .questionsContainer .likertHeader .answers div {
+        text-align: center;
     }
 
     .testContainer .feedbackContainer {
@@ -358,6 +382,14 @@ testTemplate.innerHTML = `
             row-gap: 2rem;    
         }
     }
+
+    @media screen and (max-width: 640px) {
+        .testContainer.likert .questionsContainer .likertHeader{
+            display: none;
+        }
+    }
+
+    
 </style>
 <div class='testContainer'>
     <div class='instruction'></div>
@@ -426,6 +458,7 @@ export class Test extends HTMLElement {
         }
 
         this.setStaticContent()
+        this.setLikert()
         this.setDynamicContent(this.status).then(() => {
             this.setClasses()
             this.setListeners()
@@ -444,7 +477,10 @@ export class Test extends HTMLElement {
         if (this.data?.classes) {
             this.data.classes
                 .split(" ")
-                .forEach((cl) => this.placeholder.classList.add(cl))
+                .forEach((cl) => {
+                    this.placeholder.classList.add(cl)
+                    this.shadowRoot.querySelector('.testContainer').classList.add(cl)
+                })
         }
     }
 
@@ -750,6 +786,20 @@ export class Test extends HTMLElement {
 
             return new Promise((resolve, reject) => resolve())
         })
+    }
+
+    setLikert(){
+        if(this.data.classes.includes('likert')){
+            let header = document.createElement('div')
+            header.className = 'likertHeader'
+            let answers = this.data.iterables[0].answers.map(a => `<div class="answer">${a.text}</div>`).join('')
+            header.innerHTML = `<div class="statement">Вопрос</div><div class="answers">${answers}</div>`
+            this.shadowRoot.querySelector('.questionsContainer').prepend(header)
+
+            Array.from(this.shadowRoot.styleSheets[0].cssRules)
+            .filter((rule) => rule.selectorText === ".testContainer.likert .questionsContainer .likertHeader .answers")[0]
+            .style.setProperty("--amount-of-answers", this.data.iterables[0].answers.length)
+        }
     }
 
     get likertData() {
