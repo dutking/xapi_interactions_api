@@ -2,7 +2,6 @@ import { AuxFunctions } from '../auxFunctions.js';
 import { STATUS } from '../enums.js';
 import { Pool } from './pool.js';
 import { Popup } from './popup.js';
-import { STATUS } from '../enums.js';
 
 const answerTemplate = document.createElement('template');
 answerTemplate.innerHTML = ``;
@@ -80,32 +79,30 @@ export class QuestionOriginal extends HTMLElement {
         return this.nameRus;
     }
 
+
+
     /* STATEMENTS PARTS GETTERS end */
 
-    init(data, index, parent, state) {
-        
+    async init(data, index, parent) {
+        this.state = await window.XAPI.getState(this.iri)
         this.parent = parent;
         this.data = data;
         this.index = index;
         this.data.evaluated = parent.data.evaluated;
-        this.state = state;
         this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
 
-        this.addClasses()
+        this.getState()
+        AuxFunctions.addClasses(this)
         this.setCounter()
         this.setStory()
         this.setInstruction()
         this.setQuestion()
         this.setHelp()
         this.setAnswers()
-
-        // вынести LIKERT в отдельный компонент!
-        this.setLikert()
-
-        this.setButtons();
-        this.setGridTemplateAreas();
-        this.emitEvent('created');
-        this.setListeners();
+        this.setButtons()
+        this.setGridTemplateAreas()
+        this.emitEvent('created')
+        this.setListeners()
 
         if (!('isFake' in this.state)) {
             if (this.resume === true) {
@@ -114,108 +111,34 @@ export class QuestionOriginal extends HTMLElement {
         }
     }
 
-    setLikert(){
-        if(this.data.subtype === 'likert'){
-            Array.from(this.shadowRoot.styleSheets[0].cssRules)
-                .filter((rule) => rule.selectorText === ".questionContainer.likert .answersContainer")[0]
-                .style.setProperty("--answersContainer-grid-template-columns", `repeat(${this.data.answers.length}, 1fr)`)
-    
-                if(this.index%2 === 1) {
-                    this.questionContainer.classList.add('even')
-                } else {
-                    this.questionContainer.classList.add('odd')
-                }
-            
-                this.shadowRoot.querySelector('.instruction').classList.add('off')
-    
-                if(this.index === 0) {
-                    this.questionContainer.classList.add('first')
-                    let story = this.shadowRoot.querySelector('.story')
-                    story.classList.remove('off')
-                    if(this.data.story.length === 0) {
-    
-                        story.innerHTML = '_'
-                        story.style.opacity = 0
-                    }
-                }
-    
-                if(this.index > 0){
-                    Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
-    
-                }
-                
-            }
+    setAnswers() {
+        let answersContainer = this.shadowRoot.querySelector('.answersContainer');
+
+        let answersData = this.data.shuffle ? AuxFunctions.shuffleArray(this.data.answers) : this.data.answers;
+
+        answersData.map(setAnswer).forEach(answerElement => answersContainer.append(answerElement));
     }
 
-    setAnswers() {
-        let answers = this.shadowRoot.querySelector('.answersContainer');
+    setAnswer(answer, index) {
+        let answerElement = answerTemplate.content.cloneNode(true).querySelector('div');
 
-        let answersData = this.data.answers;
+        answerElement.setAttribute('data-id', answer.id);
+        answerElement.querySelector('input').setAttribute('id', answer.id);
+        answerElement.querySelector('input').setAttribute('name', this.data.id);
+        answerElement.querySelector('label').setAttribute('for', answer.id);
+        answerElement.querySelector('label span.text').innerHTML = answer.text;
+        
+        let feedback = answerElement.querySelector('.answerFeedback');
+        feedback.dataset.id = a.id;
 
-        if (this.data.shuffle) {
-            answersData = AuxFunctions.shuffleArray(this.data.answers);
+        if(index%2 === 1) {
+            answerElement.classList.add('even')
+        } else {
+            answerElement.classList.add('odd')
         }
 
-        answersData.forEach((a, i) => {
-            let newAnswer;
-
-            if (that.data?.subtype !== '') {
-                let classes = this.data.subtype.split(' ')
-                classes.forEach(c => answers.classList.add(c))
-                
-                // выделить IMAGE в отдельный компонент!
-                if (that.data.subtype.includes('image')) {
-                    newAnswer = answerTemplate.content.cloneNode(true);
-                    let img = newAnswer.querySelector('img')
-
-                    let folder = this.data.id.split('_').slice(0, 2).join('_');
-
-                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
-
-                    setTimeout(() => {
-                        
-                        if(img.naturalWidth === 0) {
-                            img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
-                            
-                        }
-                    },1000)
-
-                    if(this.data.subtype.includes('zoom')){
-                        const popup = document.createElement('popup-unit')
-                        popup.init(`pp_${a.id}`, a.text, `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
-                        img.addEventListener('click', () => {
-                            popup.showPopup()
-                            let img = popup.shadowRoot.querySelector('img')
-                            if(img.naturalWidth === 0) {
-                                img.setAttribute('src', `./_app/img/${folder}/${a.id}_large.png`);
-                                
-                            }
-                        })
-                    }
-                } else {
-                    newAnswer = answerTemplate.content.cloneNode(true);
-                }
-            } else {
-                newAnswer = answerTemplate.content.cloneNode(true);
-            }
-
-            answers.appendChild(newAnswer);
-
-            newAnswer = Array.from(answers.children)[i];
-            newAnswer.setAttribute('data-id', a.id);
-            newAnswer.querySelector('input').setAttribute('id', a.id);
-            newAnswer.querySelector('input').setAttribute('name', this.data.id);
-            newAnswer.querySelector('label').setAttribute('for', a.id);
-            newAnswer.querySelector('label span.text').innerHTML = a.text;
-            let feedback = newAnswer.querySelector('.answerFeedback');
-            feedback.dataset.id = a.id;
-
-            if(i%2 === 1) {
-                newAnswer.classList.add('even')
-            } else {
-                newAnswer.classList.add('odd')
-            }
-        });
+        AuxFunctions.addClasses(answerElement)
+        return answerElement
     }
 
     setHelp() {
@@ -281,18 +204,7 @@ export class QuestionOriginal extends HTMLElement {
         }
     }
 
-    addClasses(){
-        if (this.data.subtype !== "") {
-            let classes = this.data.subtype.split(' ')
-            classes.forEach((cl) => {
-                this.classList.add(cl)
-                this.questionContainer.classList.add(cl)
-            })
-        }
-    }
-
     setButtons() {
-
         let continueBtn = this.shadowRoot.querySelector('.continueBtn');
         let submitBtn = this.shadowRoot.querySelector('.submitBtn');
 
@@ -399,12 +311,11 @@ export class QuestionOriginal extends HTMLElement {
     }
 
     restoreAnswers() {
-        let that = this;
         if ('userAnswer' in this.state) {
             let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
 
             inputs.forEach((i) => {
-                let currentAnswer = that.state.userAnswer.filter(
+                let currentAnswer = this.state.userAnswer.filter(
                     (a) => a[0] === i.id
                 )[0];
                 if (currentAnswer[1] === true) {
@@ -412,8 +323,8 @@ export class QuestionOriginal extends HTMLElement {
                 }
             });
 
-            let submitBtn = this.shadowRoot.querySelector('.submitBtn');
             if (this.checked) {
+                let submitBtn = this.shadowRoot.querySelector('.submitBtn');
                 submitBtn.disabled = false;
             }
         }
@@ -430,38 +341,42 @@ export class QuestionOriginal extends HTMLElement {
     }
 
     setListeners() {
-        let that = this;
-        // Disable/enable submitBtn on inputs' changes.
+        this.setInputListener()
+        this.setSubmitBtnListener()
+        this.setContinueBtnListener()
+    }
 
+    setInputListener(){
         let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn');
-
         inputs.forEach((i) => {
             i.addEventListener('change', (e) => {
-                if (that.checked) {
+                if (this.checked) {
                     submitBtn.disabled = false;
-                    if (that.status === 'initial') {
-                        that.status = 'inProgress';
+                    if (this.status === 'initial') {
+                        this.status = 'inProgress';
                     }
                 } else {
                     submitBtn.disabled = true;
                 }
-                that.emitEvent('questionInProgress');
-                that.setState('user input');
+                this.emitEvent('questionInProgress');
+                this.setState('user input');
             });
         });
+    }
 
-        // submitBtn action
-        submitBtn.addEventListener('click', this.checkAnswer.bind(this));
-
-        // continueBtn action
+    setContinueBtnListener() {
+        let continueBtn = this.shadowRoot.querySelector('.continueBtn');
         continueBtn.addEventListener('click', (e) => {
-            that.emitEvent('continue');
-            if (that.displayMode === 'one_by_one') {
+            this.emitEvent('continue');
+            if (this.displayMode === 'one_by_one') {
                 e.target.classList.add('off');
             }
         });
+    }
+
+    setSubmitBtnListener() {
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+        submitBtn.addEventListener('click', this.checkAnswer.bind(this));
     }
 
     get userAnswer() {
@@ -473,7 +388,6 @@ export class QuestionOriginal extends HTMLElement {
     }
 
     checkAnswer() {
-        let that = this;
 
         this.status = 'completed';
 
@@ -482,14 +396,14 @@ export class QuestionOriginal extends HTMLElement {
                 this.parent.data.buttons.submit.completed;
         }
 
-        that.userAnswer
+        this.userAnswer
             .filter((a) => a[1] === true)
             .forEach((a) => {
                 let answer = this.data.answers.filter(
                     (ans) => ans.id === a[0]
                 )[0];
 
-                that.score = that.score + Number(answer.weight);
+                this.score = this.score + Number(answer.weight);
             });
 
         let correctAnswers = this.data.answers
