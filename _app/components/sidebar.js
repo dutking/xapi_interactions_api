@@ -118,8 +118,8 @@ sidebarTemplate.innerHTML = `
         <div class="sidebarOpenerContainer">
             <input type="checkbox" name="opener" id="opener">
             <label for="opener">
-                <img class='openBtn' src="./_app/img/sidebar/button_open.svg" alt="">
-                <img class='closeBtn' src="./_app/img/sidebar/button_close.svg" alt="">
+                <img class='openBtn' src="./_app/img/sidebar/button_open.svg" alt="" style="z-index:2;">
+                <img class='closeBtn' src="./_app/img/sidebar/button_close.svg" alt="" style="z-index:1;">
                 <span class='marker'></span>
             </label>
         </div>
