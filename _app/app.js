@@ -578,7 +578,7 @@ export class App {
 
                     if (globalPoolsUpdated) {
                         App.recalculateGlobalPools();
-                        App.postedStates(XAPI.postState(`${config.trackIRI}/globalPools`, {
+                        App.postedStates.push(XAPI.postState(`${config.trackIRI}/globalPools`, {
                             globalPools: App.course.data.globalPools,
                         }));
                     }
