@@ -1263,7 +1263,7 @@ export class Test extends HTMLElement {
             this.shadowRoot.querySelector(".feedbackContainer")
         
         if(this.data.displayMode === 'one_instead_another'){
-                this.scrollIntoView()
+                this.scrollIntoView({behavior: "smooth", block: "center"})
         }
 
         if (this.hasFeedback) {
