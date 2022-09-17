@@ -184,6 +184,29 @@ testTemplate.innerHTML = `
         padding-right: 5px;
     }
 
+    .testContainer .questionsContainer > * {
+        transform-origin: top center;
+        animation-name: questionEntrance;
+        animation-duration: 200ms;
+        animation-timing-function: linear;
+        animation-delay: 0ms;
+        animation-iteration-count: 1;
+        animation-direction: normal;
+        animation-fill-mode: forwards;
+    }
+
+    @keyframes questionEntrance {
+        from {
+            scale: 100% 0%;
+            opacity: 0;
+        }
+
+        to {
+            scale: 100% 100%;
+            opacity: 1;
+        }
+    }
+
     .testContainer .feedbackContainer {
         z-index: inherit;
         grid-area: feedbackContainer;
