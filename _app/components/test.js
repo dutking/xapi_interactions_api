@@ -55,6 +55,7 @@ testTemplate.innerHTML = `
         border-radius: var(--test-border-radius);
         
         width: var(--test-best-width);
+        max-width: var(--max-width);
     }    
 
     .testContainer .instruction {
