@@ -908,7 +908,10 @@
     --popupOpenerIcon-background: rgb(219, 219, 219);
     --popupOpenerIcon-background-hover: grey;
     /* Popup opener icon -> */
+}
 
+html, body {
+    scroll-behavior: smooth;
 }
 
 #allrecords strong {
