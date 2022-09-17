@@ -1261,18 +1261,12 @@ export class Test extends HTMLElement {
 
         let feedbackContainer =
             this.shadowRoot.querySelector(".feedbackContainer")
+        
+        if(this.data.displayMode === 'one_instead_another'){
+                this.scrollIntoView()
+        }
 
-        feedbackContainer.scrollIntoView()
-
-        if (
-            this.data.feedback?.common !== "" ||
-            this.data.feedback?.passed !== "" ||
-            this.data.feedback?.failed !== "" ||
-            this.data.feedback?.chartFunction !== "" ||
-            (this.data.feedback?.byScore &&
-                this.data.feedback.byScore.length > 0) ||
-            this.data.feedback?.showUserPoolsResult === true
-        ) {
+        if (this.hasFeedback) {
             feedbackContainer.classList.remove("off")
         } else {
             feedbackContainer.classList.add("off")
