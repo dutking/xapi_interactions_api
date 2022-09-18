@@ -786,6 +786,11 @@
 
     /* mc/mr input settings -> */
 
+    /* <- inline-fill-in input settings */
+    --input-empty-width: 32px;
+    --input-width: var(--input-empty-width);
+    /* inline-fill-in input settings ->*/
+
     /* <- sidebar*/
     --sidebar-grid-template-columns: 1fr 92px;
     --sidebar-column-gap: 3rem;

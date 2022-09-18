@@ -8,5 +8,4 @@ test_package
 .git
 .vscode
 .prettier
-/_app/components/question_inline-fill-in.js
 _app/custom.css
