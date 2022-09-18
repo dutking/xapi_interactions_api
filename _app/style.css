@@ -259,7 +259,7 @@
     --questionContainer-background: transparent;
 
     /* padding */
-    --questionContainer-padding: 0;
+    --questionContainer-padding: 0 0 1rem 0;
 
     /* border */
     --questionContainer-border-style: solid;

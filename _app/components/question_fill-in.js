@@ -53,6 +53,28 @@ strong {
             border-width: var(--questionContainer-border-width);
             border-color: var(--questionContainer-border-color);
             border-radius: var(--questionContainer-border-radius);
+
+            transform-origin: top center;
+            animation-name: questionEntrance;
+            animation-duration: 500ms;
+            animation-timing-function: linear;
+            animation-delay: 0ms;
+            animation-iteration-count: 1;
+            animation-direction: normal;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes questionEntrance {
+            from {
+                translate: 0 -100%;
+                opacity: 0;
+            }
+    
+            to {
+                translate: 0;
+                opacity: 1;
+            }
+        }
         }
         
 
