@@ -914,7 +914,7 @@
         --questionEntrance-transform-origin: top center;
         --questionEntrance-animation-name: questionEntrance;
         --questionEntrance-animation-duration: 500ms;
-        --questionEntrance-animation-timing-function: linear;
+        --questionEntrance-animation-timing-function: ease-out;
         --questionEntrance-animation-delay: 0ms;
         --questionEntrance-animation-iteration-count: 1;
         --questionEntrance-animation-direction: normal;
