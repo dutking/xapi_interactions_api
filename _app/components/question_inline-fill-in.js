@@ -859,20 +859,25 @@ export class QuestionInlineFillIn extends HTMLElement {
         });
     }
 
-    get exactUserAnswer() {
+    get completedString () {
+        let userAnswer = this.data.question
+        this.filledTasks.forEach((t, index) => userAnswer = userAnswer.replace(this.taskStrings[index], t.slice(1, -1)))
 
-        // ПЕРЕПИСАТЬ
-        let inputBoxesHTML = Array.from(this.shadowRoot.querySelectorAll('.inputBox')).map(i => i.outerHTML)
+        return userAnswer
+    }
 
-        let inputValues = Array.from(this.shadowRoot.querySelectorAll('input')).map(i => i.value)
-
-        let task = this.shadowRoot.querySelector('.taskContainer').innerHTML;
-
-        inputValues.forEach((i, index) => {
-            task = task.replace(inputBoxesHTML[index], i)
+    get filledTasks () {
+        return this.taskStrings.map((str,index) => {
+            let filledTask = str
+            this.exactUserAnswer[index].forEach(v => filledTask = filledTask.replace('*', v))
+            return filledTask
         })
+    }
 
-        return task
+    get exactUserAnswer() {
+        return Array.from(this.shadowRoot.querySelectorAll('.task'))
+        .map(t => Array.from(t.querySelectorAll('input[type=text]')))
+        .map(i => i.map(input => input.value))
     }
 
     checkAnswer() {
