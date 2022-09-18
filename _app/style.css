@@ -908,6 +908,28 @@
     --popupOpenerIcon-background: rgb(219, 219, 219);
     --popupOpenerIcon-background-hover: grey;
     /* Popup opener icon -> */
+
+    /*ANIMATIONS*/
+    /*QUESTION ENTRANCE*/
+        --questionEntrance-transform-origin: top center;
+        --questionEntrance-animation-name: questionEntrance;
+        --questionEntrance-animation-duration: 500ms;
+        --questionEntrance-animation-timing-function: linear;
+        --questionEntrance-animation-delay: 0ms;
+        --questionEntrance-animation-iteration-count: 1;
+        --questionEntrance-animation-direction: normal;
+        --questionEntrance-animation-fill-mode: forwards;
+        --questionEntrance-animation: var(--questionEntrance-animation-name) var(--questionEntrance-animation-duration) var(--questionEntrance-animation-timing-function) var(--questionEntrance-animation-delay) var(--questionEntrance-animation-iteration-count) var(--questionEntrance-animation-direction) var(--questionEntrance-animation-fill-mode);
+}
+
+@keyframes questionEntrance {
+    from {
+        translate: 0 -100%;
+    }
+
+    to {
+        translate: 0;
+    }
 }
 
 html, body {
@@ -1011,3 +1033,5 @@ popup-unit {
         --questionContainer-row-gap: 0.5rem;
     }
 }
+
+
