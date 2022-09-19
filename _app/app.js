@@ -419,13 +419,15 @@ export class App {
             '%cRETURN TO TRACK',
             'color:lightblue; font-weight: bold; font-size: 18px;'
         );
-        (function () {
-            if (window.top) {
-                return window.top;
-            }
-            return window.parent;
-        })().location = '/back/';
-        return false;
+        setTimeout(() => {
+            (function () {
+                if (window.top) {
+                    return window.top;
+                }
+                return window.parent;
+            })().location = '/back/';
+            return false;
+        }, 5000)
     }
 
     static exitCourse() {

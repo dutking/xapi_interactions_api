@@ -155,6 +155,8 @@ export class Longread extends HTMLElement {
         let that = this;
         let nextBtn = this.shadowRoot.querySelector('.nextBtn');
         nextBtn.addEventListener('click', (e) => {
+            e.target.disabled = true
+            e.target.innerHTML = 'Завершение...'
             that.emitEvent('exited');
         });
     }
