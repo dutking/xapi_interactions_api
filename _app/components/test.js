@@ -1565,16 +1565,16 @@ export class Test extends HTMLElement {
 
         if (
             this.result &&
-            this.data?.feedback?.correct &&
-            this.data.feedback.correct !== ""
+            this.data?.feedback?.passed &&
+            this.data.feedback.passed !== ""
         ) {
             return true
         }
 
         if (
             !this.result &&
-            this.data?.feedback?.incorrect &&
-            this.data.feedback.incorrect !== ""
+            this.data?.feedback?.failed &&
+            this.data.feedback.failed !== ""
         ) {
             return true
         }
