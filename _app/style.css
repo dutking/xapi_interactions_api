@@ -962,6 +962,7 @@ popup-unit {
     width: 100%;
     background-color: transparent;
     z-index: calc(var(--z-index-base) + 5);
+    transition: all 300ms linear;
 }
 
 #allrecords .placeholder.longread {

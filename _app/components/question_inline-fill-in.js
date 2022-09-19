@@ -229,16 +229,54 @@ strong {
             text-decoration: none;
         }
 
-        .questionContainer .taskContainer {
+        .questionContainer .question .taskContainer {
             position: relative;
-            isolation: isolate;
             pointer-events: none;
+            line-height: 2;
             z-index: 0;
         }
 
-        .questionContainer .taskContainer .inputBox {
+        .questionContainer .question .taskContainer .task {
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        /* .questionContainer .question .taskContainer .task.incorrect {
+            text-decoration-line: underline;
+            text-decoration-style: wavy;
+            text-decoration-color: red;
+        } */
+
+        .questionContainer .question .taskContainer .inputBox {
             position: relative;
             display: inline-block;
+        }
+
+        .questionContainer .question .taskContainer .inputBox.incorrect:after{
+            content: '';
+            position: absolute;
+            height: 110%;
+            top: -5px;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-left: 1px solid red;
+            background: transparent;
+            transform-origin: 0 100%;
+            rotate: 40deg;
+            z-index: 10;
+        }
+
+        .questionContainer .question .taskContainer .inputBox.incorrect:before{
+            content: attr(data-letter);
+            position: absolute;
+            top: -70%;
+            right: 0;
+            left: 0;
+            background: transparent;
+            color: green;
+            z-index: 10;
+            text-align: center;
         }
 
         .questionContainer .question .taskContainer .inputBox input {
@@ -255,6 +293,19 @@ strong {
             border-width: 1px;
             border-style: solid;
             border-color: hsl(32, 0%, 50%);
+        }
+
+        .questionContainer .question .taskContainer .inputBox.correct input{
+            color: green;
+        }
+
+        .questionContainer .question .taskContainer .inputBox.incorrect input{
+            color: red;
+        }
+
+        .questionContainer .question .taskContainer .inputBox.correct input, 
+        .questionContainer .question .taskContainer .inputBox.incorrect input {
+            border-width: 0;
         }
 
         .questionContainer .taskContainer .inputBox input:placeholder-shown{
@@ -708,7 +759,7 @@ export class QuestionInlineFillIn extends HTMLElement {
         for( let i = 0; i < tasks.length; i++){
             parsedQuestion = parsedQuestion.replace(tasks[i], parsedTasks[i])
         }
-        let asteriskRegex = /\*/g
+        let asteriskRegex = /\(\*\)/g
         
         let asteriskReplacer= inputBoxTemplate.content.cloneNode(true).querySelector('span').outerHTML;
         
@@ -815,9 +866,15 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     get checked() {
-        let inputs = this.shadowRoot.querySelector('input[type=text]');
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input[type="text"]')).map(i => i.value);
 
-        return ;
+        return inputs.every(i => i !== '')
+    }
+
+    hideBoxes() {
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        let values = this.exactUserAnswer.flat()
+        inputs.forEach((i, index) => i.style.setProperty('--input-width', `${this.getTextWidth(values[index])}px`))
     }
 
     setListeners() {
@@ -841,6 +898,10 @@ export class QuestionInlineFillIn extends HTMLElement {
                 }
                 let width = e.target.value.length > 0 ? this.getTextWidth(e.target.value) + 14 : cssVars.getPropertyValue('--input-empty-width').replace('px','')
                 e.target.style.setProperty('--input-width', `${width}px`)
+
+                if(this.checked){
+                    this.shadowRoot.querySelector('.submitBtn').disabled = false;
+                }
 
                 that.emitEvent('questionInProgress');
                 that.setState('user input');
@@ -880,6 +941,33 @@ export class QuestionInlineFillIn extends HTMLElement {
         .map(i => i.map(input => input.value))
     }
 
+    get tasksCorrectness() {
+        return this.data.answers[0].text.split('</>').map((a, index) => a === this.filledTasks[index].slice(1, -1))
+    }
+
+    get correctInputs () {
+        let taskRegex = /\(.*?\)/g
+        return this.data.answers[0].text.split('</>').map(str => str.match(taskRegex)).flat().map(i => i.slice(1, -1))
+    }
+
+    get userInputsCorrectness() {
+        return this.exactUserAnswer.flat().map((a,index) => a === this.correctInputs[index])
+    }
+
+    markTasks(){
+        Array.from(this.shadowRoot.querySelectorAll('.task'))
+        .forEach((t, index) => this.tasksCorrectness[index] ? t.classList.add('correct') : t.classList.add('incorrect'))
+    }
+
+    markInputs(){
+        Array.from(this.shadowRoot.querySelectorAll('.inputBox'))
+        .forEach((box, index) => {
+            this.userInputsCorrectness[index] ? box.classList.add('correct') : box.classList.add('incorrect')
+
+            box.dataset.letter = this.correctInputs[index]
+        })
+    }
+
     checkAnswer() {
         let that = this;
         if (this.checked) {
@@ -893,28 +981,17 @@ export class QuestionInlineFillIn extends HTMLElement {
                     this.parent.data.buttons.submit.completed;
             }
 
-            if (
-                this.data.answers.length === 1 &&
-                this.data.answers[0].text === ''
-            ) {
-                this.result = this.data.answers[0].correct;
+            if(this.tasksCorrectness.every(i => i === true)) {
+                this.result = true;
                 this.score = this.data.answers[0].weight;
-            } else {
-                this.data.answers.forEach((a) => {
-                    if (
-                        a.text.toLowerCase().trim() ===
-                        this.exactUserAnswer.toLowerCase().trim()
-                    ) {
-                        this.result = a.correct;
-                        this.score = a.weight;
-
-                        if (a.feedback !== '') {
-                            answerFeedback.innerHTML = a.feedback;
-                            answerFeedback.classList.remove('off');
-                        }
-                    }
-                });
             }
+
+            this.markTasks()
+            this.markInputs()
+            this.hideBoxes()
+
+            
+            
 
             this.emitEvent('answered');
             console.log(
@@ -932,24 +1009,8 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     get userAnswer() {
-        let that = this;
-        if (
-            that.data.answers.length === 1 &&
-            that.data.answers[0].text === ''
-        ) {
-            return [[that.data.answers[0].id, true]];
-        } else {
-            let answers = that.data.answers.filter((a) => {
-                a.text.toLowerCase().trim() ===
-                    that.exactUserAnswer.toLowerCase().trim();
-            });
-
-            if (answers.length > 0) {
-                return [[answers[0].id, true]];
-            } else {
-                return undefined;
-            }
-        }
+        // TO DO
+        return undefined
     }
 
     setState(msg = '') {
