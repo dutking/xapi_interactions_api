@@ -90,6 +90,11 @@ longreadTemplate.innerHTML = `
     pointer-events: none;
 }
 
+.btn.deactivated{
+    cursor: auto;
+    pointer-events: none;
+}
+
 </style>
 <div class='longread'>
         <button class='btn nextBtn' type='button'></button>        
@@ -155,8 +160,8 @@ export class Longread extends HTMLElement {
         let that = this;
         let nextBtn = this.shadowRoot.querySelector('.nextBtn');
         nextBtn.addEventListener('click', (e) => {
-            e.target.disabled = true
-            e.target.innerHTML = 'Завершение...'
+            e.target.innerText = 'Завершение...'
+            e.target.classList.add('deactivated')
             that.emitEvent('exited');
         });
     }
