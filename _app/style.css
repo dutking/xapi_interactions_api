@@ -195,6 +195,9 @@
     /* background */
     --feedbackContainer-background: transparent;
 
+    /* width */
+    --feedbackContainer-width: calc(var(--test-best-width) - calc(var(--test-padding) * 2));;
+
     /* padding */
     --feedbackContainer-padding: var(--spacing_lvl_0);
 

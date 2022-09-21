@@ -218,7 +218,7 @@ testTemplate.innerHTML = `
         border-color: var(--feedbackContainer-border-color);
         border-radius: var(--feedbackContainer-border-radius);
 
-        width: calc(var(--test-best-width) - calc(var(--test-padding) * 2));;
+        width: var(--feedbackContainer-width);
     }
 
     .feedbackContainer .poolsContainer {
