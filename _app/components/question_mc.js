@@ -561,6 +561,7 @@ templateMC.innerHTML = `
 
             background: var(--questionFeedback-background);
 
+            width: var(--questionFeedback-width);
             padding: var(--questionFeedback-padding);
 
             border-style: var(--questionFeedback-border-style);

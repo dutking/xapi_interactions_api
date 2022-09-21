@@ -673,6 +673,9 @@
     /* padding */
     --questionFeedback-padding: var(--spacing_lvl_0);
 
+    /* width */
+    --questionFeedback-width: 100%;
+
     /* border */
     --questionFeedback-border-style: solid;
     --questionFeedback-border-width: 0;
