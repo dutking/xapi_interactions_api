@@ -647,7 +647,7 @@ export class QuestionInlineFillIn extends HTMLElement {
 
         // for statements only ->
 
-        if (this.parent.data?.counter && this.amountOfQuestions > 1) {
+        if (this.parent.data?.counter && this.parent.data.counter != '') {
             let subHeader = this.shadowRoot.querySelector('.subHeader');
             let counter = this.shadowRoot.querySelector('.counter');
             counter.innerHTML = AuxFunctions.parseText(
