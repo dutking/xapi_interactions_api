@@ -151,7 +151,7 @@ export class AuxFunctions {
         }
 
         if(parsedText.includes('<likert:')){
-            let regex = /(\<likert:(text|score):a\d+\>)/g
+            let regex = /(\<likert:(text|score|questions):a\d+\>)/g
             let matches = parsedText.match(regex)
             matches.forEach(m => {
                 let property = m.split(":")[1]
