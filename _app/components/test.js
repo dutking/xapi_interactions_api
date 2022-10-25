@@ -484,9 +484,46 @@ export class Test extends HTMLElement {
                 this.showResumed()
             }
             this.setGridTemplateAreas()
-
+            this.logTestData()
             /* this.setState('test started') */
         })
+
+        
+    }
+
+    logTestData() {
+        console.log("%cTEST DATA", 'color:red;font-weigth:bold;font-size:18px;')
+        try {
+            let data = {
+                state: this.state,
+                attempt: this.attempt,
+                questionsToTake: this.questionsToTake,
+                completed: this.completed,
+                passed: this.passed,
+                result: this.result,
+                scores: this.scores,
+                maxPossibleScore: this.maxPossibleScore,
+                score: this.score,
+                questionsOrder: this.questionsOrder,
+                lastQuestionShownId: this.lastQuestionShownId,
+                resumed: this.resumed,
+                status: this.status,
+                iri: this.iri,
+                globalTestGridAreas: this.globalTestGridAreas,
+                amountOfQuestions: this.amountOfQuestions,
+                amountOfQuestionsToPass: this.amountOfQuestionsToPass,
+                lastQuestionIndex: ths.lastQuestionIndex,
+                passingScore: this.passingScore,
+                attemptCompleted: this.attemptCompleted,
+                currentAttemptScore: this.currentAttemptScore,
+                correctlyAnsweredQuestions: this.correctlyAnsweredQuestions,
+                hasFeedback: this.hasFeedback,
+                sendStmtMessage: this.sendStmtMessage,
+            }
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     setClasses() {
@@ -941,6 +978,7 @@ export class Test extends HTMLElement {
             this.startTime = new Date()
             this.scrollIntoView()
             this.setState("test restarted")
+            this.logTestData()
         })
     }
 
@@ -1637,6 +1675,8 @@ export class Test extends HTMLElement {
                 this
             ))
         }
+
+        return null
     }
 
     get passingAttempt() {
