@@ -435,7 +435,7 @@ export class App {
                 return window.parent;
             })().location = '/back/';
             return false;
-        }, 5000)
+        }, 3000)
     }
 
     static exitCourse() {
