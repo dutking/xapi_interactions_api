@@ -1160,6 +1160,7 @@ export class QuestionMR extends HTMLElement {
         if (this.status === 'inProgress') {
             this.restoreAnswers();
         } else if (this.status === 'completed') {
+            this.completed = true
             this.result = this.state.result;
             this.restoreAnswers();
             this.disableElements();
