@@ -820,6 +820,7 @@ export class Test extends HTMLElement {
                 this.questionsElements.forEach((q, i, arr) => {
                     if (q.status === "inProgress" && i < arr.length - 1) {
                         q.status = "completed"
+                        q.completed = true
                         q.setState("not last question cannot be inProgress")
                         q.emitEvent("continue")
                     }
@@ -1777,6 +1778,7 @@ export class Test extends HTMLElement {
     setListeners() {
         let that = this
         this.addEventListener("continue", (e) => {
+            console.log('continue event has been caught')
             if (that.data.displayMode === "one_instead_another") {
                 e.detail.obj.classList.add("off")
             }
@@ -1802,6 +1804,7 @@ export class Test extends HTMLElement {
                 }
             }
 
+            console.log(`Attempt ${this.attempt}: ${this.attemptCompleted}`)
             if (that.attemptCompleted) {
                 that.completeTest()
             }
