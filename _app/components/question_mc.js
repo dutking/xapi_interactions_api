@@ -1406,6 +1406,7 @@ export class QuestionMC extends HTMLElement {
     checkAnswer() {
         let that = this;
 
+        that.completed = true
         that.status = 'completed';
 
         if (that.parent.data?.buttons?.submit?.completed) {

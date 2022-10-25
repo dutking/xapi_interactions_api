@@ -1322,6 +1322,7 @@ export class QuestionMR extends HTMLElement {
     checkAnswer() {
         let that = this;
 
+        this.completed = true
         this.status = 'completed';
 
         this.userAnswer

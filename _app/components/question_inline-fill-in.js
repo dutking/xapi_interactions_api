@@ -971,6 +971,7 @@ export class QuestionInlineFillIn extends HTMLElement {
     checkAnswer() {
         let that = this;
         if (this.checked) {
+            that.completed = true
             this.status = 'completed';
 
             let answerFeedback =

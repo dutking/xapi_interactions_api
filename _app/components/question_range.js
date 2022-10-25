@@ -1125,6 +1125,7 @@ export class QuestionRange extends HTMLElement {
     checkAnswer() {
         let that = this;
 
+        that.completed = true
         this.status = 'completed';
 
         if (
