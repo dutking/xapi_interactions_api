@@ -1367,10 +1367,10 @@ export class QuestionMC extends HTMLElement {
 
         // continueBtn action
         continueBtn.addEventListener('click', (e) => {
-            that.emitEvent('continue');
             if (that.displayMode === 'one_by_one') {
                 e.target.classList.add('off');
             }
+            that.emitEvent('continue');
         });
     }
 
@@ -1548,7 +1548,6 @@ export class QuestionMC extends HTMLElement {
             this.parent.data?.questionsSettings?.feedback?.hideElements &&
             this.parent.data.questionsSettings.feedback.hideElements.length > 0
         ) {
-        
                 this.parent.data.questionsSettings.feedback.hideElements.forEach(
                     (element) => {
                         this.shadowRoot
@@ -1556,7 +1555,6 @@ export class QuestionMC extends HTMLElement {
                             .classList.add('off');
                     }
                 );
-
         }
 
         // process answers feedbacks

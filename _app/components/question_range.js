@@ -1111,10 +1111,10 @@ export class QuestionRange extends HTMLElement {
 
         // continueBtn action
         continueBtn.addEventListener('click', (e) => {
-            that.emitEvent('continue');
             if (that.displayMode === 'one_by_one') {
                 e.target.classList.add('off');
             }
+            that.emitEvent('continue');
         });
     }
 
