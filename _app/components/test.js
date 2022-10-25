@@ -1789,7 +1789,7 @@ export class Test extends HTMLElement {
                         that.questionsToTake[that.lastQuestionIndex + 1].id
                     ).then((qElement) => {
                         that.lastQuestionShownId =
-                            that.questionsToTake[that.lastQuestionIndex].id
+                            qElement.data.id
                         that.setState("lastQuestionShownId changed")
                         /* if (that.data.displayMode === 'one_by_one') {
                             qElement.scrollIntoView();
