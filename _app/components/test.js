@@ -495,6 +495,7 @@ export class Test extends HTMLElement {
         console.log("%cTEST DATA", 'color:red;font-weigth:bold;font-size:18px;')
         try {
             let data = {
+                dbData: this.data,
                 state: this.state,
                 attempt: this.attempt,
                 questionsToTake: this.questionsToTake,
