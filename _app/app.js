@@ -317,6 +317,14 @@ export class App {
         });
     }
 
+    static logCurrentTestsData() {
+        App.currentInteractions.forEach(i => {
+            if (i instanceof Test) {
+                i.logTestData()
+            }
+        })
+    }
+
     static getMaxPossibleScore() {
         App.currentInteractions.forEach((i) => {
             App.course.maxPossibleScore += Number(i.weight);

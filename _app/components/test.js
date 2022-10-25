@@ -492,7 +492,7 @@ export class Test extends HTMLElement {
     }
 
     logTestData() {
-        console.log("%cTEST DATA", 'color:red;font-weigth:bold;font-size:18px;')
+        console.log(`%cTEST DATA FOR ${this.data.id}`, 'color:red;font-weigth:bold;font-size:18px;')
         try {
             let data = {
                 dbData: this.data,
@@ -513,7 +513,7 @@ export class Test extends HTMLElement {
                 globalTestGridAreas: this.globalTestGridAreas,
                 amountOfQuestions: this.amountOfQuestions,
                 amountOfQuestionsToPass: this.amountOfQuestionsToPass,
-                lastQuestionIndex: ths.lastQuestionIndex,
+                lastQuestionIndex: this.lastQuestionIndex,
                 passingScore: this.passingScore,
                 attemptCompleted: this.attemptCompleted,
                 currentAttemptScore: this.currentAttemptScore,
