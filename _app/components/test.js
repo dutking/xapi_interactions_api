@@ -431,7 +431,7 @@ export class Test extends HTMLElement {
         this.shadowRoot.appendChild(testTemplate.content.cloneNode(true))
     }
 
-    async init(placeholder, interaction, stateData = {}, parent) {
+    init(placeholder, interaction, stateData = {}, parent) {
         this.parent = parent
         this.placeholder = placeholder
         this.data = interaction
