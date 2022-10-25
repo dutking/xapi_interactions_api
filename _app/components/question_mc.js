@@ -1381,6 +1381,28 @@ export class QuestionMC extends HTMLElement {
         });
     }
 
+    logQuestionData() {
+        console.log(`%cQuestion data for ${this.data.id}`, 'color:red;font-weigth:bold;font-size:16px;')
+        try {
+            let data = {
+                initialData: this.data,
+                state: this.state,
+                status: this.status,
+                result: this.result,
+                userAnswer: this.userAnswer,
+                exactUserAnswer: this.exactUserAnswer,
+                userPoolsResult: this.userPoolsResult,
+                completed: this.completed,
+                score: this.score,
+                hasPools: this.hasPools,
+                hasFeedback: this.hasFeedback
+            }
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     checkAnswer() {
         let that = this;
 
@@ -1425,7 +1447,7 @@ export class QuestionMC extends HTMLElement {
         console.log(
             `Question ${that.data.id} answered. Result: ${that.result}`
         );
-        
+
         that.setState('question completed');
         that.emitEvent('answered');
     }

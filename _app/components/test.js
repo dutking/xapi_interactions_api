@@ -522,6 +522,7 @@ export class Test extends HTMLElement {
                 sendStmtMessage: this.sendStmtMessage,
             }
             console.log(data)
+            this.questionsElements.forEach(e => e.logQuestionData())
         } catch (e) {
             console.log(e)
         }
