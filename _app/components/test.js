@@ -1495,6 +1495,19 @@ export class Test extends HTMLElement {
                 buttonsContainer.classList.add("off")
                 tryAgainBtn.classList.add("off")
             }
+        } else if (this.data.tryAgain === "until_result"){
+            if (
+                (this.attempt + 1 < Number(this.data.attemptsPerTest) ||
+                    Number(this.data.attemptsPerTest) === 0) &&
+                !this.result
+            ) {
+                buttonsContainer.classList.remove("off")
+                tryAgainBtn.classList.remove("off")
+                this.enableElement(tryAgainBtn)
+            } else {
+                buttonsContainer.classList.add("off")
+                tryAgainBtn.classList.add("off")
+            }
         } else {
             buttonsContainer.classList.add("off")
             tryAgainBtn.classList.add("off")
