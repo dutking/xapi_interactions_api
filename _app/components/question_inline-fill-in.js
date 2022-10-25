@@ -903,8 +903,8 @@ export class QuestionInlineFillIn extends HTMLElement {
                     this.shadowRoot.querySelector('.submitBtn').disabled = false;
                 }
 
-                that.emitEvent('questionInProgress');
                 that.setState('user input');
+                that.emitEvent('questionInProgress');
             })
         })
 

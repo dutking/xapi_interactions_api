@@ -1278,8 +1278,8 @@ export class QuestionMR extends HTMLElement {
                 } else {
                     submitBtn.disabled = true;
                 }
-                that.emitEvent('questionInProgress');
                 that.setState('user input');
+                that.emitEvent('questionInProgress');
             });
         });
 

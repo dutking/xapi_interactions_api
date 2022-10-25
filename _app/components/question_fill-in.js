@@ -1030,7 +1030,7 @@ export class QuestionFillIn extends HTMLElement {
         input.addEventListener('input', (e) => {
             if (e.target.value.length > 0) {
                 submitBtn.disabled = false;
-                that.emitEvent('questionInProgress');
+                this.emitEvent('questionInProgress');
             } else {
                 submitBtn.disabled = true;
             }
@@ -1047,8 +1047,8 @@ export class QuestionFillIn extends HTMLElement {
                 submitBtn.disabled = true;
             }
 
-            that.emitEvent('questionInProgress');
             this.setState('user input');
+            this.emitEvent('questionInProgress');
         });
 
         // submitBtn action

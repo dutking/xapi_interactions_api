@@ -1101,8 +1101,8 @@ export class QuestionRange extends HTMLElement {
                 this.status = 'inProgress';
             }
 
-            that.emitEvent('questionInProgress');
             this.setState('user input');
+            this.emitEvent('questionInProgress');
         });
 
         // submitBtn action

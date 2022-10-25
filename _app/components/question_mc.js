@@ -1356,8 +1356,8 @@ export class QuestionMC extends HTMLElement {
                 } else {
                     submitBtn.disabled = true;
                 }
-                that.emitEvent('questionInProgress');
                 that.setState('user input');
+                that.emitEvent('questionInProgress');
             });
         });
 
@@ -1384,53 +1384,53 @@ export class QuestionMC extends HTMLElement {
     checkAnswer() {
         let that = this;
 
-        this.status = 'completed';
+        that.status = 'completed';
 
-        if (this.parent.data?.buttons?.submit?.completed) {
-            this.shadowRoot.querySelector('.submitBtn').innerHTML =
-                this.parent.data.buttons.submit.completed;
+        if (that.parent.data?.buttons?.submit?.completed) {
+            that.shadowRoot.querySelector('.submitBtn').innerHTML =
+                that.parent.data.buttons.submit.completed;
         }
 
         that.userAnswer
             .filter((a) => a[1] === true)
             .forEach((a) => {
-                let answer = this.data.answers.filter(
+                let answer = that.data.answers.filter(
                     (ans) => ans.id === a[0]
                 )[0];
 
                 that.score = that.score + Number(answer.weight);
             });
 
-        let correctAnswers = this.data.answers
+        let correctAnswers = that.data.answers
             .filter((a) => a.correct === true)
             .map((a) => a.id);
 
-        let userChecked = this.userAnswer
+        let userChecked = that.userAnswer
             .filter((a) => a[1] === true)
             .map((a) => a[0])[0];
 
         if (correctAnswers.includes(userChecked)) {
-            this.result = true;
+            that.result = true;
         } else {
-            this.result = false;
+            that.result = false;
         }
 
-        this.emitEvent('answered');
+        that.disableElements();
+        that.showFeedback();
+
+        if ('isFake' in that.state) {
+            delete that.state.isFake;
+        }
+
         console.log(
-            `Question ${this.data.id} answered. Result: ${this.result}`
+            `Question ${that.data.id} answered. Result: ${that.result}`
         );
-
-        this.disableElements();
-        this.showFeedback();
-
-        if ('isFake' in this.state) {
-            delete this.state.isFake;
-        }
-        this.setState('question completed');
+        
+        that.setState('question completed');
+        that.emitEvent('answered');
     }
 
     get exactUserAnswer() {
-        let that = this;
         let exactUserAnswer = [];
 
         this.userAnswer
