@@ -1005,7 +1005,6 @@ export class Test extends HTMLElement {
                     this.data.buttons.submit.completed.text
             }
 
-            let that = this
             this.questionsElements.forEach((q) => q.checkAnswer())
 
             if (this.attemptCompleted) {
@@ -1582,6 +1581,8 @@ export class Test extends HTMLElement {
             2
         )
 
+        this.setState('score changed')
+
         /* if (this.data?.scoringFunction) {
             this.processedScores =
                 scoringFunctions[this.data.scoringFunction](this);
@@ -1757,12 +1758,14 @@ export class Test extends HTMLElement {
         this.completed = true
         this.status = "completed"
 
+        this.setState("test completed")
+
+        this.showFeedback()
+        
         console.log(
             `%cTest "${that.data.id}" completed`,
             "color:green;font-weight:bold;font-size:16px;"
         )
-
-        this.setState("test completed")
 
         if (this.result) {
             that.emitEvent("completed")
@@ -1770,9 +1773,7 @@ export class Test extends HTMLElement {
         } else {
             that.emitEvent("completed")
             that.emitEvent("failed")
-        }
-
-        this.showFeedback()
+        } 
     }
 
     setListeners() {

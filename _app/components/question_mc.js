@@ -1440,8 +1440,7 @@ export class QuestionMC extends HTMLElement {
         }
 
         that.disableElements();
-        that.showFeedback();
-
+        
         if ('isFake' in that.state) {
             delete that.state.isFake;
         }
@@ -1450,8 +1449,9 @@ export class QuestionMC extends HTMLElement {
             `Question ${that.data.id} answered. Result: ${that.result}`
         );
 
-        that.setState('question completed');
         that.emitEvent('answered');
+        that.setState('question completed');
+        that.showFeedback();
     }
 
     get exactUserAnswer() {

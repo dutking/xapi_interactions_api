@@ -992,21 +992,20 @@ export class QuestionInlineFillIn extends HTMLElement {
             this.markInputs()
             this.hideBoxes()
 
-            
-            
-
             this.emitEvent('answered');
             console.log(
                 `Question ${this.iri} answered. Result: ${this.result}`
             );
 
             this.disableElements();
-            this.showFeedback();
-
+            
             if ('isFake' in this.state) {
                 delete this.state.isFake;
             }
-            this.setState('question completed');
+
+            that.emitEvent('answered');
+            that.setState('question completed');
+            that.showFeedback();
         }
     }
 

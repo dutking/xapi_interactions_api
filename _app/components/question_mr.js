@@ -1353,20 +1353,19 @@ export class QuestionMR extends HTMLElement {
             this.result = true;
         }
 
-        this.emitEvent('answered');
         console.log(
             `Question ${this.data.id} answered. Result: ${this.result}`
         );
 
         this.disableElements();
 
-        this.disableElements();
-        this.showFeedback();
-
         if ('isFake' in this.state) {
             delete this.state.isFake;
         }
-        this.setState('question completed');
+        
+        that.emitEvent('answered');
+        that.setState('question completed');
+        that.showFeedback();
     }
 
     get exactUserAnswer() {
