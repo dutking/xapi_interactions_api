@@ -1164,6 +1164,28 @@ export class QuestionRange extends HTMLElement {
         that.showFeedback();
     }
 
+    logQuestionData() {
+        console.log(`%cQuestion data for ${this.data.id}`, 'color:red;font-weigth:bold;font-size:16px;')
+        try {
+            let data = {
+                initialData: this.data,
+                state: this.state,
+                status: this.status,
+                result: this.result,
+                userAnswer: this.userAnswer,
+                exactUserAnswer: this.exactUserAnswer,
+                userPoolsResult: this.userPoolsResult,
+                completed: this.completed,
+                score: this.score,
+                hasPools: this.hasPools,
+                hasFeedback: this.hasFeedback
+            }
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     get userAnswer() {
         let that = this;
         if (
