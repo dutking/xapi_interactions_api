@@ -9,3 +9,4 @@ test_package
 .vscode
 .prettier
 _app/custom.css
+_app/app.js
