@@ -512,7 +512,6 @@ export class Test extends HTMLElement {
                 lastQuestionIndex: this.lastQuestionIndex,
                 passingScore: this.passingScore,
                 attemptCompleted: this.attemptCompleted,
-                currentAttemptScore: this.currentAttemptScore,
                 correctlyAnsweredQuestions: this.correctlyAnsweredQuestions,
                 hasFeedback: this.hasFeedback,
                 sendStmtMessage: this.sendStmtMessage,
@@ -814,7 +813,42 @@ export class Test extends HTMLElement {
             }
         }
 
-        return Promise.allSettled(createdQuestions).then(() => {
+        let questions = await Promise.all(createdQuestions)
+
+        if (
+            status !== 'initial' &&
+            this.questionsElements.length > 1 &&
+            this.data.displayMode === 'one_instead_another'
+        ) {
+            // setting status to Completed for questions whose status is inProgress due to connection errors
+            questions.forEach((q, i, arr) => {
+                if (q.status === 'inProgress' && i < arr.length - 1) {
+                    q.status = 'completed'
+                    q.completed = true
+                    q.setState('not last question cannot be inProgress')
+                    q.emitEvent('continue')
+                }
+            })
+
+            questions.slice(0, -1).forEach((i) => {
+                i.classList.add('off')
+            })
+        }
+
+        this.submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        if (this.data.submitMode === 'all_at_once') {
+            if (status !== 'completed') {
+                this.submitBtn.classList.remove('off')
+            }
+        }
+
+        if (this.allChecked) {
+            this.enableElement(this.submitBtn)
+        }
+
+        return Promise.resolve()
+
+        /* return Promise.allSettled(createdQuestions).then(() => {
             if (
                 status !== 'initial' &&
                 this.questionsElements.length > 1 &&
@@ -847,7 +881,7 @@ export class Test extends HTMLElement {
             }
 
             return new Promise((resolve, reject) => resolve())
-        })
+        }) */
     }
 
     setLikert() {
@@ -1044,6 +1078,7 @@ export class Test extends HTMLElement {
             this.questionsElements.forEach((q) => q.checkAnswer())
 
             if (this.attemptCompleted) {
+                this.setScore()
                 this.completeTest()
             }
         }
@@ -1801,16 +1836,14 @@ export class Test extends HTMLElement {
     }
 
     completeTest() {
-        console.log(`Status: ${this.status}`)
+        this.setScore()
         this.completed = true
         this.status = 'completed'
-        console.log(`Status: ${this.status}`)
         this.setState('test completed')
-        console.log(`Status: ${this.status}`)
+
         this.showFeedback()
-        console.log(`Status: ${this.status}`)
         console.log(
-            `%cTest "${this.data.id}" completed`,
+            `%cTest "${this.data.id}" completed: ${this.completed}`,
             'color:green;font-weight:bold;font-size:16px;'
         )
 
@@ -1821,32 +1854,36 @@ export class Test extends HTMLElement {
             this.emitEvent('completed')
             this.emitEvent('failed')
         }
-        console.log(`Status: ${this.status}`)
+
+        console.log(
+            `%cTest "${this.data.id}" status: ${this.status}`,
+            'color:green;font-weight:bold;font-size:16px;'
+        )
     }
 
     setListeners() {
         let that = this
         this.addEventListener('continue', (e) => {
             console.log('continue event has been caught')
-            if (that.data.displayMode === 'one_instead_another') {
+            if (this.data.displayMode === 'one_instead_another') {
                 e.detail.obj.classList.add('off')
             }
 
             if (
-                that.data.displayMode === 'one_by_one' ||
-                that.data.displayMode === 'one_instead_another'
+                this.data.displayMode === 'one_by_one' ||
+                this.data.displayMode === 'one_instead_another'
             ) {
-                if (that.lastQuestionIndex + 1 < that.questionsToTake.length) {
-                    that.createQuestion(
-                        that.questionsToTake[that.lastQuestionIndex + 1].id
+                if (this.lastQuestionIndex + 1 < that.questionsToTake.length) {
+                    this.createQuestion(
+                        this.questionsToTake[that.lastQuestionIndex + 1].id
                     ).then((qElement) => {
-                        that.lastQuestionShownId = qElement.data.id
+                        this.lastQuestionShownId = qElement.data.id
 
-                        that.setState('lastQuestionShownId changed')
+                        this.setState('lastQuestionShownId changed')
                         /* if (that.data.displayMode === 'one_by_one') {
                             qElement.scrollIntoView();
                         } */
-                        if (that.data.displayMode === 'one_instead_another') {
+                        if (this.data.displayMode === 'one_instead_another') {
                             this.scrollIntoView({block: 'center'})
                         }
                     })
@@ -1855,8 +1892,8 @@ export class Test extends HTMLElement {
 
             console.log(`Attempt ${this.attempt}: ${this.attemptCompleted}`)
 
-            if (that.attemptCompleted) {
-                that.completeTest()
+            if (this.attemptCompleted) {
+                this.completeTest()
             }
 
             this.markQuestionsCorrectness()
@@ -1865,8 +1902,10 @@ export class Test extends HTMLElement {
         })
 
         this.addEventListener('answered', (e) => {
-            this.setScore()
-            this.showCorrectAnswers(e.detail.obj)
+            if (this.data.submitMode === 'each') {
+                this.setScore()
+                this.showCorrectAnswers(e.detail.obj)
+            }
         })
 
         let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
@@ -1902,15 +1941,10 @@ export class Test extends HTMLElement {
     }
 
     processTest() {
-        console.log(`Status: ${this.status}`)
         if (this.status === 'initial') {
-            console.log(`Status: ${this.status}`)
             this.status = 'inProgress'
-            console.log(`Status: ${this.status}`)
             this.setState('test status changed to inProgress')
-            console.log(`Status: ${this.status}`)
         }
-        console.log(`Status: ${this.status}`)
 
         let submitBtn = this.shadowRoot.querySelector('.submitBtn')
 
