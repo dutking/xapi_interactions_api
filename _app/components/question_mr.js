@@ -1,7 +1,7 @@
-import { AuxFunctions } from '../auxFunctions.js';
-import { Pool } from './pool.js';
+import {AuxFunctions} from '../auxFunctions.js'
+import {Pool} from './pool.js'
 
-const answerTemplateMR = document.createElement('template');
+const answerTemplateMR = document.createElement('template')
 answerTemplateMR.innerHTML = `
         <div class='answerContainer'>
             <div>
@@ -10,9 +10,9 @@ answerTemplateMR.innerHTML = `
                 <div class='answerFeedback off'></div>
             </div>
         </div>
-`;
+`
 
-const answerTemplateMRImage = document.createElement('template');
+const answerTemplateMRImage = document.createElement('template')
 answerTemplateMRImage.innerHTML = `
 <div class='answerContainer'>
 <div>
@@ -25,9 +25,9 @@ answerTemplateMRImage.innerHTML = `
     <div class='answerFeedback off'></div>
 </div>
 </div>
-`;
+`
 
-const templateMR = document.createElement('template');
+const templateMR = document.createElement('template')
 templateMR.innerHTML = `
 <style>
 * {
@@ -863,45 +863,45 @@ strong {
         <button type='button' class='continueBtn btn off'></button>
     </div>
 </div>
-`;
+`
 
 export class QuestionMR extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+        super()
+        this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(templateMR.content.cloneNode(true));
+        this.shadowRoot.appendChild(templateMR.content.cloneNode(true))
 
-        this.completed = false;
-        this.result = false;
-        this.status = 'initial';
-        this.score = 0;
-        this.state = {};
-        this.answersOrder = new Set();
+        this.completed = false
+        this.result = false
+        this.status = 'initial'
+        this.score = 0
+        this.state = {}
+        this.answersOrder = new Set()
     }
 
     get iri() {
-        return `${this.parent.iri}/${this.data.id}`;
+        return `${this.parent.iri}/${this.data.id}`
     }
 
     get amountOfQuestions() {
-        return this.parent.amountOfQuestions;
+        return this.parent.amountOfQuestions
     }
 
     get submitMode() {
-        return this.parent.data.submitMode;
+        return this.parent.data.submitMode
     }
 
     get displayMode() {
-        return this.parent.data.displayMode;
+        return this.parent.data.displayMode
     }
 
     get attemptsPerTest() {
-        return this.parent.data.attemptsPerTest;
+        return this.parent.data.attemptsPerTest
     }
 
     get passingScore() {
-        return this.parent.data.passingScore;
+        return this.parent.data.passingScore
     }
 
     get resume() {
@@ -909,38 +909,42 @@ export class QuestionMR extends HTMLElement {
             this.parent.resumed === true &&
             this.parent.data.resume.resume === true &&
             this.parent.status !== 'initial'
-        );
+        )
     }
 
     setFields(data, index, parent, state) {
-        this.parent = parent;
-        this.data = data;
-        this.score = 0;
-        this.index = index;
-        this.data.evaluated = parent.data.evaluated;
+        this.parent = parent
+        this.data = data
+        this.score = 0
+        this.index = index
+        this.data.evaluated = parent.data.evaluated
 
-        this.state = state;
+        this.state = state
 
         // <- for statements only
 
-        let question = '';
+        let question = ''
         if (parent.data.commonQuestion !== '') {
-            question = `${parent.data.commonQuestion} ${data.question}`;
+            question = `${parent.data.commonQuestion} ${data.question}`
         } else {
-            question = data.question;
+            question = data.question
         }
 
-        this.data.description = data.story !== '' ? AuxFunctions.clearFromTags(data.story) : AuxFunctions.clearFromTags(question);
-        this.data.nameRus = question;
+        this.data.description =
+            data.story !== ''
+                ? AuxFunctions.clearFromTags(data.story)
+                : AuxFunctions.clearFromTags(question)
+        this.data.nameRus = question
 
         // for statements only ->
 
-        let that = this;
+        let that = this
 
         // adding subtype as a class
-        this.questionContainer = this.shadowRoot.querySelector(".questionContainer")
+        this.questionContainer =
+            this.shadowRoot.querySelector('.questionContainer')
 
-        if (this.data.subtype !== "") {
+        if (this.data.subtype !== '') {
             let classes = this.data.subtype.split(' ')
             classes.forEach((c) => {
                 that.classList.add(c)
@@ -949,169 +953,196 @@ export class QuestionMR extends HTMLElement {
         }
 
         if (this.parent.data?.counter && this.parent.data.counter != '') {
-            let subHeader = this.shadowRoot.querySelector('.subHeader');
-            let counter = this.shadowRoot.querySelector('.counter');
+            let subHeader = this.shadowRoot.querySelector('.subHeader')
+            let counter = this.shadowRoot.querySelector('.counter')
             counter.innerHTML = AuxFunctions.parseText(
                 parent.data.counter,
                 this
-            );
-            counter.classList.remove('off');
-            subHeader.classList.remove('off');
+            )
+            counter.classList.remove('off')
+            subHeader.classList.remove('off')
         }
 
         if (this.data.story.length > 0) {
-            let story = this.shadowRoot.querySelector('.story');
-            story.innerHTML = this.data.story;
-            story.classList.remove('off');
+            let story = this.shadowRoot.querySelector('.story')
+            story.innerHTML = this.data.story
+            story.classList.remove('off')
         }
 
-        if(this.data.instruction !== ' ') {
+        if (this.data.instruction !== ' ') {
             this.shadowRoot.querySelector('.instruction').innerHTML =
-            AuxFunctions.parseText(this.data.instruction, this);
+                AuxFunctions.parseText(this.data.instruction, this)
         } else {
             this.shadowRoot.querySelector('.instruction').classList.add('off')
         }
 
         this.shadowRoot.querySelector('.questionText').innerHTML =
-            this.data.question;
+            this.data.question
 
-            if (this.data.help.length !== 0 && this.data.help[0] !== '') {
-                let tipsContainer = this.shadowRoot.querySelector('.tipsContainer');
-                tipsContainer.classList.remove('off');
-                this.tipBtn = this.shadowRoot.querySelector('.tipBtn');
-                this.tipBtn.dataset.tipnum = 1
-                this.tipBtn.innerHTML = this.data.help.length === 1 ? 'Показать подсказку' : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
-                //дописать логику показа подсказок
-                this.tipBtn.addEventListener('click', () => {
-                    let currentTip = Number(this.tipBtn.dataset.tipnum)
-                    if(currentTip === 1) {
-                        let pp = document.createElement('popup-unit')
-                        pp.init(`tips_for_${that.data.id}`, 'Подсказки', `<div class='tip'><p class='tipHeader'>Подсказка 1:</p><p>${this.data.help[currentTip-1]}</p></div>`)
-                        pp.showPopup()
-                    } else {
-                        let pp = document.querySelector(`#tips_for_${that.data.id}`)
-                        let tips = this.data.help.filter((t,i) => i < currentTip).map((h,i) => `<div class='tip'><p class='tipHeader'>Подсказка ${i + 1}:</p><p>${h}</p></div>`).join('')
-                        pp.updateContent('Подсказки', tips)
-                        pp.showPopup()
-    
-                    }
-                    let nextTip = currentTip + 1 > this.data.help.length ? this.data.help.length : (currentTip + 1)
-                    this.tipBtn.dataset.tipnum = nextTip
-                    this.tipBtn.innerHTML = this.data.help.length === 1 ? 'Показать подсказку' : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`;
-    
-                
-                })
-            }
+        if (this.data.help.length !== 0 && this.data.help[0] !== '') {
+            let tipsContainer = this.shadowRoot.querySelector('.tipsContainer')
+            tipsContainer.classList.remove('off')
+            this.tipBtn = this.shadowRoot.querySelector('.tipBtn')
+            this.tipBtn.dataset.tipnum = 1
+            this.tipBtn.innerHTML =
+                this.data.help.length === 1
+                    ? 'Показать подсказку'
+                    : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`
+            //дописать логику показа подсказок
+            this.tipBtn.addEventListener('click', () => {
+                let currentTip = Number(this.tipBtn.dataset.tipnum)
+                if (currentTip === 1) {
+                    let pp = document.createElement('popup-unit')
+                    pp.init(
+                        `tips_for_${that.data.id}`,
+                        'Подсказки',
+                        `<div class='tip'><p class='tipHeader'>Подсказка 1:</p><p>${
+                            this.data.help[currentTip - 1]
+                        }</p></div>`
+                    )
+                    pp.showPopup()
+                } else {
+                    let pp = document.querySelector(`#tips_for_${that.data.id}`)
+                    let tips = this.data.help
+                        .filter((t, i) => i < currentTip)
+                        .map(
+                            (h, i) =>
+                                `<div class='tip'><p class='tipHeader'>Подсказка ${
+                                    i + 1
+                                }:</p><p>${h}</p></div>`
+                        )
+                        .join('')
+                    pp.updateContent('Подсказки', tips)
+                    pp.showPopup()
+                }
+                let nextTip =
+                    currentTip + 1 > this.data.help.length
+                        ? this.data.help.length
+                        : currentTip + 1
+                this.tipBtn.dataset.tipnum = nextTip
+                this.tipBtn.innerHTML =
+                    this.data.help.length === 1
+                        ? 'Показать подсказку'
+                        : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`
+            })
+        }
 
-        let answers = this.shadowRoot.querySelector('.answersContainer');
+        let answers = this.shadowRoot.querySelector('.answersContainer')
 
-        let answersData = this.data.answers;
+        let answersData = this.data.answers
 
         if (this.data.shuffle) {
-            answersData = AuxFunctions.shuffleArray(this.data.answers);
+            answersData = AuxFunctions.shuffleArray(this.data.answers)
         }
 
         answersData.forEach((a, i) => {
-            let newAnswer;
+            let newAnswer
 
             if (that.data?.subtype !== '') {
                 let classes = that.data.subtype.split(' ')
-                classes.forEach(c => answers.classList.add(c))
-                
+                classes.forEach((c) => answers.classList.add(c))
+
                 if (that.data.subtype.includes('image')) {
-                    newAnswer = answerTemplateMRImage.content.cloneNode(true);
+                    newAnswer = answerTemplateMRImage.content.cloneNode(true)
                     let img = newAnswer.querySelector('img')
 
-                    let folder = this.data.id.split('_').slice(0, 2).join('_');
+                    let folder = this.data.id.split('_').slice(0, 2).join('_')
 
-                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`);
+                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`)
 
                     setTimeout(() => {
-                        
-                        if(img.naturalWidth === 0) {
-                            img.setAttribute('src', `./_app/img/${folder}/${a.id}.png`);
-                            
+                        if (img.naturalWidth === 0) {
+                            img.setAttribute(
+                                'src',
+                                `./_app/img/${folder}/${a.id}.png`
+                            )
                         }
-                    },1000)
+                    }, 1000)
 
-                    if(that.data.subtype.includes('zoom')){
+                    if (that.data.subtype.includes('zoom')) {
                         const popup = document.createElement('popup-unit')
-                        popup.init(`pp_${a.id}`, '', `<img src="./_app/img/${folder}/${a.id}_large.svg">`)
+                        popup.init(
+                            `pp_${a.id}`,
+                            '',
+                            `<img src="./_app/img/${folder}/${a.id}_large.svg">`
+                        )
                         img.addEventListener('click', () => {
                             popup.showPopup()
                             let img = popup.shadowRoot.querySelector('img')
-                            if(img.naturalWidth === 0) {
-                                img.setAttribute('src', `./_app/img/${folder}/${a.id}_large.png`);
-                                
+                            if (img.naturalWidth === 0) {
+                                img.setAttribute(
+                                    'src',
+                                    `./_app/img/${folder}/${a.id}_large.png`
+                                )
                             }
                         })
                     }
                 } else {
-                    newAnswer = answerTemplateMR.content.cloneNode(true);
+                    newAnswer = answerTemplateMR.content.cloneNode(true)
                 }
             } else {
-                newAnswer = answerTemplateMR.content.cloneNode(true);
+                newAnswer = answerTemplateMR.content.cloneNode(true)
             }
 
-            answers.appendChild(newAnswer);
+            answers.appendChild(newAnswer)
 
-            newAnswer = Array.from(answers.children)[i];
-            newAnswer.setAttribute('data-id', a.id);
-            newAnswer.querySelector('input').setAttribute('id', a.id);
-            newAnswer.querySelector('input').setAttribute('name', that.data.id);
-            newAnswer.querySelector('label').setAttribute('for', a.id);
-            newAnswer.querySelector('label span.text').innerHTML = a.text;
-            let feedback = newAnswer.querySelector('.answerFeedback');
-            feedback.dataset.id = a.id;
-        });
+            newAnswer = Array.from(answers.children)[i]
+            newAnswer.setAttribute('data-id', a.id)
+            newAnswer.querySelector('input').setAttribute('id', a.id)
+            newAnswer.querySelector('input').setAttribute('name', that.data.id)
+            newAnswer.querySelector('label').setAttribute('for', a.id)
+            newAnswer.querySelector('label span.text').innerHTML = a.text
+            let feedback = newAnswer.querySelector('.answerFeedback')
+            feedback.dataset.id = a.id
+        })
 
         if (this.submitMode === 'all_at_once') {
-            this.shadowRoot.querySelector('.submitBtn').classList.add('off');
+            this.shadowRoot.querySelector('.submitBtn').classList.add('off')
         }
-        this.setButtons();
-        this.setGridTemplateAreas();
-        this.emitEvent('created');
-        this.setListeners();
+        this.setButtons()
+        this.setGridTemplateAreas()
+        this.emitEvent('created')
+        this.setListeners()
         if (!('isFake' in this.state)) {
             if (this.resume === true) {
                 if (!('status' in this.state)) {
                     // to handle old version without states
-                    this.state.status = 'completed';
+                    this.state.status = 'completed'
                 }
-                this.restoreState();
+                this.restoreState()
             }
         }
     }
 
     setButtons() {
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn');
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
         Object.keys(this.parent.data.buttons).forEach((k) => {
-            let btn = this.shadowRoot.querySelector(`.${k}Btn`);
+            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
             if (btn) {
-                btn.innerHTML = this.parent.data.buttons[k].initial;
+                btn.innerHTML = this.parent.data.buttons[k].initial
                 if (this.parent.data.buttons[k].icon === true) {
-                    btn.classList.add('icon');
+                    btn.classList.add('icon')
                 }
             }
-        });
+        })
 
         if (this.index + 1 === this.amountOfQuestions) {
-            continueBtn.classList.add('continueLastBtn');
-            continueBtn.innerHTML = this.parent.data.buttons.continue.last;
+            continueBtn.classList.add('continueLastBtn')
+            continueBtn.innerHTML = this.parent.data.buttons.continue.last
         }
 
         if (this.status === 'completed' && this.displayMode === 'one_by_one') {
-            continueBtn.classList.add('off');
+            continueBtn.classList.add('off')
         }
 
         if (this.submitMode === 'all_at_once') {
             this.shadowRoot
                 .querySelector('.buttonsContainer')
-                .classList.add('off');
+                .classList.add('off')
         }
 
-        submitBtn.classList.remove('invisible');
+        submitBtn.classList.remove('invisible')
     }
 
     get globalTestGridAreas() {
@@ -1119,83 +1150,83 @@ export class QuestionMR extends HTMLElement {
             .getPropertyValue('--questionContainer-grid-template-areas')
             .trim()
             .split('" "')
-            .map((i) => i.replaceAll('"', ''));
+            .map((i) => i.replaceAll('"', ''))
     }
 
     setGridTemplateAreas() {
         let questionContainer =
-            this.shadowRoot.querySelector('.questionContainer');
+            this.shadowRoot.querySelector('.questionContainer')
         let currentAreas = Array.from(questionContainer.children)
             .map((element) => {
                 if (!element.className.includes('off')) {
-                    return element.className.split(' ')[0];
+                    return element.className.split(' ')[0]
                 } else {
-                    return '';
+                    return ''
                 }
             })
-            .filter((i) => i !== '');
+            .filter((i) => i !== '')
 
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
-                let subunits = unit.split(' ');
+                let subunits = unit.split(' ')
                 if (subunits.every((u) => currentAreas.includes(u))) {
-                    return `"${unit}"`;
+                    return `"${unit}"`
                 } else {
-                    return '';
+                    return ''
                 }
             })
             .filter((unit) => unit !== '')
-            .join(' ');
+            .join(' ')
 
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
             .style.setProperty(
                 '--questionContainer-grid-template-areas',
                 currentAreasString
-            );
+            )
     }
 
     restoreState() {
-        this.status = this.state.status;
+        this.status = this.state.status
         if (this.status === 'inProgress') {
-            this.restoreAnswers();
+            this.restoreAnswers()
         } else if (this.status === 'completed') {
             this.completed = true
-            this.result = this.state.result;
-            this.restoreAnswers();
-            this.disableElements();
-            this.showFeedback();
+            this.result = this.state.result
+            this.restoreAnswers()
+            this.disableElements()
+            this.showFeedback()
         }
     }
 
     restoreAnswers() {
-        let that = this;
+        let that = this
 
         if ('userAnswer' in this.state) {
-            let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
+            let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
             let inputMarkers = Array.from(
                 this.shadowRoot.querySelectorAll('.inputMarker')
-            );
+            )
             inputs.forEach((i, index) => {
                 let currentAnswer = that.state.userAnswer.filter(
                     (a) => a[0] === i.id
-                )[0];
+                )[0]
                 if (currentAnswer[1] === true) {
-                    i.checked = true;
+                    i.checked = true
                 }
                 if (that.data.subtype === 'order') {
                     if (currentAnswer[2]) {
                         inputMarkers[index].style.setProperty(
                             '--order',
                             currentAnswer[2]
-                        );
+                        )
                     }
                 }
-            });
+            })
 
-            let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+            let submitBtn = this.shadowRoot.querySelector('.submitBtn')
             if (this.checked) {
-                submitBtn.disabled = false;
+                submitBtn.disabled = false
             }
         }
     }
@@ -1203,16 +1234,24 @@ export class QuestionMR extends HTMLElement {
     get validation() {
         let result = {
             min: null,
-            max: null
+            max: null,
         }
 
-        if(this.data.validation !== null && 'max' in this.data.validation && this.data.validation.max !== null){
+        if (
+            this.data.validation !== null &&
+            'max' in this.data.validation &&
+            this.data.validation.max !== null
+        ) {
             result.max = this.data.validation.max
         } else {
             result.max = this.data.answers.length
         }
 
-        if(this.data.validation !== null && 'min' in this.data.validation && this.data.validation.min !== null){
+        if (
+            this.data.validation !== null &&
+            'min' in this.data.validation &&
+            this.data.validation.min !== null
+        ) {
             result.min = this.data.validation.min
         } else {
             result.min = 1
@@ -1222,154 +1261,155 @@ export class QuestionMR extends HTMLElement {
     }
 
     get checked() {
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
-        let checkedItems = inputs.filter((input) => input.checked).length;
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        let checkedItems = inputs.filter((input) => input.checked).length
 
         if (
             checkedItems >= this.validation.min &&
             checkedItems <= this.validation.max
         ) {
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 
     setAnswersOrder(id) {
-        let that = this;
+        let that = this
         if (this.answersOrder.has(id)) {
-            this.answersOrder.delete(id);
+            this.answersOrder.delete(id)
         } else {
-            this.answersOrder.add(id);
+            this.answersOrder.add(id)
         }
 
-        console.log(this.answersOrder);
+        console.log(this.answersOrder)
         let markers = Array.from(
             this.shadowRoot.querySelectorAll('.inputMarker')
-        );
-        let arr = [...this.answersOrder];
+        )
+        let arr = [...this.answersOrder]
 
         markers.forEach((m) => {
-            let mId = m.parentElement.getAttribute('for');
-            m.style.setProperty('--order', '');
+            let mId = m.parentElement.getAttribute('for')
+            m.style.setProperty('--order', '')
 
             if (that.answersOrder.has(mId)) {
-                m.style.setProperty('--order', arr.indexOf(mId) + 1);
+                m.style.setProperty('--order', arr.indexOf(mId) + 1)
             }
-        });
+        })
     }
 
     setListeners() {
-        let that = this;
+        let that = this
         // Disable/enable submitBtn on inputs' changes.
 
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn');
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
 
         inputs.forEach((i) => {
             i.addEventListener('change', (e) => {
                 if (this.data?.subtype === 'order') {
-                    that.setAnswersOrder(e.target.id);
+                    that.setAnswersOrder(e.target.id)
                 }
                 if (that.checked) {
-                    submitBtn.disabled = false;
+                    submitBtn.disabled = false
                     if (that.status === 'initial') {
-                        that.status = 'inProgress';
+                        that.status = 'inProgress'
                     }
                 } else {
-                    submitBtn.disabled = true;
+                    submitBtn.disabled = true
                 }
-                that.setState('user input');
-                that.emitEvent('questionInProgress');
-            });
-        });
+                that.setState('user input')
+                that.emitEvent('questionInProgress')
+            })
+        })
 
         // submitBtn action
-        submitBtn.addEventListener('click', this.checkAnswer.bind(this));
+        submitBtn.addEventListener('click', this.checkAnswer.bind(this))
 
         // continueBtn action
         continueBtn.addEventListener('click', (e) => {
             if (that.displayMode === 'one_by_one') {
-                e.target.classList.add('off');
+                e.target.classList.add('off')
             }
-            that.emitEvent('continue');
-        });
+            that.emitEvent('continue')
+        })
     }
 
     get userAnswer() {
-        let that = this;
-        let inputs = Array.from(that.shadowRoot.querySelectorAll('input'));
+        let that = this
+        let inputs = Array.from(that.shadowRoot.querySelectorAll('input'))
 
         if (this.data.subtype === 'order') {
             let order = Array.from(
                 that.shadowRoot.querySelectorAll('.inputMarker')
             ).map((i) => {
                 if (i.style.getPropertyValue('--order')) {
-                    return i.style.getPropertyValue('--order');
+                    return i.style.getPropertyValue('--order')
                 } else {
-                    return '';
+                    return ''
                 }
-            });
+            })
             return inputs.map((i, index) => {
-                return [i.id, i.checked, order[index]];
-            });
+                return [i.id, i.checked, order[index]]
+            })
         }
 
         return inputs.map((i) => {
-            return [i.id, i.checked];
-        });
+            return [i.id, i.checked]
+        })
     }
 
     checkAnswer() {
-        let that = this;
+        let that = this
 
         this.completed = true
-        this.status = 'completed';
+        this.status = 'completed'
 
         this.userAnswer
             .filter((a) => a[1] === true)
             .forEach((a) => {
                 let answer = this.data.answers.filter(
                     (ans) => ans.id === a[0]
-                )[0];
+                )[0]
 
-                that.score = that.score + Number(answer.weight);
-            });
+                that.score = that.score + Number(answer.weight)
+            })
 
         if (this.parent.data?.buttons?.submit?.completed) {
             this.shadowRoot.querySelector('.submitBtn').innerHTML =
-                this.parent.data.buttons.submit.completed;
+                this.parent.data.buttons.submit.completed
         }
 
         let answerCorrectness = this.userAnswer.map((a) => {
-            let answer = this.data.answers.filter((ans) => ans.id === a[0])[0];
-            let isCorrect = answer.correct === a[1];
-            return [answer.id, isCorrect];
-        });
+            let answer = this.data.answers.filter((ans) => ans.id === a[0])[0]
+            let isCorrect = answer.correct === a[1]
+            return [answer.id, isCorrect]
+        })
 
         if (answerCorrectness.some((a) => a[1] === false)) {
-            this.result = false;
+            this.result = false
         } else {
-            this.result = true;
+            this.result = true
         }
 
-        console.log(
-            `Question ${this.data.id} answered. Result: ${this.result}`
-        );
+        console.log(`Question ${this.data.id} answered. Result: ${this.result}`)
 
-        this.disableElements();
+        this.disableElements()
 
         if ('isFake' in this.state) {
-            delete this.state.isFake;
+            delete this.state.isFake
         }
-        
-        that.emitEvent('answered');
-        that.setState('question completed');
-        that.showFeedback();
+
+        that.emitEvent('answered')
+        that.setState('question completed')
+        that.showFeedback()
     }
 
     logQuestionData() {
-        console.log(`%cQuestion data for ${this.data.id}`, 'color:red;font-weigth:bold;font-size:16px;')
+        console.log(
+            `%cQuestion data for ${this.data.id}`,
+            'color:red;font-weigth:bold;font-size:16px;'
+        )
         try {
             let data = {
                 initialData: this.data,
@@ -1382,7 +1422,7 @@ export class QuestionMR extends HTMLElement {
                 completed: this.completed,
                 score: this.score,
                 hasPools: this.hasPools,
-                hasFeedback: this.hasFeedback
+                hasFeedback: this.hasFeedback,
             }
             console.log(data)
         } catch (e) {
@@ -1391,131 +1431,135 @@ export class QuestionMR extends HTMLElement {
     }
 
     get exactUserAnswer() {
-        let exactUserAnswer = [];
+        let exactUserAnswer = []
 
         this.userAnswer
             .filter((a) => a[1] === true)
             .forEach((a) => {
                 let answer = this.data.answers.filter(
                     (ans) => ans.id === a[0]
-                )[0];
+                )[0]
 
                 if (this.data.subtype === 'order') {
-                    exactUserAnswer.push(`${a[2]}. ${AuxFunctions.clearFromTags(answer.text)}`);
+                    exactUserAnswer.push(
+                        `${a[2]}. ${AuxFunctions.clearFromTags(answer.text)}`
+                    )
                 } else {
-                    exactUserAnswer.push(AuxFunctions.clearFromTags(answer.text));
+                    exactUserAnswer.push(
+                        AuxFunctions.clearFromTags(answer.text)
+                    )
                 }
-            });
+            })
 
-        return exactUserAnswer.map((a, ind) => `${ind + 1}) ${a}`).join('   ');
+        return exactUserAnswer.map((a, ind) => `${ind + 1}) ${a}`).join('   ')
     }
 
     setState(msg = '') {
         console.log(
             `%c...setting question ${this.data.id} state due to: ${msg}`,
             'color:blue;font-weight:bold;'
-        );
-        this.state.date = new Date();
-        this.state.status = this.status;
-        this.state.result = this.result;
-        this.state.userAnswer = this.userAnswer;
-        this.state.exactUserAnswer = this.exactUserAnswer;
-        this.state.userPoolsResult = this.userPoolsResult;
+        )
+        this.state.date = new Date()
+        this.state.status = this.status
+        this.state.result = this.result
+        this.state.userAnswer = this.userAnswer
+        this.state.exactUserAnswer = this.exactUserAnswer
+        this.state.userPoolsResult = this.userPoolsResult
+        this.state.completed = this.completed
+        this.state.score = this.score
 
         if ('isFake' in this.state) {
-            delete this.state.isFake;
+            delete this.state.isFake
         }
 
-        this.emitEvent('state_changed');
+        this.emitEvent('state_changed')
     }
 
     get hasPools() {
-        return this.data.answers.filter((a) => a.pools.length > 0).length > 0;
+        return this.data.answers.filter((a) => a.pools.length > 0).length > 0
     }
 
     get hasFeedback() {
         if (this.data.showPoolsInFeedback) {
-            return true;
+            return true
         }
 
         if (this.data?.feedback?.correct && this.data.feedback.correct !== '') {
-            return true;
+            return true
         }
 
         if (
             this.data?.feedback?.incorrect &&
             this.data.feedback.incorrect !== ''
         ) {
-            return true;
+            return true
         }
 
         if (
             this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
             this.parent.data.feedback.answersFeedbackMode === 'question'
         ) {
-            return true;
+            return true
         }
 
-        return false;
+        return false
     }
 
     markQuestionCorrectness() {
-        let question = this.shadowRoot.querySelector('.questionContainer');
-        let marker = question.querySelector('.subHeader .correctnessMarker');
-        marker.classList.remove('off');
+        let question = this.shadowRoot.querySelector('.questionContainer')
+        let marker = question.querySelector('.subHeader .correctnessMarker')
+        marker.classList.remove('off')
 
         if (this.result) {
-            question.classList.add('correct');
-            question.classList.remove('incorrect');
+            question.classList.add('correct')
+            question.classList.remove('incorrect')
         } else {
-            question.classList.add('incorrect');
-            question.classList.remove('correct');
+            question.classList.add('incorrect')
+            question.classList.remove('correct')
         }
     }
 
     showCorrectAnswers() {
-        let that = this;
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
+        let that = this
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
         inputs.forEach((i) => {
             if (that.data.answers.filter((a) => a.id === i.id)[0].correct) {
-                i.classList.add('correct');
+                i.classList.add('correct')
             } else {
-                i.classList.add('incorrect');
+                i.classList.add('incorrect')
             }
-        });
+        })
     }
 
     markResponsesCorrectness() {
-        let that = this;
+        let that = this
         let inputs = Array.from(
             this.shadowRoot.querySelectorAll('input')
-        ).filter((i) => i.checked);
+        ).filter((i) => i.checked)
         inputs.forEach((i) => {
             if (that.data.answers.filter((a) => a.id === i.id)[0].correct) {
-                i.classList.add('correct');
+                i.classList.add('correct')
             } else {
-                i.classList.add('incorrect');
+                i.classList.add('incorrect')
             }
-        });
+        })
     }
 
     showFeedback() {
-        let feedback = this.shadowRoot.querySelector('.questionFeedback');
-        feedback.scrollIntoView();
+        let feedback = this.shadowRoot.querySelector('.questionFeedback')
+        feedback.scrollIntoView()
 
         if (
             this.parent.data?.questionsSettings?.feedback?.hideElements &&
             this.parent.data.questionsSettings.feedback.hideElements.length > 0
         ) {
-            
-                this.parent.data.questionsSettings.feedback.hideElements.forEach(
-                    (element) => {
-                        this.shadowRoot
-                            .querySelector(`${element}`)
-                            .classList.add('off');
-                    }
-                );
-            
+            this.parent.data.questionsSettings.feedback.hideElements.forEach(
+                (element) => {
+                    this.shadowRoot
+                        .querySelector(`${element}`)
+                        .classList.add('off')
+                }
+            )
         }
 
         /* if (this.displayMode === 'one_instead_another') {
@@ -1538,34 +1582,36 @@ export class QuestionMR extends HTMLElement {
                     .forEach((a) => {
                         let answer = this.data.answers.filter(
                             (ans) => ans.id === a[0]
-                        )[0];
+                        )[0]
 
                         let answerFeedback = this.shadowRoot.querySelector(
                             `.answerFeedback[data-id='${a[0]}']`
-                        );
+                        )
                         if (answer.feedback.length > 0) {
-                            answerFeedback.innerHTML = answer.feedback;
-                            answerFeedback.classList.remove('off');
+                            answerFeedback.innerHTML = answer.feedback
+                            answerFeedback.classList.remove('off')
                         }
-                    });
-            } else if (this.parent.data.feedback.answersFeedbackMode === 'question') {
+                    })
+            } else if (
+                this.parent.data.feedback.answersFeedbackMode === 'question'
+            ) {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {
                         let answer = this.data.answers.filter(
                             (ans) => ans.id === a[0]
-                        )[0];
+                        )[0]
 
                         if (answer.feedback.length > 0) {
-                            let aFeedback = document.createElement('div');
-                            aFeedback.classList.add('answerFeedback');
+                            let aFeedback = document.createElement('div')
+                            aFeedback.classList.add('answerFeedback')
                             aFeedback.innerHTML = AuxFunctions.parseText(
                                 answer.feedback,
                                 answer
-                            );
-                            feedback.append(aFeedback);
+                            )
+                            feedback.append(aFeedback)
                         }
-                    });
+                    })
             }
         }
 
@@ -1573,28 +1619,28 @@ export class QuestionMR extends HTMLElement {
 
         if (this.result) {
             if (this.data.feedback.correct) {
-                let qFeedback = document.createElement('div');
+                let qFeedback = document.createElement('div')
                 qFeedback.innerHTML = AuxFunctions.parseText(
                     this.data.feedback.correct,
                     this
-                );
-                feedback.append(qFeedback);
+                )
+                feedback.append(qFeedback)
             }
             this.shadowRoot
                 .querySelector('.questionContainer')
-                .classList.add('correct');
+                .classList.add('correct')
         } else {
             if (this.data.feedback.incorrect) {
-                let qFeedback = document.createElement('div');
+                let qFeedback = document.createElement('div')
                 qFeedback.innerHTML = AuxFunctions.parseText(
                     this.data.feedback.incorrect,
                     this
-                );
-                feedback.append(qFeedback);
+                )
+                feedback.append(qFeedback)
             }
             this.shadowRoot
                 .querySelector('.questionContainer')
-                .classList.add('incorrect');
+                .classList.add('incorrect')
         }
 
         // show pools
@@ -1602,37 +1648,36 @@ export class QuestionMR extends HTMLElement {
             this.data.showPoolsInFeedback === true &&
             this.userPoolsResult.length > 0
         ) {
-            let poolsContainer = document.createElement('div');
-            poolsContainer.classList.add('poolsContainer');
+            let poolsContainer = document.createElement('div')
+            poolsContainer.classList.add('poolsContainer')
 
             this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div');
-                poolContainer.classList.add('poolContainer');
+                let poolContainer = document.createElement('div')
+                poolContainer.classList.add('poolContainer')
 
-                let pool = new Pool();
-                pool.init(r.id);
-                poolContainer.append(pool);
+                let pool = new Pool()
+                pool.init(r.id)
+                poolContainer.append(pool)
 
-                let userPoolResult = document.createElement('div');
-                userPoolResult.classList.add('userPoolResult');
-                userPoolResult.innerText =
-                    r.value > 0 ? `+${r.value}` : r.value;
-                poolContainer.append(userPoolResult);
+                let userPoolResult = document.createElement('div')
+                userPoolResult.classList.add('userPoolResult')
+                userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
+                poolContainer.append(userPoolResult)
 
-                poolsContainer.append(poolContainer);
-            });
+                poolsContainer.append(poolContainer)
+            })
 
-            feedback.prepend(poolsContainer);
+            feedback.prepend(poolsContainer)
         }
 
         // show feedback
         if (this.hasFeedback) {
-            feedback.classList.remove('off');
+            feedback.classList.remove('off')
         } else {
-            feedback.classList.add('off');
+            feedback.classList.add('off')
         }
 
-        this.setGridTemplateAreas();
+        this.setGridTemplateAreas()
 
         //show NEXT button
         if (
@@ -1640,14 +1685,14 @@ export class QuestionMR extends HTMLElement {
             this.parent.data.displayMode === 'one_by_one' */
         ) {
             if (this.hasFeedback) {
-                let continueBtn = this.shadowRoot.querySelector('.continueBtn');
-                let submitBtn = this.shadowRoot.querySelector('.submitBtn');
-                submitBtn.classList.add('off');
+                let continueBtn = this.shadowRoot.querySelector('.continueBtn')
+                let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+                submitBtn.classList.add('off')
                 if (
                     this.parent.data.displayMode === 'one_instead_another' /* ||
                     this.parent.data.displayMode === 'one_by_one' */
                 ) {
-                    continueBtn.classList.remove('off');
+                    continueBtn.classList.remove('off')
                 }
                 /* if (
                     this.parent.data.displayMode === 'one_by_one' &&
@@ -1656,20 +1701,20 @@ export class QuestionMR extends HTMLElement {
                     continueBtn.classList.add('off');
                 } */
             } else {
-                this.emitEvent('continue');
+                this.emitEvent('continue')
             }
         } else if (
             this.parent.data.displayMode === 'all_at_once' ||
             this.parent.data.displayMode === 'one_by_one'
         ) {
             if (this.parent.data.submitMode === 'each') {
-                this.emitEvent('continue');
+                this.emitEvent('continue')
             }
         }
     }
 
     get userPoolsResult() {
-        let that = this;
+        let that = this
         return that.userAnswer
             .filter((a) => a[1] === true)
             .map((a) => a[0])
@@ -1680,47 +1725,47 @@ export class QuestionMR extends HTMLElement {
             .reduce((accum, unit) => {
                 if (unit && unit.length > 0) {
                     unit.forEach((item) => {
-                        let pool = accum.filter((i) => i.id === item.id);
+                        let pool = accum.filter((i) => i.id === item.id)
 
                         if (pool.length === 0) {
-                            accum.push(Object.assign({}, item));
+                            accum.push(Object.assign({}, item))
                         } else {
-                            pool[0].value = pool[0].value + item.value;
+                            pool[0].value = pool[0].value + item.value
                         }
-                    });
+                    })
                 }
-                return accum;
-            }, []);
+                return accum
+            }, [])
     }
 
     emitEvent(eventName) {
-        let that = this;
+        let that = this
         let event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
                 obj: that,
             },
-        });
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`);
-        this.dispatchEvent(event);
+        })
+        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
+        this.dispatchEvent(event)
     }
 
     disableElements() {
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'));
-        let labels = Array.from(this.shadowRoot.querySelectorAll('label'));
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn');
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        let labels = Array.from(this.shadowRoot.querySelectorAll('label'))
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
 
         if (this.parent.data?.buttons?.submit?.completed) {
-            submitBtn.innerHTML = this.parent.data.buttons.submit.completed;
+            submitBtn.innerHTML = this.parent.data.buttons.submit.completed
         }
 
-        inputs.forEach((i) => (i.disabled = true));
+        inputs.forEach((i) => (i.disabled = true))
 
-        labels.forEach((l) => l.classList.add('inactive'));
+        labels.forEach((l) => l.classList.add('inactive'))
 
-        submitBtn.disabled = true;
+        submitBtn.disabled = true
     }
 }
 
-window.customElements.define('question-mr', QuestionMR);
+window.customElements.define('question-mr', QuestionMR)

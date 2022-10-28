@@ -1123,6 +1123,8 @@ export class QuestionLongFillIn extends HTMLElement {
         this.state.userAnswer = this.userAnswer
         this.state.exactUserAnswer = this.exactUserAnswer
         this.state.userPoolsResult = this.userPoolsResult
+        this.state.completed = this.completed
+        this.state.score = this.score
 
         if ('isFake' in this.state) {
             delete this.state.isFake

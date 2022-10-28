@@ -959,7 +959,7 @@ class XAPI {
         }
     }
 
-    static getAllStates() {
+    static async getAllStates() {
         let items = []
 
         items.push(XAPI.getState(App.course.iri))
@@ -977,12 +977,7 @@ class XAPI {
             }
         })
 
-        Promise.allSettled(items).then(() =>
-            console.log(
-                '%cALL STATES RETRIEVED',
-                'font-weight:bold;color:red;font-size:18px;'
-            )
-        )
+        return await Promise.allSettled(items)
     }
 
     static async postState(stateId, obj) {
