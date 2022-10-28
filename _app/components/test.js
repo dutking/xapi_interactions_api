@@ -461,16 +461,8 @@ export class Test extends HTMLElement {
         if (this.resumed === true) {
             if (this.data.resume.resume === true) {
                 if ("status" in this.state) {
+                    console.log(`%cResumed status for ${this.data.id}: ${this.state.status}`, "color:#FA9401;font-weight:bold;font-size:16px;")
                     this.status = this.state.status
-                } else {
-                    // to handle old version without statuses
-                    if (this.completed) {
-                        this.status = "completed"
-                    } else {
-                        this.status = "inProgress"
-                    }
-                    this.lastQuestionShownId =
-                        this.questionsOrder[this.questionsOrder.length - 1]
                 }
             }
         }
@@ -731,11 +723,6 @@ export class Test extends HTMLElement {
     }
 
     setState(msg = "") {
-        let that = this
-        console.log(
-            `%c...setting test state due to: ${msg}`,
-            "color:lightblue;font-weight:bold;"
-        )
         this.state.date = new Date()
         this.state.id = this.data.id
         this.state.completed = this.completed
@@ -762,7 +749,11 @@ export class Test extends HTMLElement {
         if ("isFake" in this.state) {
             delete this.state.isFake
         }
-
+        console.log(
+            `%c...setting test state due to: ${msg}`,
+            "color:#4AACDA;font-weight:bold;"
+        )
+        console.log(this.state)
         this.emitEvent("state_changed")
     }
 
@@ -1530,9 +1521,6 @@ export class Test extends HTMLElement {
     get attemptCompleted() {
         if (this.questionsElements.length === this.questionsToTake.length) {
             let statuses = this.questionsElements.map((i) => i.status)
-/*             if(this.data.submitMode === 'all_at_once'){
-                return statuses.every(i => i === 'inProgress')
-            } */
 
             return statuses.every((i) => i === "completed")
         }
@@ -1767,26 +1755,27 @@ export class Test extends HTMLElement {
     }
 
     completeTest() {
-        let that = this
+        console.log(`Status: ${this.status}`)
         this.completed = true
         this.status = "completed"
-
+        console.log(`Status: ${this.status}`)
         this.setState("test completed")
-
+        console.log(`Status: ${this.status}`)
         this.showFeedback()
-        
+        console.log(`Status: ${this.status}`)
         console.log(
-            `%cTest "${that.data.id}" completed`,
+            `%cTest "${this.data.id}" completed`,
             "color:green;font-weight:bold;font-size:16px;"
         )
 
         if (this.result) {
-            that.emitEvent("completed")
-            that.emitEvent("passed")
+            this.emitEvent("completed")
+            this.emitEvent("passed")
         } else {
-            that.emitEvent("completed")
-            that.emitEvent("failed")
+            this.emitEvent("completed")
+            this.emitEvent("failed")
         } 
+        console.log(`Status: ${this.status}`)
     }
 
     setListeners() {
@@ -1807,6 +1796,7 @@ export class Test extends HTMLElement {
                     ).then((qElement) => {
                         that.lastQuestionShownId =
                             qElement.data.id
+
                         that.setState("lastQuestionShownId changed")
                         /* if (that.data.displayMode === 'one_by_one') {
                             qElement.scrollIntoView();
@@ -1819,6 +1809,7 @@ export class Test extends HTMLElement {
             }
 
             console.log(`Attempt ${this.attempt}: ${this.attemptCompleted}`)
+            
             if (that.attemptCompleted) {
                 that.completeTest()
             }
@@ -1864,10 +1855,15 @@ export class Test extends HTMLElement {
     }
 
     processTest() {
+        console.log(`Status: ${this.status}`)
         if (this.status === "initial") {
+            console.log(`Status: ${this.status}`)
             this.status = "inProgress"
+            console.log(`Status: ${this.status}`)
             this.setState("test status changed to inProgress")
+            console.log(`Status: ${this.status}`)
         }
+        console.log(`Status: ${this.status}`)
 
         let submitBtn = this.shadowRoot.querySelector(".submitBtn")
 
