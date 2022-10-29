@@ -775,11 +775,9 @@ export class App {
                 }
             }
 
-            Promise.all([
-                ...App.postedStates,
-                ...App.sentStatements,
-                App.setState(),
-            ]).catch((e) => console.log(e))
+            Promise.all([...App.postedStates, ...App.sentStatements]).catch(
+                (e) => console.log(e)
+            )
         })
 
         App.container.addEventListener('created', (e) => {
