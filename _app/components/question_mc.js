@@ -1309,7 +1309,7 @@ export class QuestionMC extends HTMLElement {
     setState(msg = '') {
         console.log(
             `%c...setting question ${this.data.id} state due to: ${msg}`,
-            'color:lightblue;font-weight:bold;'
+            'color:#4AACDA;font-weight:bold;'
         )
         this.state.date = new Date()
         this.state.status = this.status

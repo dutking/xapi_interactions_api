@@ -1115,7 +1115,7 @@ export class QuestionLongFillIn extends HTMLElement {
     setState(msg = '') {
         console.log(
             `%c...setting question ${this.iri} state due to: ${msg}`,
-            'color:blue;font-weight:bold;'
+            'color:#4AACDA;font-weight:bold;'
         )
         this.state.date = new Date()
         this.state.status = this.status
