@@ -981,6 +981,8 @@ class XAPI {
     }
 
     static async postState(stateId, obj) {
+        console.log(`State to be posted for\n${stateId}`)
+        console.log(obj)
         if (!App.testMode) {
             let url = XAPI.getURL(stateId)
             let res = await fetch(url, {

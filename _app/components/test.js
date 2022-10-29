@@ -453,7 +453,6 @@ export class Test extends HTMLElement {
             this.attempt = this.state.attempt
             this.completed = this.state.completed
             this.scores = this.state.scores
-            /* this.processedScores = this.state.processedScores; */
             this.questionsOrder = this.state.questionsOrder
             this.lastQuestionShownId = this.state.lastQuestionShownId
         }
@@ -480,7 +479,6 @@ export class Test extends HTMLElement {
             }
             this.setGridTemplateAreas()
             this.logTestData()
-            /* this.setState('test started') */
         })
     }
 
@@ -1663,15 +1661,6 @@ export class Test extends HTMLElement {
             currentAttemptScore,
             2
         )
-
-        this.setState('score changed')
-
-        /* if (this.data?.scoringFunction) {
-            this.processedScores =
-                scoringFunctions[this.data.scoringFunction](this);
-        } else {
-            this.processedScores = Array.from(this.scores);
-        } */
     }
 
     get processedScores() {
