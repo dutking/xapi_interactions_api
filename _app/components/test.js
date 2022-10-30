@@ -478,7 +478,7 @@ export class Test extends HTMLElement {
                 this.showResumed()
             }
             this.setGridTemplateAreas()
-            this.logTestData()
+            //this.logTestData()
         })
     }
 
