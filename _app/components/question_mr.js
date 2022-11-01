@@ -1145,6 +1145,16 @@ export class QuestionMR extends HTMLElement {
         submitBtn.classList.remove('invisible')
     }
 
+    get currentStylesheets() {
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
+                ss.href !== null &&
+                (ss.href.includes('_app/custom.css') ||
+                    ss.href.includes('_app/style.css'))
+            )
+        })
+    }
+
     get globalTestGridAreas() {
         return getComputedStyle(document.documentElement)
             .getPropertyValue('--questionContainer-grid-template-areas')

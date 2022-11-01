@@ -899,6 +899,16 @@ export class QuestionFillIn extends HTMLElement {
         submitBtn.classList.remove('invisible')
     }
 
+    get currentStylesheets() {
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
+                ss.href !== null &&
+                (ss.href.includes('_app/custom.css') ||
+                    ss.href.includes('_app/style.css'))
+            )
+        })
+    }
+
     get globalTestGridAreas() {
         return getComputedStyle(document.documentElement)
             .getPropertyValue('--questionContainer-grid-template-areas')
@@ -971,9 +981,30 @@ export class QuestionFillIn extends HTMLElement {
                     currentAreasString
                 )
 
-            let stylesheet = Array.from(document.styleSheets).filter((ss) => {
-                return ss.href !== null && ss.href.includes('_app/custom.css')
-            })[0]
+            let stylesheets = Array.from(document.styleSheets)
+                .filter((ss) => {
+                    return (
+                        ss.href !== null &&
+                        (ss.href.includes('_app/custom.css') ||
+                            ss.href.includes('_app/style.css'))
+                    )
+                })
+                .filter((ss) => {
+                    return (
+                        Array.from(ss.cssRules).filter((rule) =>
+                            rule?.selectorText?.includes('.shortFillIn')
+                        ).length > 0
+                    )
+                })
+
+            let stylesheet =
+                stylesheets.length > 1
+                    ? stylesheets.filter((ss) =>
+                          ss.href.includes('_app/custom.css')
+                      )[0]
+                    : stylesheets.filter((ss) =>
+                          ss.href.includes('_app/style.css')
+                      )[0]
 
             let headerCol = Array.from(stylesheet.cssRules)
                 .filter((rule) =>

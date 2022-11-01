@@ -911,6 +911,16 @@ export class QuestionInlineFillIn extends HTMLElement {
         )
     }
 
+    get currentStylesheets() {
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
+                ss.href !== null &&
+                (ss.href.includes('_app/custom.css') ||
+                    ss.href.includes('_app/style.css'))
+            )
+        })
+    }
+
     setListeners() {
         let that = this
         // Disable/enable submitBtn on textarea changes.

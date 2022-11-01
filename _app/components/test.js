@@ -1894,6 +1894,8 @@ export class Test extends HTMLElement {
             if (this.data.submitMode === 'each') {
                 this.setScore()
                 this.showCorrectAnswers(e.detail.obj)
+                this.markResponsesCorrectness(e.detail.obj)
+                this.markQuestionsCorrectness(e.detail.obj)
             }
         })
 

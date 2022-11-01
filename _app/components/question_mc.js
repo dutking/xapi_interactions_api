@@ -718,6 +718,14 @@ templateMC.innerHTML = `
         background: var(--color-incorrect);
     }
 
+    .questionContainer .answersContainer.image input.correct + label .imageContainer {
+        border: 2px solid var(--color-correct) !important;
+    }
+
+    .questionContainer .answersContainer.image input.incorrect + label .imageContainer {
+        border: 2px solid var(--color-incorrect) !important;
+    }
+
     input + label > span.inputMarker:after {
         content: '';
         display: inline-block;
@@ -1273,6 +1281,16 @@ export class QuestionMC extends HTMLElement {
             .map((i) => i.replaceAll('"', ''))
     }
 
+    get currentStylesheets() {
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
+                ss.href !== null &&
+                (ss.href.includes('_app/custom.css') ||
+                    ss.href.includes('_app/style.css'))
+            )
+        })
+    }
+
     setGridTemplateAreas() {
         let questionContainer =
             this.shadowRoot.querySelector('.questionContainer')
@@ -1298,6 +1316,7 @@ export class QuestionMC extends HTMLElement {
             .filter((unit) => unit !== '')
             .join(' ')
 
+        console.log(currentAreasString)
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
             .style.setProperty(

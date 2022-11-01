@@ -1494,6 +1494,16 @@ export class QuestionRange extends HTMLElement {
         }
     }
 
+    get currentStylesheets() {
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
+                ss.href !== null &&
+                (ss.href.includes('_app/custom.css') ||
+                    ss.href.includes('_app/style.css'))
+            )
+        })
+    }
+
     get hasPools() {
         return this.data.answers.filter((a) => a.pools.length > 0).length > 0
     }
