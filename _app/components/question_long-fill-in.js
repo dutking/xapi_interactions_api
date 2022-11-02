@@ -24,11 +24,11 @@ strong {
 
     /* <- grid settings */
         .questionContainer {
-            --questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
+            --this-questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
             display: grid;
             grid-template-columns: var(--questionContainer-grid-template-columns);
             grid-template-rows: var(--questionContainer-grid-template-rows);
-            grid-template-areas: var(--questionContainer-grid-template-areas);
+            grid-template-areas: var(--this-questionContainer-grid-template-areas);
             row-gap: var(--questionContainer-row-gap);
             column-gap: var(--questionContainer-column-gap);
             justify-items: var(--questionContainer-justify-items);
@@ -68,7 +68,7 @@ strong {
         
 
         .questionContainer.feedbackOnly {
-            --questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
+            --this-questionContainer-grid-template-areas: 'subHeader' 'questionFeedback' 'buttonsContainer';
         }
 
         .questionContainer .subHeader {
@@ -892,6 +892,8 @@ export class QuestionLongFillIn extends HTMLElement {
         submitBtn.classList.remove('invisible')
     }
 
+    /* <- SETTING GRID */
+
     get currentStylesheets() {
         return Array.from(document.styleSheets).filter((ss) => {
             return (
@@ -900,6 +902,52 @@ export class QuestionLongFillIn extends HTMLElement {
                     ss.href.includes('_app/style.css'))
             )
         })
+    }
+
+    getCSSPropertyValue(selector, property) {
+        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
+            return (
+                Array.from(ss.cssRules).filter((rule) =>
+                    rule?.selectorText?.endsWith(selector)
+                ).length > 0
+            )
+        })
+
+        let stylesheet
+        if (applicableStylesheets.length > 1) {
+            stylesheet = applicableStylesheets.filter((ss) =>
+                ss.href.includes('_app/custom.css')
+            )[0]
+        } else if (applicableStylesheets.length === 1) {
+            stylesheet = applicableStylesheets[0]
+        } else if (applicableStylesheets.length === 0) {
+            console.log('selector not found. using style.css')
+            stylesheet = this.currentStylesheets.filter((ss) =>
+                ss.href.includes('_app/style.css')
+            )[0]
+        }
+
+        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
+            String(rule.selectorText).endsWith(selector)
+        )
+
+        let style
+        if (selectors.length === 1) {
+            style = selectors[0].style
+        } else if (selectors.length === 0) {
+            console.log('selector not found. using ":root"')
+            style = Array.from(stylesheet.cssRules).filter((rule) =>
+                String(rule.selectorText).endsWith(':root')
+            )[0].style
+        } else {
+            console.error('found more than one selector')
+        }
+
+        // style.getPropertyValue(property)
+        // style.setProperty(property)
+
+        let propertyValue = style.getPropertyValue(property)
+        return {style: style, propertyValue: propertyValue}
     }
 
     get globalTestGridAreas() {
@@ -926,6 +974,7 @@ export class QuestionLongFillIn extends HTMLElement {
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
                 let subunits = unit.split(' ')
+
                 if (subunits.every((u) => currentAreas.includes(u))) {
                     return `"${unit}"`
                 } else {
@@ -935,13 +984,19 @@ export class QuestionLongFillIn extends HTMLElement {
             .filter((unit) => unit !== '')
             .join(' ')
 
+        console.log(
+            `currentAreasString for ${this.data.id}: ${currentAreasString}`
+        )
+
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
             .style.setProperty(
-                '--questionContainer-grid-template-areas',
+                '--this-questionContainer-grid-template-areas',
                 currentAreasString
             )
     }
+
+    /* SETTING GRID -> */
 
     restoreState() {
         this.status = this.state.status

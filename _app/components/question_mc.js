@@ -47,9 +47,8 @@ templateMC.innerHTML = `
     /* <- grid settings */
         .questionContainer {
             --this-questionContainer-grid-template-areas: var(--questionContainer-grid-template-areas);
-            --this-grid-template-columns: var(--questionContainer-grid-template-columns);
             display: grid;
-            grid-template-columns: var(--this-questionContainer-grid-template-columns);
+            grid-template-columns: var(--questionContainer-grid-template-columns);
             grid-template-rows: var(--questionContainer-grid-template-rows);
             grid-template-areas: var(--this-questionContainer-grid-template-areas);
             row-gap: var(--questionContainer-row-gap);
@@ -1274,6 +1273,8 @@ export class QuestionMC extends HTMLElement {
             .split(' ');
     } */
 
+    /* <- SETTING GRID */
+
     get currentStylesheets() {
         return Array.from(document.styleSheets).filter((ss) => {
             return (
@@ -1301,7 +1302,7 @@ export class QuestionMC extends HTMLElement {
         } else if (applicableStylesheets.length === 1) {
             stylesheet = applicableStylesheets[0]
         } else if (applicableStylesheets.length === 0) {
-            ;('selector not found. using style.css')
+            console.log('selector not found. using style.css')
             stylesheet = this.currentStylesheets.filter((ss) =>
                 ss.href.includes('_app/style.css')
             )[0]
@@ -1315,7 +1316,7 @@ export class QuestionMC extends HTMLElement {
         if (selectors.length === 1) {
             style = selectors[0].style
         } else if (selectors.length === 0) {
-            ;('selector not found. using ":root"')
+            console.log('selector not found. using ":root"')
             style = Array.from(stylesheet.cssRules).filter((rule) =>
                 String(rule.selectorText).endsWith(':root')
             )[0].style
@@ -1360,10 +1361,11 @@ export class QuestionMC extends HTMLElement {
                 }
             })
             .filter((i) => i !== '')
-        console.log(`currentAreas for ${this.data.id}`)
-        console.log(currentAreas)
-        console.log(`globalAreas for ${this.data.id}`)
-        console.log(this.globalTestGridAreas)
+
+        console.log(`CURRENT AREAS FOR ${this.data.id}: ${currentAreas}`)
+        console.log(
+            `GLOBAL AREAS FOR ${this.data.id}: ${this.globalTestGridAreas}`
+        )
 
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
@@ -1389,6 +1391,8 @@ export class QuestionMC extends HTMLElement {
                 currentAreasString
             )
     }
+
+    /* SETTING GRID -> */
 
     setState(msg = '') {
         console.log(

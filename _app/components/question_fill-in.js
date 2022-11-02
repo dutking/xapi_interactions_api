@@ -899,6 +899,8 @@ export class QuestionFillIn extends HTMLElement {
         submitBtn.classList.remove('invisible')
     }
 
+    /* <- SETTING GRID */
+
     get currentStylesheets() {
         return Array.from(document.styleSheets).filter((ss) => {
             return (
@@ -907,6 +909,52 @@ export class QuestionFillIn extends HTMLElement {
                     ss.href.includes('_app/style.css'))
             )
         })
+    }
+
+    getCSSPropertyValue(selector, property) {
+        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
+            return (
+                Array.from(ss.cssRules).filter((rule) =>
+                    rule?.selectorText?.endsWith(selector)
+                ).length > 0
+            )
+        })
+
+        let stylesheet
+        if (applicableStylesheets.length > 1) {
+            stylesheet = applicableStylesheets.filter((ss) =>
+                ss.href.includes('_app/custom.css')
+            )[0]
+        } else if (applicableStylesheets.length === 1) {
+            stylesheet = applicableStylesheets[0]
+        } else if (applicableStylesheets.length === 0) {
+            console.log('selector not found. using style.css')
+            stylesheet = this.currentStylesheets.filter((ss) =>
+                ss.href.includes('_app/style.css')
+            )[0]
+        }
+
+        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
+            String(rule.selectorText).endsWith(selector)
+        )
+
+        let style
+        if (selectors.length === 1) {
+            style = selectors[0].style
+        } else if (selectors.length === 0) {
+            console.log('selector not found. using ":root"')
+            style = Array.from(stylesheet.cssRules).filter((rule) =>
+                String(rule.selectorText).endsWith(':root')
+            )[0].style
+        } else {
+            console.error('found more than one selector')
+        }
+
+        // style.getPropertyValue(property)
+        // style.setProperty(property)
+
+        let propertyValue = style.getPropertyValue(property)
+        return {style: style, propertyValue: propertyValue}
     }
 
     get globalTestGridAreas() {
@@ -933,6 +981,7 @@ export class QuestionFillIn extends HTMLElement {
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
                 let subunits = unit.split(' ')
+
                 if (subunits.every((u) => currentAreas.includes(u))) {
                     return `"${unit}"`
                 } else {
@@ -974,55 +1023,20 @@ export class QuestionFillIn extends HTMLElement {
 
             currentAreasString = areas
 
-            Array.from(this.shadowRoot.styleSheets[0].cssRules)
-                .filter((rule) => rule.selectorText === '.questionContainer')[0]
-                .style.setProperty(
-                    '--this-questionContainer-grid-template-areas',
-                    currentAreasString
-                )
+            let headerCol = this.getCSSPropertyValue(
+                '.shortFillIn',
+                '--headerCol'
+            ).propertyValue
 
-            let stylesheets = Array.from(document.styleSheets)
-                .filter((ss) => {
-                    return (
-                        ss.href !== null &&
-                        (ss.href.includes('_app/custom.css') ||
-                            ss.href.includes('_app/style.css'))
-                    )
-                })
-                .filter((ss) => {
-                    return (
-                        Array.from(ss.cssRules).filter((rule) =>
-                            rule?.selectorText?.includes('.shortFillIn')
-                        ).length > 0
-                    )
-                })
+            let inputCol = this.getCSSPropertyValue(
+                '.shortFillIn',
+                '--inputCol'
+            ).propertyValue
 
-            let stylesheet =
-                stylesheets.length > 1
-                    ? stylesheets.filter((ss) =>
-                          ss.href.includes('_app/custom.css')
-                      )[0]
-                    : stylesheets.filter((ss) =>
-                          ss.href.includes('_app/style.css')
-                      )[0]
-
-            let headerCol = Array.from(stylesheet.cssRules)
-                .filter((rule) =>
-                    String(rule.selectorText).includes('.shortFillIn')
-                )[0]
-                .style.getPropertyValue('--headerCol')
-
-            let inputCol = Array.from(stylesheet.cssRules)
-                .filter((rule) =>
-                    String(rule.selectorText).includes('.shortFillIn')
-                )[0]
-                .style.getPropertyValue('--inputCol')
-
-            let questionCol = Array.from(stylesheet.cssRules)
-                .filter((rule) =>
-                    String(rule.selectorText).includes('.shortFillIn')
-                )[0]
-                .style.getPropertyValue('--questionCol')
+            let questionCol = this.getCSSPropertyValue(
+                '.shortFillIn',
+                '--questionCol'
+            ).propertyValue
 
             if (cols === 3) {
                 Array.from(this.shadowRoot.styleSheets[0].cssRules)
@@ -1047,6 +1061,10 @@ export class QuestionFillIn extends HTMLElement {
             }
         }
 
+        console.log(
+            `currentAreasString for ${this.data.id}: ${currentAreasString}`
+        )
+
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
             .style.setProperty(
@@ -1054,6 +1072,8 @@ export class QuestionFillIn extends HTMLElement {
                 currentAreasString
             )
     }
+
+    /* SETTING GRID -> */
 
     restoreState() {
         this.status = this.state.status

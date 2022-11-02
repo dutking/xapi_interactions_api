@@ -406,8 +406,6 @@ testTemplate.innerHTML = `
             display: none;
         }
     }
-
-    
 </style>
 <div class='testContainer'>
     <div class='instruction'></div>
@@ -538,16 +536,113 @@ export class Test extends HTMLElement {
         return `${this.parent.iri}/${this.data.id}`
     }
 
+    /* <- SETTING GRID */
+
+    get currentStylesheets() {
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
+                ss.href !== null &&
+                (ss.href.includes('_app/custom.css') ||
+                    ss.href.includes('_app/style.css'))
+            )
+        })
+    }
+
+    getCSSPropertyValue(selector, property) {
+        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
+            return (
+                Array.from(ss.cssRules).filter((rule) =>
+                    rule?.selectorText?.endsWith(selector)
+                ).length > 0
+            )
+        })
+
+        let stylesheet
+        if (applicableStylesheets.length > 1) {
+            stylesheet = applicableStylesheets.filter((ss) =>
+                ss.href.includes('_app/custom.css')
+            )[0]
+        } else if (applicableStylesheets.length === 1) {
+            stylesheet = applicableStylesheets[0]
+        } else if (applicableStylesheets.length === 0) {
+            console.log('selector not found. using style.css')
+            stylesheet = this.currentStylesheets.filter((ss) =>
+                ss.href.includes('_app/style.css')
+            )[0]
+        }
+
+        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
+            String(rule.selectorText).endsWith(selector)
+        )
+
+        let style
+        if (selectors.length === 1) {
+            style = selectors[0].style
+        } else if (selectors.length === 0) {
+            console.log('selector not found. using ":root"')
+            style = Array.from(stylesheet.cssRules).filter((rule) =>
+                String(rule.selectorText).endsWith(':root')
+            )[0].style
+        } else {
+            console.error('found more than one selector')
+        }
+
+        // style.getPropertyValue(property)
+        // style.setProperty(property)
+
+        let propertyValue = style.getPropertyValue(property)
+        return {style: style, propertyValue: propertyValue}
+    }
+
     get globalTestGridAreas() {
         return getComputedStyle(document.documentElement)
             .getPropertyValue('--test-grid-template-areas')
             .trim()
-            .replaceAll('"', '')
-            .replaceAll('  ', ' ')
-            .split(' ')
+            .split('" "')
+            .map((i) => i.replaceAll('"', ''))
     }
 
     setGridTemplateAreas() {
+        let testContainer = this.shadowRoot.querySelector('.testContainer')
+        let currentAreas = Array.from(testContainer.children)
+            .map((element) => {
+                if (!element.className.includes('off')) {
+                    return element.className.split(' ')[0]
+                } else {
+                    return ''
+                }
+            })
+            .filter((i) => i !== '')
+
+        console.log(`CURRENT AREAS FOR ${this.data.id}: ${currentAreas}`)
+        let currentAreasString = this.globalTestGridAreas
+            .map((unit) => {
+                let subunits = unit.split(' ')
+
+                if (subunits.every((u) => currentAreas.includes(u))) {
+                    return `"${unit}"`
+                } else {
+                    return ''
+                }
+            })
+            .filter((unit) => unit !== '')
+            .join(' ')
+
+        console.log(
+            `currentAreasString for ${this.data.id}: ${currentAreasString}`
+        )
+
+        Array.from(this.shadowRoot.styleSheets[0].cssRules)
+            .filter((rule) => rule.selectorText === '.testContainer')[0]
+            .style.setProperty(
+                '--this-test-grid-template-areas',
+                currentAreasString
+            )
+    }
+
+    /* SETTING GRID -> */
+
+    /* setGridTemplateAreas() {
         let testContainer = this.shadowRoot.querySelector('.testContainer')
         let currentAreas = Array.from(testContainer.children)
             .map((element) => {
@@ -578,7 +673,7 @@ export class Test extends HTMLElement {
                 '--this-test-grid-template-areas',
                 currentAreasString
             )
-    }
+    } */
 
     setStaticContent() {
         let instructionDiv = this.shadowRoot.querySelector('.instruction')
