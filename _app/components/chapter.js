@@ -4,9 +4,7 @@ export class Chapter extends HTMLElement {
         this.innerHTML = ``
         this.startTime = new Date()
         this.completedTime = new Date()
-        this.score = 0
         this.completed = false
-        this.order = this.dataset.order
         this.status = 'initial'
     }
 
@@ -15,6 +13,13 @@ export class Chapter extends HTMLElement {
         this.state = state
         this.data = data
         this.parent = parent
+
+        if (!('isFake' in this.state)) {
+            this.completed = this.state.completed
+            this.status = this.state.status
+        }
+
+        placeholder.appendChild(this)
     }
 
     setState(msg = '') {
@@ -38,6 +43,10 @@ export class Chapter extends HTMLElement {
         )
         console.log(this.state)
         this.emitEvent('state_changed')
+    }
+
+    get score() {
+        return this.completed ? 1 : 0
     }
 
     get iri() {
