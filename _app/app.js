@@ -20,6 +20,7 @@ export class App {
         App.placeholders = document.querySelectorAll('.placeholder')
         App.completedInteractions = new Set()
         App.currentInteractions = new Set()
+        App.currentChapters = []
         App.course = {}
         App.course.iri = `${config.trackIRI}/${config.id}`
 
@@ -331,8 +332,14 @@ export class App {
                 App.currentInteractions.add(taskElement)
             }
 
+            if (interaction.type === 'chapter') {
+                App.currentChapters.push(taskElement)
+            }
+
             if (interaction.type === 'longread') {
                 App.observerLongread.observe(taskElement)
+            } else if (interaction.type === 'chapter') {
+                App.observerChapter.observe(taskElement)
             } else {
                 App.observer.observe(taskElement)
             }
@@ -439,24 +446,43 @@ export class App {
 
         let optionsLongread = {
             root: document,
-            rootMargin: '500px',
+            rootMargin: '300px',
+            threshold: 0,
+        }
+
+        let optionsChapter = {
+            root: document,
+            rootMargin: '-500px',
             threshold: 0,
         }
 
         let callback = (entries, observer) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    if (
-                        entry.target.tagName !== 'longread-unit'.toUpperCase()
-                    ) {
+                    let interaction = entry.target
+                    if (interaction.tagName !== 'longread-unit'.toUpperCase()) {
                         console.log(
-                            `%c${entry.target.tagName} ${entry.target.iri} is in viewport.`,
+                            `%c${interaction.tagName} ${interaction.iri} is in viewport.`,
                             'color:gray;'
                         )
-                        entry.target['startTime'] = new Date()
-                        entry.target.emitEvent('interacted')
+                        interaction['startTime'] = new Date()
+                        interaction.emitEvent('interacted')
 
-                        observer.unobserve(entry.target)
+                        if (
+                            interaction.tagName === 'chapter-unit'.toUpperCase()
+                        ) {
+                            interaction.status = 'inProgress'
+                            interaction.setState(`Chapter inProgress`)
+                            if (App.currentChapters.indexOf(interaction) > 0) {
+                                let currentChapterIndex =
+                                    App.currentChapters.indexOf(interaction)
+                                let prevChapter =
+                                    App.currentChapters[currentChapterIndex - 1]
+                                prevChapter.setCompleted()
+                            }
+                        }
+
+                        observer.unobserve(interaction)
                     }
                 }
                 // Each entry describes an intersection change for one observed
@@ -481,12 +507,10 @@ export class App {
                             `%c${entry.target.tagName} ${entry.target.iri} is in viewport.`,
                             'color:gray;'
                         )
-                        entry.target.completed = true
-                        entry.target.passed = true
-                        entry.target.score = 1
-                        entry.target.setState('longread is in viewport')
-                        entry.target.emitEvent('completed')
-                        entry.target.emitEvent('passed')
+                        App.currentChapters[
+                            App.currentChapters.length - 1
+                        ].setCompleted()
+                        entry.target.setCompleted()
                         observer.unobserve(entry.target)
                     }
                 }
@@ -494,6 +518,7 @@ export class App {
         }
 
         App.observer = new IntersectionObserver(callback, options)
+        App.observerChapter = new IntersectionObserver(callback, optionsChapter)
         App.observerLongread = new IntersectionObserver(
             callbackLongread,
             optionsLongread
