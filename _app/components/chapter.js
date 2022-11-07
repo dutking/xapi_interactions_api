@@ -46,7 +46,7 @@ export class Chapter extends HTMLElement {
     }
 
     get score() {
-        return this.completed ? 1 : 0
+        return this.completed ? this.data.weight : 0
     }
 
     get iri() {
@@ -74,11 +74,10 @@ export class Chapter extends HTMLElement {
         if (!this.completed) {
             this.status = 'completed'
             this.completed = true
-            this.score = this.data.weight
             this.completedTime = new Date()
+            this.setState(`Chapter ${this.data.id} completed`)
             this.emitEvent('completed')
             this.emitEvent('passed')
-            this.setState(`Chapter ${this.data.id} completed`)
         }
     }
 
