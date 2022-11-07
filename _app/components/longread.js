@@ -1,4 +1,4 @@
-let longreadTemplate = document.createElement('template');
+let longreadTemplate = document.createElement('template')
 longreadTemplate.innerHTML = `
 <style>
 * {
@@ -99,71 +99,81 @@ longreadTemplate.innerHTML = `
 <div class='longread'>
         <button class='btn nextBtn' type='button'></button>        
 </div>
-`;
+`
 
 export class Longread extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+        super()
+        this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(longreadTemplate.content.cloneNode(true));
+        this.shadowRoot.appendChild(longreadTemplate.content.cloneNode(true))
     }
 
     init(placeholder, interaction, stateData = {}, parent) {
-        this.parent = parent;
-        this.placeholder = placeholder;
-        this.data = interaction;
-        this.state = stateData;
-        this.completed = false;
-        this.passed = false;
-        this.score = 0;
-        this.startTime = new Date();
-        this.setButtons();
-        this.emitEvent('interacted');
-        this.setListeners();
+        this.parent = parent
+        this.placeholder = placeholder
+        this.data = interaction
+        this.state = stateData
+        this.completed = false
+        this.passed = false
+        this.score = 0
+        this.startTime = new Date()
+        this.setButtons()
+        this.emitEvent('interacted')
+        this.setListeners()
 
         if ('completed' in this.state) {
-            this.passed = this.state.passed;
-            this.completed = this.state.completed;
+            this.passed = this.state.passed
+            this.completed = this.state.completed
         }
 
-        this.placeholder.append(this);
-        this.placeholder.classList.add(this.data.structure[0]);
+        this.placeholder.append(this)
+        this.placeholder.classList.add(this.data.structure[0])
     }
 
     setButtons() {
         Object.keys(this.data.buttons).forEach((k) => {
-            let btn = this.shadowRoot.querySelector(`.${k}Btn`);
+            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
             if (btn) {
-                btn.innerHTML = this.data.buttons[k].initial;
+                btn.innerHTML = this.data.buttons[k].initial
                 if (this.data.buttons[k].icon === true) {
-                    btn.classList.add('icon');
+                    btn.classList.add('icon')
                 }
             }
-        });
+        })
     }
 
     emitEvent(eventName) {
-        let that = this;
+        let that = this
         let event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
                 obj: that,
             },
-        });
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`);
-        this.dispatchEvent(event);
+        })
+        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
+        this.dispatchEvent(event)
     }
 
     setListeners() {
-        let that = this;
-        let nextBtn = this.shadowRoot.querySelector('.nextBtn');
+        let that = this
+        let nextBtn = this.shadowRoot.querySelector('.nextBtn')
         nextBtn.addEventListener('click', (e) => {
             e.target.innerText = 'Завершение...'
             e.target.classList.add('deactivated')
-            that.emitEvent('exited');
-        });
+            that.emitEvent('exited')
+        })
+    }
+
+    setCompleted() {
+        this.completed = true
+        this.status = 'completed'
+        this.passed = true
+        this.score = 1
+        this.setState('longread is in viewport')
+        this.emitEvent('completed')
+        this.emitEvent('passed')
     }
 
     get iri() {
@@ -171,50 +181,54 @@ export class Longread extends HTMLElement {
     }
 
     get maxScore() {
-        return 1;
+        return 1
     }
 
     get weight() {
-        return 1;
+        return 1
     }
 
     get maxPossibleScore() {
-        return 1;
+        return 1
+    }
+
+    get passed() {
+        return this.completed
     }
 
     get result() {
         switch (this.data.requiredState) {
             case 'passed':
                 if (this.passed) {
-                    return true;
+                    return true
                 }
-                break;
+                break
             case 'completed':
                 if (this.completed) {
-                    return true;
+                    return true
                 }
-                break;
+                break
             case 'none':
-                return true;
-                break;
+                return true
+                break
             default:
-                break;
+                break
         }
     }
 
     setState() {
-        this.state.date = new Date();
-        this.state.id = this.data.id;
-        this.state.completed = this.completed;
-        this.state.passed = this.passed;
-        this.state.result = this.result;
+        this.state.date = new Date()
+        this.state.id = this.data.id
+        this.state.completed = this.completed
+        this.state.passed = this.passed
+        this.state.result = this.result
 
         if ('isFake' in this.state) {
-            delete this.state.isFake;
+            delete this.state.isFake
         }
 
-        this.emitEvent('state_changed');
+        this.emitEvent('state_changed')
     }
 }
 
-window.customElements.define('longread-unit', Longread);
+window.customElements.define('longread-unit', Longread)
