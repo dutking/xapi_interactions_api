@@ -897,6 +897,24 @@ export class App {
             App.exitCourse()
         })
 
+        App.container.addEventListener('feedbackSubmitted', (e) => {
+            if (e.detail.obj.amountOfRatingItems) {
+                App.sentStatements.push(
+                    XAPI.sendStatement(
+                        new Statement(e.detail.obj, 'rated').statement
+                    )
+                )
+            }
+
+            if (e.detail.obj.hasCommentField) {
+                App.sentStatements.push(
+                    XAPI.sendStatement(
+                        new Statement(e.detail.obj, 'commented').statement
+                    )
+                )
+            }
+        })
+
         document.addEventListener(
             'visibilitychange',
             (e) => {

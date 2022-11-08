@@ -961,6 +961,22 @@ body {
     font-style: italic;
 }
 
+feedback-unit {
+    --feedback-width: 400px;
+    --feedback-padding: 2rem;
+    --feedback-gap: 2rem;
+
+    --ratingContainer-gap: 2rem;
+    --ratingContainer-justify-content: center;
+    --ratingContainer-align-items: center;
+
+    --ratingItem-width: 100px;
+    --ratingItem-height: 100px;
+    --ratingItem-background: #d6d7e3;
+    --ratingItem-background-hover: #1e2251;
+    --ratingItem-background-checked: #1e2251;
+}
+
 popup-unit {
     position: relative;
     --z-index-base: 1000;
