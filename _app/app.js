@@ -1,4 +1,5 @@
 import {Test} from './components/test.js'
+import {Chapter} from './components/chapter.js'
 import {Branching} from './components/branching.js'
 import {Longread} from './components/longread.js'
 import {Sidebar} from './components/sidebar.js'

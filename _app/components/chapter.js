@@ -19,7 +19,7 @@ export class Chapter extends HTMLElement {
             this.status = this.state.status
         }
 
-        placeholder.appendChild(this)
+        this.placeholder.append(this)
     }
 
     setState(msg = '') {

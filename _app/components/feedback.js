@@ -11,7 +11,7 @@ commentItemTemplate.innerHTML = `
             pointer-events: none;
         }
     </style>
-    <textarea class="comment" placeholder="Введите Ваш отзыв">
+    <textarea class="comment" placeholder="Напишите комментарий">
     </textarea>
 `
 
@@ -59,6 +59,7 @@ const feedbackTemplate = document.createElement('template')
 feedbackTemplate.innerHTML = `
     <style>
         .feedbackContainer {
+            position: relative;
             box-sizing: border-box;
             width: var(--feedback-width, 30vw);
             padding: var(--feedback-padding, 2rem);
@@ -80,18 +81,43 @@ feedbackTemplate.innerHTML = `
             width: 100%;
         }
 
+        .btn {
+            background: var(--button-bg-color);
+        }
+
+        .btn:hover {
+            background: var(--button-bg-color-hover);
+        }
+
+        .btn:active {
+            background: var(--button-bg-color-active);
+        }
+
+        .closeBtn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .off {
             display: none;
         }
     </style>
 
     <dialog class="feedbackContainer">
+        <header></header>
         <div class="content">
-            <div class="ratingContainer off"></div>
+            <div class="ratingContainer off">
+            </div>
             <div class="commentContainer off"></div>
         </div>
-        <button class="submitBtn" type="button">Отправить</button>
-        <button class="closeBtn" type="button">&#x2715</button>
+        <button class="btn submitBtn" type="button">Отправить</button>
+        <button class="btn closeBtn" type="button">&#x2715</button>
     </dialog>
 `
 
@@ -114,6 +140,9 @@ export class Feedback extends HTMLElement {
         this.evaluatedObjectID = evaluatedObjectID // string
         this.amountOfRatingItems = amountOfRatingItems // number
         this.hasCommentField = hasCommentField // bool
+        this.evaluatedObject = Array.from(
+            window.App.currentInteractions
+        ).filter((i) => i.data.id === evaluatedObjectID)[0]
     }
 
     clearContent() {
@@ -125,6 +154,9 @@ export class Feedback extends HTMLElement {
 
     setRating() {
         this.ratingContainer.classList.remove('off')
+        let header = document.createElement('header')
+        header.innerHTML = `Оцените ${this.eveluatedObject.data.nameRus} от 1 до ${this.amountOfRatingItems}`
+        this.ratingContainer.append(header)
 
         for (let i = 0; i < this.amountOfRatingItems; i++) {
             let item = ratingItemTemplate.content.cloneNode(true)
