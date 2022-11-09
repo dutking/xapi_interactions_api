@@ -472,10 +472,12 @@ export class App {
                         if (
                             interaction.tagName === 'chapter-unit'.toUpperCase()
                         ) {
-                            interaction.status = 'inProgress'
-                            interaction.setState(
-                                `Chapter ${interaction.data.id} is inProgress`
-                            )
+                            if (!interaction.completed) {
+                                interaction.status = 'inProgress'
+                                interaction.setState(
+                                    `Chapter ${interaction.data.id} is inProgress`
+                                )
+                            }
                             if (App.currentChapters.indexOf(interaction) > 0) {
                                 let currentChapterIndex =
                                     App.currentChapters.indexOf(interaction)
