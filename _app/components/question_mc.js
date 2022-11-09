@@ -1362,10 +1362,10 @@ export class QuestionMC extends HTMLElement {
             })
             .filter((i) => i !== '')
 
-        console.log(`CURRENT AREAS FOR ${this.data.id}: ${currentAreas}`)
+        /* console.log(`CURRENT AREAS FOR ${this.data.id}: ${currentAreas}`)
         console.log(
             `GLOBAL AREAS FOR ${this.data.id}: ${this.globalTestGridAreas}`
-        )
+        ) */
 
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
@@ -1380,9 +1380,9 @@ export class QuestionMC extends HTMLElement {
             .filter((unit) => unit !== '')
             .join(' ')
 
-        console.log(
+        /* console.log(
             `currentAreasString for ${this.data.id}: ${currentAreasString}`
-        )
+        ) */
 
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]

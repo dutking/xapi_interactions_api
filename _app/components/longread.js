@@ -115,7 +115,6 @@ export class Longread extends HTMLElement {
         this.data = interaction
         this.state = stateData
         this.completed = false
-        this.passed = false
         this.score = 0
         this.startTime = new Date()
         this.setButtons()
@@ -123,7 +122,6 @@ export class Longread extends HTMLElement {
         this.setListeners()
 
         if ('completed' in this.state) {
-            this.passed = this.state.passed
             this.completed = this.state.completed
         }
 
@@ -169,7 +167,6 @@ export class Longread extends HTMLElement {
     setCompleted() {
         this.completed = true
         this.status = 'completed'
-        this.passed = true
         this.score = 1
         this.setState('longread is in viewport')
         this.emitEvent('completed')

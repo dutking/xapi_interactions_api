@@ -1120,9 +1120,9 @@ export class QuestionRange extends HTMLElement {
             .filter((unit) => unit !== '')
             .join(' ')
 
-        console.log(
+        /* console.log(
             `currentAreasString for ${this.data.id}: ${currentAreasString}`
-        )
+        ) */
 
         Array.from(this.shadowRoot.styleSheets[0].cssRules)
             .filter((rule) => rule.selectorText === '.questionContainer')[0]
