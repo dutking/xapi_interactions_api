@@ -512,9 +512,11 @@ export class App {
                             `%c${entry.target.tagName} ${entry.target.iri} is in viewport.`,
                             'color:gray;'
                         )
-                        App.currentChapters[
-                            App.currentChapters.length - 1
-                        ].setCompleted()
+                        if (App.currentChapters.length > 0) {
+                            App.currentChapters[
+                                App.currentChapters.length - 1
+                            ].setCompleted()
+                        }
                         entry.target.setCompleted()
                         observer.unobserve(entry.target)
                     }
@@ -571,7 +573,7 @@ export class App {
         let score = 0
         App.completedInteractions.forEach((i) => {
             if (i.result) {
-                score += i.weight
+                score += Number(i.weight)
             }
         })
         App.course.scores.push(score)
@@ -584,6 +586,8 @@ export class App {
         } else {
             App.course.processedScores = Array.from(App.course.scores)
         }
+
+        console.log(`Course score is ${App.course.score}`)
     }
 
     static async finishCourse() {
