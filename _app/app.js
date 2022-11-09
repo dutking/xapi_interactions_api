@@ -453,8 +453,8 @@ export class App {
 
         let optionsChapter = {
             root: document,
-            rootMargin: '-500px',
-            threshold: 0,
+            rootMargin: '0px',
+            threshold: 0.2,
         }
 
         let callback = (entries, observer) => {
@@ -473,7 +473,9 @@ export class App {
                             interaction.tagName === 'chapter-unit'.toUpperCase()
                         ) {
                             interaction.status = 'inProgress'
-                            interaction.setState(`Chapter inProgress`)
+                            interaction.setState(
+                                `Chapter ${interaction.data.id} is inProgress`
+                            )
                             if (App.currentChapters.indexOf(interaction) > 0) {
                                 let currentChapterIndex =
                                     App.currentChapters.indexOf(interaction)

@@ -961,6 +961,12 @@ body {
     font-style: italic;
 }
 
+#allrecords .placeholder chapter-unit {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+}
+
 feedback-unit {
     --feedback-width: 400px;
     --feedback-padding: 2rem;
