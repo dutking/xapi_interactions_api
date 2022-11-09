@@ -49,6 +49,10 @@ export class Chapter extends HTMLElement {
         return this.completed ? this.data.weight : 0
     }
 
+    get weight() {
+        return 1
+    }
+
     get iri() {
         return `${this.parent.iri}/${this.data.id}`
     }
