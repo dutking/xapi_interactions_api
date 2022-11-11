@@ -53,6 +53,10 @@ export class Chapter extends HTMLElement {
         return 1
     }
 
+    get maxPossibleScore() {
+        return 1
+    }
+
     get iri() {
         return `${this.parent.iri}/${this.data.id}`
     }
