@@ -1,8 +1,8 @@
-import { AuxFunctions } from '../auxFunctions.js';
+import {AuxFunctions} from '../auxFunctions.js'
 
-const popupTemplate = document.createElement('template');
+const popupTemplate = document.createElement('template')
 
-const popupOpenerTemplate = document.createElement('template');
+const popupOpenerTemplate = document.createElement('template')
 
 popupOpenerTemplate.innerHTML = `
 <style>
@@ -130,6 +130,7 @@ popupTemplate.innerHTML = `
 }
 
 .popupContainer .closeBtn {
+    color: black;
     grid-area: 1 / 1 / 2 / 2;
     position: absolute;
     box-sizing: border-box;
@@ -145,7 +146,7 @@ popupTemplate.innerHTML = `
     z-index: 1;
 }
 
-.popupContainer .closeBtn::before {
+/* .popupContainer .closeBtn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -171,9 +172,13 @@ popupTemplate.innerHTML = `
     transform: rotate(45deg);
     transition: background 150ms linear;
     pointer-events: none;
-}
+} */
 
-.popupContainer .closeBtn:hover::after, .popupContainer .closeBtn:hover::before {
+/* .popupContainer .closeBtn:hover::after, .popupContainer .closeBtn:hover::before {
+    background: #ccc;
+} */
+
+.popupContainer .closeBtn:hover {
     background: #ccc;
 }
 
@@ -201,32 +206,31 @@ popupTemplate.innerHTML = `
             </div>
         </div>
         
-        <button class="closeBtn" type="button"></button>
+        <button class="closeBtn" type="button">&#x2715</button>
     </div>
 
-`;
+`
 export class Popup extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+        super()
+        this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(popupTemplate.content.cloneNode(true));
+        this.shadowRoot.appendChild(popupTemplate.content.cloneNode(true))
     }
 
     init(id, header, content) {
         this.id = id
         this.header = header
         this.content = content
-        this.setContent();
-        this.setListeners();
-        this.append();
+        this.setContent()
+        this.setListeners()
+        this.append()
     }
 
     append() {
         this.shadowRoot.querySelector('.popupContainer').classList.add('hidden')
-        this.setAttribute("id", this.id)
+        this.setAttribute('id', this.id)
         document.querySelector('body').append(this)
-
     }
 
     updateContent(header, content) {
@@ -235,11 +239,11 @@ export class Popup extends HTMLElement {
         this.setContent()
     }
 
-    setContent(){
+    setContent() {
         let headerElement = this.shadowRoot.querySelector('.header')
         let contentElement = this.shadowRoot.querySelector('.content')
 
-        if(this.header){
+        if (this.header) {
             headerElement.innerHTML = AuxFunctions.parseText(this.header)
         }
 
@@ -254,54 +258,57 @@ export class Popup extends HTMLElement {
         shade.addEventListener('click', this.closePopup.bind(this))
     }
 
-    showPopup(){
-        document.querySelector('body').style.overflow = "hidden";
-        this.shadowRoot.querySelector('.popupContainer').classList.remove('hidden')
+    showPopup() {
+        document.querySelector('body').style.overflow = 'hidden'
+        this.shadowRoot
+            .querySelector('.popupContainer')
+            .classList.remove('hidden')
     }
 
     closePopup() {
-        document.querySelector('body').style.overflow = "auto";
+        document.querySelector('body').style.overflow = 'auto'
         this.shadowRoot.querySelector('.popupContainer').classList.add('hidden')
     }
-
 }
 
 export class PopupOpener extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+        super()
+        this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(popupOpenerTemplate.content.cloneNode(true));
+        this.shadowRoot.appendChild(popupOpenerTemplate.content.cloneNode(true))
     }
 
     connectedCallback() {
-        this.text = this.dataset.text || ""
+        this.text = this.dataset.text || ''
         this.ref = this.dataset.ref || `pp_${window.crypto.randomUUID()}`
 
-        if(!document.querySelector(`#${this.ref}`)){
+        if (!document.querySelector(`#${this.ref}`)) {
             let popup = document.createElement('popup-unit')
             popup.init(this.ref, this.header, this.content)
-
         }
 
         this.addListeners()
         this.setContent()
     }
 
-    addListeners(){
-        this.shadowRoot.querySelector(".popupOpenerContainer").addEventListener("click", this.openPopup.bind(this))
+    addListeners() {
+        this.shadowRoot
+            .querySelector('.popupOpenerContainer')
+            .addEventListener('click', this.openPopup.bind(this))
     }
 
     openPopup() {
         document.querySelector(`#${this.ref}`).showPopup()
     }
 
-    setContent(){
-        if(this.text){
-            this.shadowRoot.querySelector(".popupOpenerContainer").innerHTML = AuxFunctions.parseText(this.text)
+    setContent() {
+        if (this.text) {
+            this.shadowRoot.querySelector('.popupOpenerContainer').innerHTML =
+                AuxFunctions.parseText(this.text)
         }
     }
 }
 
-window.customElements.define('popup-unit', Popup);
-window.customElements.define('popup-opener-unit', PopupOpener);
+window.customElements.define('popup-unit', Popup)
+window.customElements.define('popup-opener-unit', PopupOpener)
