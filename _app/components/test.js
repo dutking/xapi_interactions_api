@@ -1924,6 +1924,9 @@ export class Test extends HTMLElement {
         this.completed = true
         this.status = 'completed'
         this.setState('test completed')
+        this.questionsElements.forEach((element) =>
+            element.setState('test completed')
+        )
 
         this.showFeedback()
         console.log(
