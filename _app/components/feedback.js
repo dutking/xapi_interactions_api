@@ -42,10 +42,10 @@ ratingItemTemplate.innerHTML = `
             width: var(--ratingItem-width, 50px);
             height: var(--ratingItem-height, 50px);
             background: var(--ratingItem-background, #eee);;
-            -webkit-mask-image: url(_app/img/feedbackClippingMask.svg);
+            -webkit-mask-image: url(_app/components/img/feedbackClippingMask.svg);
             -webkit-mask-size: 100% 100%;
             -webkit-mask-repeat: no-repeat;
-            mask-image: url(_app/img/feedbackClippingMask.svg);
+            mask-image: url(_app/components/img/feedbackClippingMask.svg);
             mask-size: 100% 100%;
             mask-repeat: no-repeat;
             cursor: pointer;
