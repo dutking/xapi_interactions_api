@@ -9,7 +9,7 @@ import {scoringFunctions} from '../scoringFunctions.js'
 import {AuxFunctions} from '../auxFunctions.js'
 import {Pool} from './pool.js'
 
-let testTemplate = document.createElement('template')
+const testTemplate = document.createElement('template')
 testTemplate.innerHTML = `
 <style>
 * {
@@ -476,7 +476,7 @@ export class Test extends HTMLElement {
                 this.showResumed()
             }
             this.setGridTemplateAreas()
-            //this.logTestData()
+            // this.logTestData()
         })
     }
 
@@ -486,7 +486,7 @@ export class Test extends HTMLElement {
             'color:red;font-weigth:bold;font-size:18px;'
         )
         try {
-            let data = {
+            const data = {
                 dbData: this.data,
                 state: this.state,
                 attempt: this.attempt,
@@ -539,23 +539,21 @@ export class Test extends HTMLElement {
     /* <- SETTING GRID */
 
     get currentStylesheets() {
-        return Array.from(document.styleSheets).filter((ss) => {
-            return (
+        return Array.from(document.styleSheets).filter(
+            (ss) =>
                 ss.href !== null &&
                 (ss.href.includes('_app/custom.css') ||
                     ss.href.includes('_app/style.css'))
-            )
-        })
+        )
     }
 
     getCSSPropertyValue(selector, property) {
-        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
-            return (
+        const applicableStylesheets = this.currentStylesheets.filter(
+            (ss) =>
                 Array.from(ss.cssRules).filter((rule) =>
                     rule?.selectorText?.endsWith(selector)
                 ).length > 0
-            )
-        })
+        )
 
         let stylesheet
         if (applicableStylesheets.length > 1) {
@@ -571,7 +569,7 @@ export class Test extends HTMLElement {
             )[0]
         }
 
-        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
+        const selectors = Array.from(stylesheet.cssRules).filter((rule) =>
             String(rule.selectorText).endsWith(selector)
         )
 
@@ -590,8 +588,8 @@ export class Test extends HTMLElement {
         // style.getPropertyValue(property)
         // style.setProperty(property)
 
-        let propertyValue = style.getPropertyValue(property)
-        return {style: style, propertyValue: propertyValue}
+        const propertyValue = style.getPropertyValue(property)
+        return {style, propertyValue}
     }
 
     get globalTestGridAreas() {
@@ -603,27 +601,25 @@ export class Test extends HTMLElement {
     }
 
     setGridTemplateAreas() {
-        let testContainer = this.shadowRoot.querySelector('.testContainer')
-        let currentAreas = Array.from(testContainer.children)
+        const testContainer = this.shadowRoot.querySelector('.testContainer')
+        const currentAreas = Array.from(testContainer.children)
             .map((element) => {
                 if (!element.className.includes('off')) {
                     return element.className.split(' ')[0]
-                } else {
-                    return ''
                 }
+                return ''
             })
             .filter((i) => i !== '')
 
         /* console.log(`CURRENT AREAS FOR ${this.data.id}: ${currentAreas}`) */
-        let currentAreasString = this.globalTestGridAreas
+        const currentAreasString = this.globalTestGridAreas
             .map((unit) => {
-                let subunits = unit.split(' ')
+                const subunits = unit.split(' ')
 
                 if (subunits.every((u) => currentAreas.includes(u))) {
                     return `"${unit}"`
-                } else {
-                    return ''
                 }
+                return ''
             })
             .filter((unit) => unit !== '')
             .join(' ')
@@ -676,7 +672,7 @@ export class Test extends HTMLElement {
     } */
 
     setStaticContent() {
-        let instructionDiv = this.shadowRoot.querySelector('.instruction')
+        const instructionDiv = this.shadowRoot.querySelector('.instruction')
         if (this.data?.instruction && this.data.instruction.length > 0) {
             instructionDiv.innerHTML = AuxFunctions.parseText(
                 this.data.instruction,
@@ -686,7 +682,8 @@ export class Test extends HTMLElement {
             instructionDiv.classList.add('off')
         }
 
-        let commonQuestionDiv = this.shadowRoot.querySelector('.commonQuestion')
+        const commonQuestionDiv =
+            this.shadowRoot.querySelector('.commonQuestion')
         if (this.data?.commonQuestion && this.data.commonQuestion.length > 0) {
             commonQuestionDiv.innerHTML = this.data.commonQuestion
             commonQuestionDiv.classList.remove('off')
@@ -694,7 +691,7 @@ export class Test extends HTMLElement {
             commonQuestionDiv.classList.add('off')
         }
 
-        let buttonsContainer =
+        const buttonsContainer =
             this.shadowRoot.querySelector('.buttonsContainer')
         if (this.data.displayMode !== 'all_at_once') {
             buttonsContainer.classList.add('off')
@@ -705,7 +702,7 @@ export class Test extends HTMLElement {
 
     setButtons() {
         Object.keys(this.data.buttons).forEach((k) => {
-            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
+            const btn = this.shadowRoot.querySelector(`.${k}Btn`)
             if (btn) {
                 btn.innerHTML = this.data.buttons[k].initial
                 if (this.data.buttons[k].icon === true) {
@@ -716,52 +713,54 @@ export class Test extends HTMLElement {
     }
 
     get amountOfQuestions() {
-        let data = this.data.amountOfQuestions
+        const data = this.data.amountOfQuestions
         if (!isNaN(data)) {
-            let val = Number(data)
+            const val = Number(data)
 
             if (val === 0) {
                 return this.data.iterables.length
             }
 
             return val
-        } else {
-            if (data.endsWith('%')) {
-                return Math.floor(
-                    (this.data.iterables.length / 100) *
-                        Number(data.split(':')[1].split('%')[0])
-                )
-            }
-
-            if (data.startsWith('groups')) {
-                let groups = data
-                    .split('groups:')[1]
-                    .split('</>')
-                    .map((i) => i.split('='))
-                return groups.reduce((sum, e) => {
-                    let key = e[0]
-                    let value = e[1]
-                    if (key.startsWith('http')) {
-                        key =
-                            'group_' +
-                            window.XAPI.data.context.contextActivities
-                                ?.grouping[0]?.definition.extensions[e[0]]
-                    }
-                    if (Number(value) === 0) {
-                        return (sum += this.data.iterables.filter(
-                            (i) => i.group === key
-                        ).length)
-                    } else if (Number(value) > 0) {
-                        return (sum += Number(value))
-                    }
-                }, 0)
-            }
         }
+        if (data.endsWith('%')) {
+            return Math.floor(
+                (this.data.iterables.length / 100) *
+                    Number(data.split(':')[1].split('%')[0])
+            )
+        }
+
+        if (data.startsWith('groups')) {
+            const groups = data
+                .split('groups:')[1]
+                .split('</>')
+                .map((i) => i.split('='))
+            return groups.reduce((sum, e) => {
+                let key = e[0]
+                const value = e[1]
+                if (key.startsWith('http')) {
+                    key = `group_${
+                        window.XAPI.data.context.contextActivities?.grouping[0]
+                            ?.definition.extensions[e[0]]
+                    }`
+                }
+                if (Number(value) === 0) {
+                    return (sum += this.data.iterables.filter(
+                        (i) => i.group === key
+                    ).length)
+                }
+                if (Number(value) > 0) {
+                    return (sum += Number(value))
+                }
+            }, 0)
+        }
+
+        return null
     }
 
     setCurrentAttemptQuestions(restore = false) {
         this.questionsToTake = []
-        let that = this
+        const that = this
         if (restore === false) {
             if (!this.data.amountOfQuestions.startsWith('groups')) {
                 if (this.data?.shuffleQuestions === true) {
@@ -780,17 +779,17 @@ export class Test extends HTMLElement {
             }
 
             if (this.data.amountOfQuestions.startsWith('groups')) {
-                let groups = this.data.amountOfQuestions
+                const groups = this.data.amountOfQuestions
                     .split('groups:')[1]
                     .split('</>')
                     .map((i) => i.split('='))
                 groups.forEach((e) => {
                     let group = e[0]
                     if (group.startsWith('http')) {
-                        group =
-                            'group_' +
+                        group = `group_${
                             window.XAPI.data.context.contextActivities
                                 ?.grouping[0]?.definition.extensions[e[0]]
+                        }`
                     }
                     let questionsFromGroup = Number(e[1])
                     if (questionsFromGroup === 0) {
@@ -821,9 +820,9 @@ export class Test extends HTMLElement {
             this.questionsOrder = this.questionsToTake.map((q) => q.id)
             this.lastQuestionShownId = this.questionsOrder[0]
         } else if (restore === true) {
-            this.questionsToTake = this.questionsOrder.map((qId) => {
-                return this.data.iterables.filter((i) => i.id === qId)[0]
-            })
+            this.questionsToTake = this.questionsOrder.map(
+                (qId) => this.data.iterables.filter((i) => i.id === qId)[0]
+            )
         }
     }
 
@@ -864,7 +863,7 @@ export class Test extends HTMLElement {
     }
 
     async setDynamicContent(status) {
-        let that = this
+        const that = this
 
         if (status === 'inProgress' || status === 'completed') {
             // true parameter set to restore questions based on questionsOrder got from state
@@ -873,10 +872,10 @@ export class Test extends HTMLElement {
             this.setCurrentAttemptQuestions()
         }
 
-        let createdQuestions = []
+        const createdQuestions = []
 
         if (this.data.displayMode === 'all_at_once') {
-            this.questionsToTake.forEach((q, i) => {
+            this.questionsToTake.forEach((q) => {
                 createdQuestions.push(that.createQuestion(q.id))
             })
         } else if (
@@ -906,7 +905,7 @@ export class Test extends HTMLElement {
             }
         }
 
-        let questions = await Promise.all(createdQuestions)
+        const questions = await Promise.all(createdQuestions)
 
         if (
             status !== 'initial' &&
@@ -979,9 +978,9 @@ export class Test extends HTMLElement {
 
     setLikert() {
         if (this.data.classes.includes('likert')) {
-            let header = document.createElement('div')
+            const header = document.createElement('div')
             header.className = 'likertHeader'
-            let answers = this.data.iterables[0].answers
+            const answers = this.data.iterables[0].answers
                 .map((a) => `<div class="answer">${a.text}</div>`)
                 .join('')
             header.innerHTML = `<div class="statement">Вопрос</div><div class="answers">${answers}</div>`
@@ -1002,7 +1001,7 @@ export class Test extends HTMLElement {
 
     get likertData() {
         if (this.data.classes.includes('likert')) {
-            let answers = this.questionsElements[0].data.answers.map(
+            const answers = this.questionsElements[0].data.answers.map(
                 (a) => a.text
             )
 
@@ -1017,7 +1016,7 @@ export class Test extends HTMLElement {
                 .map((i) => [i[0], i[1].split('a')[1]])
                 .reduce(
                     (accum, item) => {
-                        let position = Number(item[1]) - 1
+                        const position = Number(item[1]) - 1
                         accum[position].score += 1
                         accum[position].questions.push(item[0])
                         return accum
@@ -1026,22 +1025,20 @@ export class Test extends HTMLElement {
                         .fill(null)
                         .map((i) => ({questions: [], score: 0}))
                 )
-                .map((i, index) => {
-                    return {
-                        text: answers[index],
-                        score: i.score,
-                        questions: i.questions.join(', '),
-                    }
-                })
+                .map((i, index) => ({
+                    text: answers[index],
+                    score: i.score,
+                    questions: i.questions.join(', '),
+                }))
         }
         return undefined
     }
 
     get questionsElements() {
-        let children = Array.from(
+        const children = Array.from(
             this.shadowRoot.querySelector('.questionsContainer').children
         )
-        let filtered = children.filter(
+        const filtered = children.filter(
             (c) => !c.className.includes('likertHeader')
         )
         return filtered
@@ -1052,9 +1049,8 @@ export class Test extends HTMLElement {
             return this.questionsElements
                 .map((i) => i.checked)
                 .every((i) => i === true)
-        } else {
-            return false
         }
+        return false
     }
 
     getQuestionElement(id) {
@@ -1062,8 +1058,8 @@ export class Test extends HTMLElement {
     }
 
     async createQuestion(id) {
-        let question = this.data.iterables.filter((q) => q.id === id)[0]
-        let questionElement = document.createElement(
+        const question = this.data.iterables.filter((q) => q.id === id)[0]
+        const questionElement = document.createElement(
             `question-${question.type}`
         )
 
@@ -1071,7 +1067,7 @@ export class Test extends HTMLElement {
             .querySelector('.questionsContainer')
             .appendChild(questionElement)
 
-        let qState = await window.XAPI.getState(this.iri + '/' + id)
+        const qState = await window.XAPI.getState(`${this.iri}/${id}`)
 
         questionElement.setFields(
             question,
@@ -1090,7 +1086,7 @@ export class Test extends HTMLElement {
     }
 
     async deleteQuestionsStates() {
-        let deleted = this.data.iterables.map((i) =>
+        const deleted = this.data.iterables.map((i) =>
             window.XAPI.deleteState(`${this.iri}/${i.id}`)
         )
         return await Promise.allSettled(deleted)
@@ -1109,21 +1105,21 @@ export class Test extends HTMLElement {
 
         await this.deleteQuestionsStates()
 
-        let testContainer = this.shadowRoot.querySelector('.testContainer')
+        const testContainer = this.shadowRoot.querySelector('.testContainer')
         testContainer.classList.remove('resumed')
         testContainer.classList.remove('correct')
         testContainer.classList.remove('incorrect')
 
-        let buttonsContainer =
+        const buttonsContainer =
             this.shadowRoot.querySelector('.buttonsContainer')
-        let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        const tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
+        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
 
         this.shadowRoot
             .querySelector('.questionsContainer')
             .classList.remove('off')
 
-        let feedbackContainer =
+        const feedbackContainer =
             this.shadowRoot.querySelector('.feedbackContainer')
         feedbackContainer.classList.add('off')
 
@@ -1149,8 +1145,8 @@ export class Test extends HTMLElement {
     }
 
     emitEvent(eventName) {
-        let that = this
-        let event = new CustomEvent(eventName, {
+        const that = this
+        const event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
@@ -1178,7 +1174,7 @@ export class Test extends HTMLElement {
     }
 
     markTestCorrectness() {
-        let testContainer = this.shadowRoot.querySelector('.testContainer')
+        const testContainer = this.shadowRoot.querySelector('.testContainer')
         if (this.passed) {
             console.log(
                 `%cTest "${this.data.id}" passed`,
@@ -1351,7 +1347,7 @@ export class Test extends HTMLElement {
                 .classList.add('off')
         }
 
-        let feedbackContainer =
+        const feedbackContainer =
             this.shadowRoot.querySelector('.feedbackContainer')
 
         if (
@@ -1373,18 +1369,18 @@ export class Test extends HTMLElement {
             this.data.resume.showUserPoolsResult === true &&
             this.userPoolsResult.length > 0
         ) {
-            let poolsContainer = document.createElement('div')
+            const poolsContainer = document.createElement('div')
             poolsContainer.classList.add('poolsContainer')
 
             this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div')
+                const poolContainer = document.createElement('div')
                 poolContainer.classList.add('poolContainer')
 
-                let pool = new Pool()
+                const pool = new Pool()
                 pool.init(r.id)
                 poolContainer.append(pool)
 
-                let userPoolResult = document.createElement('div')
+                const userPoolResult = document.createElement('div')
                 userPoolResult.classList.add('userPoolResult')
                 userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
                 poolContainer.append(userPoolResult)
@@ -1396,7 +1392,7 @@ export class Test extends HTMLElement {
         }
 
         if (this.data.resume?.common !== '') {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.common,
                 this
@@ -1409,7 +1405,7 @@ export class Test extends HTMLElement {
             this.data.resume.passed &&
             this.data.resume.passed !== ''
         ) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.passed,
                 this
@@ -1422,7 +1418,7 @@ export class Test extends HTMLElement {
             this.data.resume.failed &&
             this.data.resume.failed !== ''
         ) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.resume.failed,
                 this
@@ -1431,14 +1427,13 @@ export class Test extends HTMLElement {
         }
 
         if (this.data?.resume?.byScore && this.data.resume.byScore.length > 0) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
-                this.data.resume.byScore.filter((item) => {
-                    return (
+                this.data.resume.byScore.filter(
+                    (item) =>
                         this.score >= Number(item.interval[0]) &&
                         this.score <= Number(item.interval[1])
-                    )
-                })[0].text,
+                )[0].text,
                 this
             )
             feedbackContainer.appendChild(text)
@@ -1474,7 +1469,7 @@ export class Test extends HTMLElement {
                 .classList.add('off')
         }
 
-        let feedbackContainer =
+        const feedbackContainer =
             this.shadowRoot.querySelector('.feedbackContainer')
 
         if (this.data.displayMode === 'one_instead_another') {
@@ -1495,18 +1490,18 @@ export class Test extends HTMLElement {
             this.data.feedback?.showUserPoolsResult === true &&
             this.userPoolsResult.length > 0
         ) {
-            let poolsContainer = document.createElement('div')
+            const poolsContainer = document.createElement('div')
             poolsContainer.classList.add('poolsContainer')
 
             this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div')
+                const poolContainer = document.createElement('div')
                 poolContainer.classList.add('poolContainer')
 
-                let pool = new Pool()
+                const pool = new Pool()
                 pool.init(r.id)
                 poolContainer.append(pool)
 
-                let userPoolResult = document.createElement('div')
+                const userPoolResult = document.createElement('div')
                 userPoolResult.classList.add('userPoolResult')
                 userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
                 poolContainer.append(userPoolResult)
@@ -1518,7 +1513,7 @@ export class Test extends HTMLElement {
         }
 
         if (this.data.feedback?.common !== '') {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.common,
                 this
@@ -1530,7 +1525,7 @@ export class Test extends HTMLElement {
             this.data?.feedback?.chartFunction &&
             this.data.feedback.chartFunction !== ''
         ) {
-            let chart = document.createElement('chart-html')
+            const chart = document.createElement('chart-html')
             feedbackContainer.appendChild(chart)
             chart.init(
                 scoringFunctions[`${this.data.feedback.chartFunction}`](this)
@@ -1542,7 +1537,7 @@ export class Test extends HTMLElement {
             this.data.feedback.passed &&
             this.data.feedback.passed !== ''
         ) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.passed,
                 this
@@ -1555,7 +1550,7 @@ export class Test extends HTMLElement {
             this.data.feedback.failed &&
             this.data.feedback.failed !== ''
         ) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.failed,
                 this
@@ -1564,14 +1559,13 @@ export class Test extends HTMLElement {
         }
 
         if (this.data?.feedback?.byScore.length > 0) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
-                this.data.feedback.byScore.filter((item) => {
-                    return (
+                this.data.feedback.byScore.filter(
+                    (item) =>
                         this.score >= Number(item.interval[0]) &&
                         this.score <= Number(item.interval[1])
-                    )
-                })[0].text,
+                )[0].text,
                 this
             )
             feedbackContainer.appendChild(text)
@@ -1591,7 +1585,7 @@ export class Test extends HTMLElement {
                 return false
             }).length > 0
         ) {
-            let text = document.createElement('p')
+            const text = document.createElement('p')
             text.innerHTML = AuxFunctions.parseText(
                 this.data.feedback.byAttempt.filter((i) => {
                     if (
@@ -1617,9 +1611,9 @@ export class Test extends HTMLElement {
     }
 
     showTryAgainBtn() {
-        let buttonsContainer =
+        const buttonsContainer =
             this.shadowRoot.querySelector('.buttonsContainer')
-        let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
+        const tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
 
         if (this.data.tryAgain === 'until_all_attempts') {
             if (
@@ -1681,19 +1675,23 @@ export class Test extends HTMLElement {
     get passingScore() {
         if (typeof this.data.passingScore === 'string') {
             if (this.data.passingScore.includes('%')) {
-                let multiplier = Number(this.data.passingScore.replace('%', ''))
+                const multiplier = Number(
+                    this.data.passingScore.replace('%', '')
+                )
                 return Math.round((this.maxPossibleScore / 100) * multiplier)
-            } else {
-                return Number(this.data.passingScore)
             }
-        } else if (typeof this.data.passingScore === 'number') {
+            return Number(this.data.passingScore)
+        }
+        if (typeof this.data.passingScore === 'number') {
             return this.data.passingScore
         }
+
+        return 0
     }
 
     get attemptCompleted() {
         if (this.questionsElements.length === this.questionsToTake.length) {
-            let statuses = this.questionsElements.map((i) => i.status)
+            const statuses = this.questionsElements.map((i) => i.status)
 
             return statuses.every((i) => i === 'completed')
         }
@@ -1703,24 +1701,22 @@ export class Test extends HTMLElement {
 
     get amountOfQuestionsToPass() {
         if (this.data.scoring === 'questions') {
-            let singleWeight = this.data.iterables[0].weight
-            let sameWeights = this.data.iterables.every(
+            const singleWeight = this.data.iterables[0].weight
+            const sameWeights = this.data.iterables.every(
                 (q) => q.weight === singleWeight
             )
             if (sameWeights) {
-                let value = this.passingScore / Number(singleWeight)
+                const value = this.passingScore / Number(singleWeight)
                 // attempt to remove floating point calculation deviations
                 if (value - Math.round(value) < 0.01) {
                     return Math.round(value)
-                } else {
-                    return Math.ceil(value)
                 }
-            } else {
-                console.log(
-                    'amountOfQuestionsToPass. Unable to count - weights are not the same.'
-                )
-                return null
+                return Math.ceil(value)
             }
+            console.log(
+                'amountOfQuestionsToPass. Unable to count - weights are not the same.'
+            )
+            return null
         }
     }
 
@@ -1730,25 +1726,23 @@ export class Test extends HTMLElement {
 
     setScore() {
         let currentAttemptScore = 0
-        let completedQuestions = this.questionsElements.filter(
+        const completedQuestions = this.questionsElements.filter(
             (i) => i.status === 'completed'
         )
 
         if (this.data?.scoring === 'questions') {
             completedQuestions.forEach((q) => {
                 if (q.result) {
-                    currentAttemptScore =
-                        currentAttemptScore + Number(q.data.weight)
+                    currentAttemptScore += Number(q.data.weight)
                 }
             })
         } else if (this.data?.scoring === 'answers') {
             completedQuestions.forEach((q) => {
-                currentAttemptScore = currentAttemptScore + q.score
+                currentAttemptScore += q.score
             })
         } else if (this.data?.scoring === 'userInput') {
             completedQuestions.forEach((q) => {
-                currentAttemptScore =
-                    currentAttemptScore + Number(q.exactUserAnswer)
+                currentAttemptScore += Number(q.exactUserAnswer)
             })
         }
 
@@ -1761,13 +1755,12 @@ export class Test extends HTMLElement {
     get processedScores() {
         if (this.data?.scoringFunction) {
             return scoringFunctions[this.data.scoringFunction](this)
-        } else {
-            return Array.from(this.scores)
         }
+        return Array.from(this.scores)
     }
 
     get hasFeedback() {
-        let that = this
+        const that = this
 
         if (this.data.showPoolsInFeedback) {
             return true
@@ -1827,6 +1820,7 @@ export class Test extends HTMLElement {
     get score() {
         return this.scores[this.scores.length - 1]
     }
+
     get processedScore() {
         return this.processedScores[this.processedScores.length - 1]
     }
@@ -1834,7 +1828,8 @@ export class Test extends HTMLElement {
     get passed() {
         if (this.score >= this.passingScore) {
             return true
-        } else if (this.score < this.passingScore) {
+        }
+        if (this.score < this.passingScore) {
             return false
         }
     }
@@ -1851,7 +1846,7 @@ export class Test extends HTMLElement {
 
     get passingAttempt() {
         if (this.data.requiredState.startsWith('attempt')) {
-            let passingAttempt = Number(this.data.requiredState.split(':')[1])
+            const passingAttempt = Number(this.data.requiredState.split(':')[1])
             return passingAttempt
         }
 
@@ -1863,7 +1858,7 @@ export class Test extends HTMLElement {
             if (this.passed) {
                 return true
             }
-            let requiredAttempt =
+            const requiredAttempt =
                 Number(this.data.requiredState.split(':')[1]) - 1
             if (this.attempt >= requiredAttempt) {
                 return true
@@ -1874,17 +1869,15 @@ export class Test extends HTMLElement {
         if (this.data.requiredState === 'passed') {
             if (this.passed) {
                 return true
-            } else {
-                return false
             }
+            return false
         }
 
         if (this.data.requiredState === 'completed') {
             if (this.completed) {
                 return true
-            } else {
-                return false
             }
+            return false
         }
 
         if (this.data.requiredState === 'none') {
@@ -1894,10 +1887,12 @@ export class Test extends HTMLElement {
 
     get maxPossibleScore() {
         if (this.data.scoring === 'questions') {
-            return this.questionsToTake.reduce((sum, item) => {
-                return (sum += Number(item.weight))
-            }, 0)
-        } else if (this.data.scoring === 'answers') {
+            return this.questionsToTake.reduce(
+                (sum, item) => (sum += Number(item.weight)),
+                0
+            )
+        }
+        if (this.data.scoring === 'answers') {
             let sum = 0
             this.questionsToTake.forEach((q) => {
                 if (q.type === 'mc' || q.type === 'fill-in') {
@@ -1949,7 +1944,7 @@ export class Test extends HTMLElement {
     }
 
     setListeners() {
-        let that = this
+        const that = this
         this.addEventListener('continue', (e) => {
             console.log('continue event has been caught')
             if (this.data.displayMode === 'one_instead_another') {
@@ -1997,17 +1992,17 @@ export class Test extends HTMLElement {
             }
         })
 
-        let tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
+        const tryAgainBtn = this.shadowRoot.querySelector('.tryAgainBtn')
         tryAgainBtn.addEventListener('click', this.restart.bind(this))
 
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
         submitBtn.addEventListener('click', this.submitAll.bind(this))
 
         this.addEventListener('questionInProgress', this.processTest.bind(this))
     }
 
     get userPoolsResult() {
-        let questions = this.questionsElements.filter(
+        const questions = this.questionsElements.filter(
             (child) => !child.className.includes('likertHeader')
         )
 
@@ -2016,10 +2011,10 @@ export class Test extends HTMLElement {
             .reduce((accum, arr) => {
                 if (arr.length > 0) {
                     arr.forEach((item) => {
-                        let pool = accum.filter((i) => i.id === item.id)
+                        const pool = accum.filter((i) => i.id === item.id)
 
                         if (pool.length === 0) {
-                            accum.push(Object.assign({}, item))
+                            accum.push({...item})
                         } else {
                             pool[0].value = pool[0].value + item.value
                         }
@@ -2035,7 +2030,7 @@ export class Test extends HTMLElement {
             this.setState('test status changed to inProgress')
         }
 
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
 
         if (this.allChecked) {
             this.enableElement(submitBtn)

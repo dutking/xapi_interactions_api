@@ -1,6 +1,6 @@
-import { Pool } from './pool.js';
+import {Pool} from './pool.js'
 
-let sidebarTemplate = document.createElement('template');
+const sidebarTemplate = document.createElement('template')
 sidebarTemplate.innerHTML = `
 <style>
 * {
@@ -124,86 +124,86 @@ sidebarTemplate.innerHTML = `
             </label>
         </div>
     </div>
-`;
+`
 
 export class Sidebar extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+        super()
+        this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(sidebarTemplate.content.cloneNode(true));
+        this.shadowRoot.appendChild(sidebarTemplate.content.cloneNode(true))
     }
 
     init(placeholder, data) {
-        this.placeholder = placeholder;
-        this.data = data;
+        this.placeholder = placeholder
+        this.data = data
 
-        this.setListeners();
+        this.setListeners()
 
-        this.placeholder.append(this);
+        this.placeholder.append(this)
 
         if ('globalPools' in this.data) {
-            this.pools = [];
-            this.initPools();
-            this.setListeners();
+            this.pools = []
+            this.initPools()
+            this.setListeners()
         }
     }
 
     initPools() {
-        let that = this;
+        const that = this
 
-        let container = this.shadowRoot.querySelector(
+        const container = this.shadowRoot.querySelector(
             '.sidebarContentContainer'
-        );
+        )
 
-        this.data.globalPools.forEach((p, index) => {
-            let pool = new Pool();
+        this.data.globalPools.forEach((p) => {
+            const pool = new Pool()
 
-            pool.init(p.id);
-            that.pools.push(pool);
-            container.append(pool);
-        });
+            pool.init(p.id)
+            that.pools.push(pool)
+            container.append(pool)
+        })
     }
 
     updatePools() {
-        this.pools.forEach((p) => p.setDynamicContent());
+        this.pools.forEach((p) => p.setDynamicContent())
     }
 
     setListeners() {
-        let that = this;
-        const sidebar = this.shadowRoot.querySelector('.sidebar');
-        const label = sidebar.querySelector('label');
-        const input = sidebar.querySelector('input');
-        const btnOpen = sidebar.querySelector('.openBtn');
-        const btnClose = sidebar.querySelector('.closeBtn');
+        const that = this
+        const sidebar = this.shadowRoot.querySelector('.sidebar')
+        const label = sidebar.querySelector('label')
+        const input = sidebar.querySelector('input')
+        const btnOpen = sidebar.querySelector('.openBtn')
+        const btnClose = sidebar.querySelector('.closeBtn')
         input.addEventListener('input', (e) => {
             if (e.target.checked) {
-                that.updatePools();
-                sidebar.classList.add('opened');
-                label.classList.add('opened');
-                btnClose.style.zIndex = 2;
-                btnOpen.style.zIndex = 1;
+                that.updatePools()
+                sidebar.classList.add('opened')
+                label.classList.add('opened')
+                btnClose.style.zIndex = 2
+                btnOpen.style.zIndex = 1
             } else {
-                sidebar.classList.remove('opened');
-                label.classList.remove('opened');
-                btnClose.style.zIndex = 1;
-                btnOpen.style.zIndex = 2;
+                sidebar.classList.remove('opened')
+                label.classList.remove('opened')
+                btnClose.style.zIndex = 1
+                btnOpen.style.zIndex = 2
             }
-        });
+        })
     }
 
     emitEvent(eventName) {
-        let that = this;
-        let event = new CustomEvent(eventName, {
+        const that = this
+        const event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
                 obj: that,
             },
-        });
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`);
-        this.dispatchEvent(event);
+        })
+        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
+        this.dispatchEvent(event)
     }
 }
 
-window.customElements.define('sidebar-unit', Sidebar);
+window.customElements.define('sidebar-unit', Sidebar)

@@ -240,8 +240,8 @@ export class Popup extends HTMLElement {
     }
 
     setContent() {
-        let headerElement = this.shadowRoot.querySelector('.header')
-        let contentElement = this.shadowRoot.querySelector('.content')
+        const headerElement = this.shadowRoot.querySelector('.header')
+        const contentElement = this.shadowRoot.querySelector('.content')
 
         if (this.header) {
             headerElement.innerHTML = AuxFunctions.parseText(this.header)
@@ -251,10 +251,10 @@ export class Popup extends HTMLElement {
     }
 
     setListeners() {
-        let closeBtn = this.shadowRoot.querySelector('.closeBtn')
+        const closeBtn = this.shadowRoot.querySelector('.closeBtn')
         closeBtn.addEventListener('click', this.closePopup.bind(this))
 
-        let shade = this.shadowRoot.querySelector('.shade')
+        const shade = this.shadowRoot.querySelector('.shade')
         shade.addEventListener('click', this.closePopup.bind(this))
     }
 
@@ -284,7 +284,7 @@ export class PopupOpener extends HTMLElement {
         this.ref = this.dataset.ref || `pp_${window.crypto.randomUUID()}`
 
         if (!document.querySelector(`#${this.ref}`)) {
-            let popup = document.createElement('popup-unit')
+            const popup = document.createElement('popup-unit')
             popup.init(this.ref, this.header, this.content)
         }
 

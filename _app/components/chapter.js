@@ -90,8 +90,8 @@ export class Chapter extends HTMLElement {
     }
 
     emitEvent(eventName) {
-        let that = this
-        let event = new CustomEvent(eventName, {
+        const that = this
+        const event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {

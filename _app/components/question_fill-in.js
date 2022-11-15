@@ -1,3 +1,4 @@
+import { constants } from 'fs'
 import {AuxFunctions} from '../auxFunctions.js'
 
 const answerTemplateFillIn = document.createElement('template')
@@ -725,7 +726,7 @@ export class QuestionFillIn extends HTMLElement {
         this.index = index
         this.state = state
         this.data.evaluated = parent.data.evaluated
-        this.timeout
+        this.timeout = null
 
         // <- for statements only
 
@@ -744,7 +745,7 @@ export class QuestionFillIn extends HTMLElement {
 
         // for statements only ->
 
-        let that = this
+        const that = this
 
         // adding subtype as a class
         this.questionContainer =
@@ -754,9 +755,9 @@ export class QuestionFillIn extends HTMLElement {
             this.questionContainer.classList.add(this.data.subtype)
         }
 
-        if (this.parent.data?.counter && this.parent.data.counter != '') {
-            let subHeader = this.shadowRoot.querySelector('.subHeader')
-            let counter = this.shadowRoot.querySelector('.counter')
+        if (this.parent.data?.counter && this.parent.data.counter !== '') {
+            const subHeader = this.shadowRoot.querySelector('.subHeader')
+            const counter = this.shadowRoot.querySelector('.counter')
             counter.innerHTML = AuxFunctions.parseText(
                 parent.data.counter,
                 this
@@ -766,7 +767,7 @@ export class QuestionFillIn extends HTMLElement {
         }
 
         if (this.data.story.length > 0) {
-            let story = this.shadowRoot.querySelector('.story')
+            const story = this.shadowRoot.querySelector('.story')
             story.innerHTML = this.data.story
             story.classList.remove('off')
         }
@@ -785,7 +786,7 @@ export class QuestionFillIn extends HTMLElement {
             this.data.question
 
         if (this.data.help.length !== 0 && this.data.help[0] !== '') {
-            let tipsContainer = this.shadowRoot.querySelector('.tipsContainer')
+            const tipsContainer = this.shadowRoot.querySelector('.tipsContainer')
             tipsContainer.classList.remove('off')
             this.tipBtn = this.shadowRoot.querySelector('.tipBtn')
             this.tipBtn.dataset.tipnum = 1
@@ -793,11 +794,11 @@ export class QuestionFillIn extends HTMLElement {
                 this.data.help.length === 1
                     ? 'Показать подсказку'
                     : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`
-            //дописать логику показа подсказок
+            // дописать логику показа подсказок
             this.tipBtn.addEventListener('click', () => {
-                let currentTip = Number(this.tipBtn.dataset.tipnum)
+                const currentTip = Number(this.tipBtn.dataset.tipnum)
                 if (currentTip === 1) {
-                    let pp = document.createElement('popup-unit')
+                    const pp = document.createElement('popup-unit')
                     pp.init(
                         `tips_for_${that.data.id}`,
                         'Подсказки',
@@ -807,8 +808,8 @@ export class QuestionFillIn extends HTMLElement {
                     )
                     pp.showPopup()
                 } else {
-                    let pp = document.querySelector(`#tips_for_${that.data.id}`)
-                    let tips = this.data.help
+                    const pp = document.querySelector(`#tips_for_${that.data.id}`)
+                    const tips = this.data.help
                         .filter((t, i) => i < currentTip)
                         .map(
                             (h, i) =>
@@ -820,7 +821,7 @@ export class QuestionFillIn extends HTMLElement {
                     pp.updateContent('Подсказки', tips)
                     pp.showPopup()
                 }
-                let nextTip =
+                const nextTip =
                     currentTip + 1 > this.data.help.length
                         ? this.data.help.length
                         : currentTip + 1
@@ -832,9 +833,9 @@ export class QuestionFillIn extends HTMLElement {
             })
         }
 
-        let answers = this.shadowRoot.querySelector('.answersContainer')
+        const answers = this.shadowRoot.querySelector('.answersContainer')
 
-        let newAnswer = answerTemplateFillIn.content.cloneNode(true)
+        const newAnswer = answerTemplateFillIn.content.cloneNode(true)
         answers.appendChild(newAnswer)
 
         if (
@@ -868,10 +869,10 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     setButtons() {
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        const continueBtn = this.shadowRoot.querySelector('.continueBtn')
+        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
         Object.keys(this.parent.data.buttons).forEach((k) => {
-            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
+            const btn = this.shadowRoot.querySelector(`.${k}Btn`)
             if (btn) {
                 btn.innerHTML = this.parent.data.buttons[k].initial
                 if (this.parent.data.buttons[k].icon === true) {
@@ -881,7 +882,7 @@ export class QuestionFillIn extends HTMLElement {
         })
 
         if (this.index + 1 === this.amountOfQuestions) {
-            let continueBtn = this.shadowRoot.querySelector('.continueBtn')
+            const continueBtn = this.shadowRoot.querySelector('.continueBtn')
             continueBtn.classList.add('continueLastBtn')
             continueBtn.innerHTML = this.parent.data.buttons.continue.last
         }
@@ -912,7 +913,7 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     getCSSPropertyValue(selector, property) {
-        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
+        constants applicableStylesheets = this.currentStylesheets.filter((ss) => {
             return (
                 Array.from(ss.cssRules).filter((rule) =>
                     rule?.selectorText?.endsWith(selector)

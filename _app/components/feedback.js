@@ -249,13 +249,13 @@ export class Feedback extends HTMLElement {
     setRating() {
         console.log('SET RATING')
         this.ratingContainer.classList.remove('off')
-        let header = document.createElement('header')
+        const header = document.createElement('header')
         header.innerHTML = `Оцените ${this.evaluatedObject.data.nameRus} от 1 до ${this.amountOfRatingItems}`
         this.ratingContainer.append(header)
 
         for (let i = 0; i < this.amountOfRatingItems; i++) {
-            let item = ratingItemTemplate.content.cloneNode(true)
-            let input = item.querySelector('input')
+            const item = ratingItemTemplate.content.cloneNode(true)
+            const input = item.querySelector('input')
             input.setAttribute('id', `inp_${i}`)
             input.dataset.value = i + 1
 
@@ -267,7 +267,7 @@ export class Feedback extends HTMLElement {
     setComment() {
         console.log('SET COMMENT')
         this.commentContainer.classList.remove('off')
-        let item = commentItemTemplate.content.cloneNode(true)
+        const item = commentItemTemplate.content.cloneNode(true)
         item.querySelector('textarea').setAttribute(
             'placeholder',
             this.commentPlaceholderText
@@ -296,14 +296,14 @@ export class Feedback extends HTMLElement {
             e.target.disabled = true
 
             if (this.amountOfRatingItems) {
-                let inputs = Array.from(
+                const inputs = Array.from(
                     this.ratingContainer.querySelectorAll('input')
                 )
                 inputs.forEach((input) => (input.disabled = true))
             }
 
             if (this.commentPlaceholderText) {
-                let textarea = this.shadowRoot.querySelector('textarea')
+                const textarea = this.shadowRoot.querySelector('textarea')
                 textarea.disabled = true
             }
         })
@@ -311,7 +311,7 @@ export class Feedback extends HTMLElement {
 
     setCurrentListeners() {
         if (this.amountOfRatingItems) {
-            let inputs = Array.from(
+            const inputs = Array.from(
                 this.ratingContainer.querySelectorAll('input')
             )
             inputs.forEach((input, index) => {
@@ -325,7 +325,7 @@ export class Feedback extends HTMLElement {
         }
 
         if (this.commentPlaceholderText) {
-            let textarea = this.shadowRoot.querySelector('textarea')
+            const textarea = this.shadowRoot.querySelector('textarea')
             textarea.addEventListener('input', (e) => {
                 this.comment = e.target.value
             })
@@ -333,8 +333,8 @@ export class Feedback extends HTMLElement {
     }
 
     emitEvent(eventName) {
-        let that = this
-        let event = new CustomEvent(eventName, {
+        const that = this
+        const event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
