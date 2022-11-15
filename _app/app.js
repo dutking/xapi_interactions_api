@@ -10,7 +10,7 @@ import {scoringFunctions} from './scoringFunctions.js'
 import {statementFunctions} from './statementFunctions.js'
 import {AuxFunctions} from './auxFunctions.js'
 import {Statement} from './statement.js'
-import {Xapi} from './xapi.js'
+import {XAPI} from './xapi.js'
 
 export class App {
     constructor() {}
