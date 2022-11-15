@@ -11,6 +11,7 @@ import {statementFunctions} from './statementFunctions.js'
 import {AuxFunctions} from './auxFunctions.js'
 import {Statement} from './statement.js'
 import {XAPI} from './xapi.js'
+import {Course} from './components/course.js'
 
 export class App {
     constructor() {}
@@ -21,16 +22,12 @@ export class App {
         App.postedStates = []
         App.sentStatements = []
         App.container = document.querySelector('body')
-        App.placeholders = document.querySelectorAll('.placeholder')
-        App.completedInteractions = new Set()
-        App.currentInteractions = new Set()
-        App.currentChapters = []
-        App.course = {}
-        App.course.iri = `${config.trackIRI}/${config.id}`
 
         XAPI.data = await XAPI.getData()
         const courseState = await XAPI.getState(App.course.iri)
-        App.createCourseObject(courseState)
+        const course = new Course(coursestate)
+        
+        // App.createCourseObject(courseState)
         App.sentStatements.push(
             XAPI.sendStatement(new Statement(App.course, 'launched').statement)
         )
@@ -56,7 +53,7 @@ export class App {
             })
         } else if (
             !contextData &&
-            !('isFake' in globalPoolsData) &&
+            !('noState' in globalPoolsData) &&
             !('errorId' in globalPoolsData)
         ) {
             App.course.data.globalPools = globalPoolsData.globalPools || []
@@ -114,7 +111,7 @@ export class App {
                     });
                 } else if (
                     !contextData &&
-                    !('isFake' in data) &&
+                    !('noState' in data) &&
                     !('errorId' in data)
                 ) {
                     App.course.data.globalPools = data.globalPools || [];
@@ -270,8 +267,8 @@ export class App {
         App.course.state.attempt = App.course.attempt
         App.course.state.processedScores = App.course.processedScores
 
-        if ('isFake' in App.course.state) {
-            delete App.course.state.isFake
+        if ('noState' in App.course.state) {
+            delete App.course.state.noState
         }
 
         console.log(
@@ -318,7 +315,7 @@ export class App {
             const interaction = config.interactions[index]
 
             console.group('STATE FOR: ' + state.id)
-            if ('isFake' in state) {
+            if ('noState' in state) {
                 console.log('%cFake state recieved:', 'color:orange;')
             } else {
                 console.log('%cState recieved:', 'color:green;')
@@ -365,7 +362,7 @@ export class App {
       return XAPI.getState(`${App.course.iri}/${interaction.id}`).then(
         (state) => {
           console.group("STATE FOR: " + state.id);
-          if ("isFake" in state) {
+          if ("noState" in state) {
             console.log("%cFake state recieved:", "color:orange;");
           } else {
             console.log("%cState recieved:", "color:green;");
