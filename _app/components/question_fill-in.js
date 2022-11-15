@@ -1,4 +1,4 @@
-import { constants } from 'fs'
+import {constants} from 'fs'
 import {AuxFunctions} from '../auxFunctions.js'
 
 const answerTemplateFillIn = document.createElement('template')
@@ -786,7 +786,8 @@ export class QuestionFillIn extends HTMLElement {
             this.data.question
 
         if (this.data.help.length !== 0 && this.data.help[0] !== '') {
-            const tipsContainer = this.shadowRoot.querySelector('.tipsContainer')
+            const tipsContainer =
+                this.shadowRoot.querySelector('.tipsContainer')
             tipsContainer.classList.remove('off')
             this.tipBtn = this.shadowRoot.querySelector('.tipBtn')
             this.tipBtn.dataset.tipnum = 1
@@ -808,7 +809,9 @@ export class QuestionFillIn extends HTMLElement {
                     )
                     pp.showPopup()
                 } else {
-                    const pp = document.querySelector(`#tips_for_${that.data.id}`)
+                    const pp = document.querySelector(
+                        `#tips_for_${that.data.id}`
+                    )
                     const tips = this.data.help
                         .filter((t, i) => i < currentTip)
                         .map(
@@ -903,23 +906,21 @@ export class QuestionFillIn extends HTMLElement {
     /* <- SETTING GRID */
 
     get currentStylesheets() {
-        return Array.from(document.styleSheets).filter((ss) => {
-            return (
+        return Array.from(document.styleSheets).filter(
+            (ss) =>
                 ss.href !== null &&
                 (ss.href.includes('_app/custom.css') ||
                     ss.href.includes('_app/style.css'))
-            )
-        })
+        )
     }
 
     getCSSPropertyValue(selector, property) {
-        constants applicableStylesheets = this.currentStylesheets.filter((ss) => {
-            return (
+        const applicableStylesheets = this.currentStylesheets.filter(
+            (ss) =>
                 Array.from(ss.cssRules).filter((rule) =>
                     rule?.selectorText?.endsWith(selector)
                 ).length > 0
-            )
-        })
+        )
 
         let stylesheet
         if (applicableStylesheets.length > 1) {
@@ -935,7 +936,7 @@ export class QuestionFillIn extends HTMLElement {
             )[0]
         }
 
-        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
+        const selectors = Array.from(stylesheet.cssRules).filter((rule) =>
             String(rule.selectorText).endsWith(selector)
         )
 
@@ -954,8 +955,8 @@ export class QuestionFillIn extends HTMLElement {
         // style.getPropertyValue(property)
         // style.setProperty(property)
 
-        let propertyValue = style.getPropertyValue(property)
-        return {style: style, propertyValue: propertyValue}
+        const propertyValue = style.getPropertyValue(property)
+        return {style, propertyValue}
     }
 
     get globalTestGridAreas() {
@@ -967,27 +968,25 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     setGridTemplateAreas() {
-        let questionContainer =
+        const questionContainer =
             this.shadowRoot.querySelector('.questionContainer')
-        let currentAreas = Array.from(questionContainer.children)
+        const currentAreas = Array.from(questionContainer.children)
             .map((element) => {
                 if (!element.className.includes('off')) {
                     return element.className.split(' ')[0]
-                } else {
-                    return ''
                 }
+                return ''
             })
             .filter((i) => i !== '')
 
         let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
-                let subunits = unit.split(' ')
+                const subunits = unit.split(' ')
 
                 if (subunits.every((u) => currentAreas.includes(u))) {
                     return `"${unit}"`
-                } else {
-                    return ''
                 }
+                return ''
             })
             .filter((unit) => unit !== '')
             .join(' ')
@@ -1024,17 +1023,17 @@ export class QuestionFillIn extends HTMLElement {
 
             currentAreasString = areas
 
-            let headerCol = this.getCSSPropertyValue(
+            const headerCol = this.getCSSPropertyValue(
                 '.shortFillIn',
                 '--headerCol'
             ).propertyValue
 
-            let inputCol = this.getCSSPropertyValue(
+            const inputCol = this.getCSSPropertyValue(
                 '.shortFillIn',
                 '--inputCol'
             ).propertyValue
 
-            let questionCol = this.getCSSPropertyValue(
+            const questionCol = this.getCSSPropertyValue(
                 '.shortFillIn',
                 '--questionCol'
             ).propertyValue
@@ -1094,7 +1093,7 @@ export class QuestionFillIn extends HTMLElement {
             this.shadowRoot.querySelector('input').value =
                 this.state.exactUserAnswer
 
-            let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+            const submitBtn = this.shadowRoot.querySelector('.submitBtn')
             if (this.checked) {
                 submitBtn.disabled = false
             }
@@ -1102,7 +1101,7 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     get checked() {
-        let value = this.shadowRoot.querySelector('input').value
+        const {value} = this.shadowRoot.querySelector('input')
 
         if (value.length > 0) {
             return true
@@ -1111,12 +1110,12 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     setListeners() {
-        let that = this
+        const that = this
         // Disable/enable submitBtn on inputs' changes.
 
-        let input = this.shadowRoot.querySelector('input')
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
+        const input = this.shadowRoot.querySelector('input')
+        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        const continueBtn = this.shadowRoot.querySelector('.continueBtn')
 
         input.addEventListener('input', (e) => {
             if (e.target.value.length > 0) {
@@ -1155,18 +1154,18 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     get exactUserAnswer() {
-        let input = this.shadowRoot.querySelector('input')
+        const input = this.shadowRoot.querySelector('input')
         return input.value
     }
 
     checkAnswer() {
-        let that = this
+        const that = this
 
         if (this.checked) {
             that.completed = true
             this.status = 'completed'
 
-            let answerFeedback =
+            const answerFeedback =
                 this.shadowRoot.querySelector('.answerFeedback')
 
             if (this.parent.data?.buttons?.submit?.completed) {
@@ -1219,7 +1218,7 @@ export class QuestionFillIn extends HTMLElement {
             'color:red;font-weigth:bold;font-size:16px;'
         )
         try {
-            let data = {
+            const data = {
                 initialData: this.data,
                 state: this.state,
                 status: this.status,
@@ -1239,24 +1238,22 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     get userAnswer() {
-        let that = this
+        const that = this
         if (
             that.data.answers.length === 1 &&
             that.data.answers[0].text === ''
         ) {
             return [[that.data.answers[0].id, true]]
-        } else {
-            let answers = that.data.answers.filter((a) => {
-                a.text.toLowerCase().trim() ===
-                    that.exactUserAnswer.toLowerCase().trim()
-            })
-
-            if (answers.length > 0) {
-                return [[answers[0].id, true]]
-            } else {
-                return undefined
-            }
         }
+        const answers = that.data.answers.filter((a) => {
+            a.text.toLowerCase().trim() ===
+                that.exactUserAnswer.toLowerCase().trim()
+        })
+
+        if (answers.length > 0) {
+            return [[answers[0].id, true]]
+        }
+        return undefined
     }
 
     setState(msg = '') {
@@ -1307,8 +1304,8 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     markQuestionCorrectness() {
-        let question = this.shadowRoot.querySelector('.questionContainer')
-        let marker = question.querySelector('.subHeader .correctnessMarker')
+        const question = this.shadowRoot.querySelector('.questionContainer')
+        const marker = question.querySelector('.subHeader .correctnessMarker')
         marker.classList.remove('off')
 
         if (this.result) {
@@ -1321,25 +1318,26 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     showCorrectAnswers() {
-        let that = this
-        let input = this.shadowRoot.querySelector('input')
+        const that = this
+        const input = this.shadowRoot.querySelector('input')
 
         if (this.result) {
             input.classList.add('correct')
         } else {
             input.classList.add('incorrect')
-            let correctResponse = that.data.answers.filter((a) => a.correct)[0]
-                .text
-            let feedback = this.shadowRoot.querySelector('.answerFeedback')
+            const correctResponse = that.data.answers.filter(
+                (a) => a.correct
+            )[0].text
+            const feedback = this.shadowRoot.querySelector('.answerFeedback')
             feedback.classList.remove('off')
-            let node = document.createElement('p')
+            const node = document.createElement('p')
             node.innerText = `Ваш ответ: ${this.exactUserAnswer}. Возможный верный ответ: ${correctResponse}`
             feedback.append(node)
         }
     }
 
     markResponsesCorrectness() {
-        let input = this.shadowRoot.querySelector('input')
+        const input = this.shadowRoot.querySelector('input')
 
         if (this.result) {
             input.classList.add('correct')
@@ -1349,7 +1347,7 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     showFeedback() {
-        let feedback = this.shadowRoot.querySelector('.questionFeedback')
+        const feedback = this.shadowRoot.querySelector('.questionFeedback')
         feedback.scrollIntoView()
 
         if (
@@ -1386,11 +1384,11 @@ export class QuestionFillIn extends HTMLElement {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {
-                        let answer = this.data.answers.filter(
+                        const answer = this.data.answers.filter(
                             (ans) => ans.id === a[0]
                         )[0]
 
-                        let answerFeedback = this.shadowRoot.querySelector(
+                        const answerFeedback = this.shadowRoot.querySelector(
                             `.answerFeedback[data-id='${a[0]}']`
                         )
                         if (answer.feedback.length > 0) {
@@ -1405,12 +1403,12 @@ export class QuestionFillIn extends HTMLElement {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {
-                        let answer = this.data.answers.filter(
+                        const answer = this.data.answers.filter(
                             (ans) => ans.id === a[0]
                         )[0]
 
                         if (answer.feedback.length > 0) {
-                            let aFeedback = document.createElement('div')
+                            const aFeedback = document.createElement('div')
                             aFeedback.classList.add('answerFeedback')
                             aFeedback.innerHTML = AuxFunctions.parseText(
                                 answer.feedback,
@@ -1426,7 +1424,7 @@ export class QuestionFillIn extends HTMLElement {
 
         if (this.result) {
             if (this.data.feedback.correct) {
-                let qFeedback = document.createElement('div')
+                const qFeedback = document.createElement('div')
                 qFeedback.innerHTML = AuxFunctions.parseText(
                     this.data.feedback.correct,
                     this
@@ -1438,7 +1436,7 @@ export class QuestionFillIn extends HTMLElement {
                 .classList.add('correct')
         } else {
             if (this.data.feedback.incorrect) {
-                let qFeedback = document.createElement('div')
+                const qFeedback = document.createElement('div')
                 qFeedback.innerHTML = AuxFunctions.parseText(
                     this.data.feedback.incorrect,
                     this
@@ -1455,18 +1453,18 @@ export class QuestionFillIn extends HTMLElement {
             this.data.showPoolsInFeedback === true &&
             this.userPoolsResult.length > 0
         ) {
-            let poolsContainer = document.createElement('div')
+            const poolsContainer = document.createElement('div')
             poolsContainer.classList.add('poolsContainer')
 
             this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div')
+                const poolContainer = document.createElement('div')
                 poolContainer.classList.add('poolContainer')
 
-                let pool = new Pool()
+                const pool = new Pool()
                 pool.init(r.id)
                 poolContainer.append(pool)
 
-                let userPoolResult = document.createElement('div')
+                const userPoolResult = document.createElement('div')
                 userPoolResult.classList.add('userPoolResult')
                 userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
                 poolContainer.append(userPoolResult)
@@ -1486,14 +1484,15 @@ export class QuestionFillIn extends HTMLElement {
 
         this.setGridTemplateAreas()
 
-        //show NEXT button
+        // show NEXT button
         if (
             this.parent.data.displayMode === 'one_instead_another' /* ||
             this.parent.data.displayMode === 'one_by_one' */
         ) {
             if (this.hasFeedback) {
-                let continueBtn = this.shadowRoot.querySelector('.continueBtn')
-                let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+                const continueBtn =
+                    this.shadowRoot.querySelector('.continueBtn')
+                const submitBtn = this.shadowRoot.querySelector('.submitBtn')
                 submitBtn.classList.add('off')
                 if (
                     this.parent.data.displayMode === 'one_instead_another' /* ||
@@ -1525,7 +1524,7 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     get userPoolsResult() {
-        let that = this
+        const that = this
         if (this.userAnswer) {
             return that.userAnswer
                 .filter((a) => a[1] === true)
@@ -1538,10 +1537,10 @@ export class QuestionFillIn extends HTMLElement {
                 .reduce((accum, unit) => {
                     if (unit && unit.length > 0) {
                         unit.forEach((item) => {
-                            let pool = accum.filter((i) => i.id === item.id)
+                            const pool = accum.filter((i) => i.id === item.id)
 
                             if (pool.length === 0) {
-                                accum.push(Object.assign({}, item))
+                                accum.push({...item})
                             } else {
                                 pool[0].value = pool[0].value + item.value
                             }
@@ -1549,14 +1548,13 @@ export class QuestionFillIn extends HTMLElement {
                     }
                     return accum
                 }, [])
-        } else {
-            return []
         }
+        return []
     }
 
     emitEvent(eventName) {
-        let that = this
-        let event = new CustomEvent(eventName, {
+        const that = this
+        const event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
@@ -1568,8 +1566,8 @@ export class QuestionFillIn extends HTMLElement {
     }
 
     disableElements() {
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        const inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
 
         if (this.parent.data?.buttons?.submit?.completed) {
             submitBtn.innerHTML = this.parent.data.buttons.submit.completed
