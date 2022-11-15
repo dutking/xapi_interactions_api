@@ -46,7 +46,7 @@ export class XAPI {
             const fakeResponse = new Promise((resolve, reject) => {
                 resolve({
                     id: stateId,
-                    isFake: true,
+                    noState: true,
                 })
             })
             return fakeResponse
@@ -54,7 +54,7 @@ export class XAPI {
         const fakeResponse = new Promise((resolve, reject) => {
             resolve({
                 id: stateId,
-                isFake: true,
+                noState: true,
             })
         })
         return fakeResponse

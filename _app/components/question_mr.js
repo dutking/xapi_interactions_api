@@ -1103,7 +1103,7 @@ export class QuestionMR extends HTMLElement {
         this.setGridTemplateAreas()
         this.emitEvent('created')
         this.setListeners()
-        if (!('isFake' in this.state)) {
+        if (!('noState' in this.state)) {
             if (this.resume === true) {
                 if (!('status' in this.state)) {
                     // to handle old version without states
@@ -1471,8 +1471,8 @@ export class QuestionMR extends HTMLElement {
 
         this.disableElements()
 
-        if ('isFake' in this.state) {
-            delete this.state.isFake
+        if ('noState' in this.state) {
+            delete this.state.noState
         }
 
         that.emitEvent('answered')
@@ -1543,8 +1543,8 @@ export class QuestionMR extends HTMLElement {
         this.state.completed = this.completed
         this.state.score = this.score
 
-        if ('isFake' in this.state) {
-            delete this.state.isFake
+        if ('noState' in this.state) {
+            delete this.state.noState
         }
 
         this.emitEvent('state_changed')

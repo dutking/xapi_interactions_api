@@ -220,8 +220,8 @@ export class Longread extends HTMLElement {
         this.state.passed = this.passed
         this.state.result = this.result
 
-        if ('isFake' in this.state) {
-            delete this.state.isFake
+        if ('noState' in this.state) {
+            delete this.state.noState
         }
 
         this.emitEvent('state_changed')

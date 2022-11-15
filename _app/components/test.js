@@ -446,7 +446,7 @@ export class Test extends HTMLElement {
 
         placeholder.appendChild(this)
 
-        if (!('isFake' in this.state)) {
+        if (!('noState' in this.state)) {
             this.resumed = true
             this.attempt = this.state.attempt
             this.completed = this.state.completed
@@ -852,8 +852,8 @@ export class Test extends HTMLElement {
             )
         }
 
-        if ('isFake' in this.state) {
-            delete this.state.isFake
+        if ('noState' in this.state) {
+            delete this.state.noState
         }
         console.log(
             `%c...setting test state due to: ${msg}`,
