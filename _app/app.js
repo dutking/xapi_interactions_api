@@ -10,7 +10,6 @@ import {scoringFunctions} from './scoringFunctions.js'
 import {statementFunctions} from './statementFunctions.js'
 import {AuxFunctions} from './auxFunctions.js'
 import {Statement} from './statement.js'
-import {XAPI} from './xapi.js'
 
 export class App {
     constructor() {}
@@ -51,7 +50,7 @@ export class App {
 
         if (contextData) {
             App.course.data.globalPools.forEach((p) => {
-                const pool = contextData.filter((d) => d.id === p.id)[0]
+                let pool = contextData.filter((d) => d.id === p.id)[0]
                 p.value.initial = pool.score
             })
         } else if (
@@ -149,9 +148,9 @@ export class App {
     }
 
     static setSidebar() {
-        const sidebar = document.querySelector('.sidebar')
+        let sidebar = document.querySelector('.sidebar')
         if (sidebar) {
-            const sb = document.createElement('sidebar-unit')
+            let sb = document.createElement('sidebar-unit')
             App.course.sidebar = sb
             sb.init(sidebar, {
                 globalPools: App.course.data.globalPools,
@@ -210,7 +209,7 @@ export class App {
                 maxPossibleScore: 0,
                 maxRequiredScore: 0,
                 attempt: state.attempt,
-                state,
+                state: state,
             })
             App.course.attempt++
         } else {
@@ -285,11 +284,11 @@ export class App {
                 '%c...posting metrics',
                 'font-size: 18px; color: lightblue; font-weight: bold;'
             )
-            const currentMetric = config.globalMetrics.filter((metric) =>
+            let currentMetric = config.globalMetrics.filter((metric) =>
                 App.course.data.metrics.includes(metric.iri)
             )[0]
 
-            const statements = []
+            let statements = []
             statements.push(
                 XAPI.sendStatement(
                     new Statement(App.course, 'calculated', {
@@ -299,8 +298,9 @@ export class App {
             )
 
             return Promise.all([...App.postedStates, ...statements])
+        } else {
+            return Promise.all(App.postedStates)
         }
-        return Promise.all(App.postedStates)
     }
 
     static async createCourse() {
@@ -316,7 +316,7 @@ export class App {
         states.forEach((state, index) => {
             const interaction = config.interactions[index]
 
-            console.group(`STATE FOR: ${state.id}`)
+            console.group('STATE FOR: ' + state.id)
             if ('isFake' in state) {
                 console.log('%cFake state recieved:', 'color:orange;')
             } else {
@@ -325,9 +325,7 @@ export class App {
             console.log(state)
             console.groupEnd()
 
-            const taskElement = document.createElement(
-                `${interaction.type}-unit`
-            )
+            let taskElement = document.createElement(`${interaction.type}-unit`)
 
             console.log(
                 `%c${interaction.type}: ${interaction.id} completed/status -> ${state.completed}/${state.status}`,
@@ -406,7 +404,7 @@ export class App {
       );
     }); */
 
-        Promise.allSettled(states).then((res) => {
+        Promise.allSettled(states).then((results) => {
             App.getMaxPossibleScore()
             App.getMaxRequiredScore()
             App.getPassingScore()
@@ -451,34 +449,34 @@ export class App {
     } */
 
     static setIntersectionObserver() {
-        const options = {
+        let options = {
             root: null,
             rootMargin: '100px',
             threshold: 0,
         }
 
-        const optionsLongread = {
+        let optionsLongread = {
             root: document,
             rootMargin: '300px',
             threshold: 0,
         }
 
-        const optionsChapter = {
+        let optionsChapter = {
             root: document,
             rootMargin: '0px',
             threshold: 0.2,
         }
 
-        const callback = (entries, observer) => {
+        let callback = (entries, observer) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    const interaction = entry.target
+                    let interaction = entry.target
                     if (interaction.tagName !== 'longread-unit'.toUpperCase()) {
                         console.log(
                             `%c${interaction.tagName} ${interaction.iri} is in viewport.`,
                             'color:gray;'
                         )
-                        interaction.startTime = new Date()
+                        interaction['startTime'] = new Date()
                         interaction.emitEvent('interacted')
 
                         if (
@@ -491,9 +489,9 @@ export class App {
                                 )
                             }
                             if (App.currentChapters.indexOf(interaction) > 0) {
-                                const currentChapterIndex =
+                                let currentChapterIndex =
                                     App.currentChapters.indexOf(interaction)
-                                const prevChapter =
+                                let prevChapter =
                                     App.currentChapters[currentChapterIndex - 1]
                                 prevChapter.setCompleted()
                             }
@@ -514,7 +512,7 @@ export class App {
             })
         }
 
-        const callbackLongread = (entries, observer) => {
+        let callbackLongread = (entries, observer) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     if (
@@ -564,7 +562,7 @@ export class App {
         App.finishCourse()
             .then((resp) => App.setState())
             .then((resp) => {
-                const statements = Array.from(App.currentInteractions).map(
+                let statements = Array.from(App.currentInteractions).map(
                     (i) => {
                         XAPI.sendStatement(new Statement(i, 'exited').statement)
                     }
@@ -604,7 +602,7 @@ export class App {
 
     static async finishCourse() {
         App.checkCourseCompleted()
-        const statements = []
+        let statements = []
         if (App.course.completed) {
             console.log(
                 '%cCOURSE COMPLETED',
@@ -651,7 +649,7 @@ export class App {
         }
 
         try {
-            const res = await Promise.all([
+            let res = await Promise.all([
                 ...App.postedStates,
                 ...App.sentStatements,
                 ...statements,
@@ -715,7 +713,7 @@ export class App {
             ) {
                 let globalPoolsUpdated = false
                 e.detail.obj.userPoolsResult.forEach((p) => {
-                    const globalPool = App.course.data.globalPools.filter(
+                    let globalPool = App.course.data.globalPools.filter(
                         (gp) => gp.id === p.id
                     )[0]
                     if (globalPool) {
@@ -743,7 +741,7 @@ export class App {
                 e.detail.obj.parent.data.questionsSettings.metrics.length > 0 &&
                 e.detail.obj.status === 'completed'
             ) {
-                const currentMetric = config.globalMetrics.filter((metric) =>
+                let currentMetric = config.globalMetrics.filter((metric) =>
                     e.detail.obj.parent.data.questionsSettings.metrics[0].includes(
                         metric.iri
                     )
@@ -765,7 +763,7 @@ export class App {
                 e.detail.obj.data.metrics.length > 0 &&
                 e.detail.obj.status === 'completed'
             ) {
-                const currentMetric = config.globalMetrics.filter((metric) =>
+                let currentMetric = config.globalMetrics.filter((metric) =>
                     e.detail.obj.data.metrics[0].includes(metric.iri)
                 )[0]
 
@@ -950,15 +948,269 @@ export class App {
     }
 
     static getIds() {
-        const data = App.course.data.interactions.map((i) => [
-            i.structure[1],
-            i.iri,
-        ])
+        let data = App.course.data.interactions.map((i) => {
+            return [i.structure[1], i.iri]
+        })
         console.table(data)
     }
 }
 
-window.addEventListener('load', () => {
+class XAPI {
+    constructor() {}
+
+    static getURL(stateId) {
+        let agentObj = {
+            objectType: 'Agent',
+            name: XAPI.data.actor.name,
+            account: {
+                name: XAPI.data.actor.account.name,
+                homePage: XAPI.data.actor.account.homePage,
+            },
+        }
+
+        let agent = encodeURIComponent(JSON.stringify(agentObj).slice(1, -1))
+
+        let activityId = `${config.trackIRI}/${config.id}`
+
+        if (stateId.endsWith('globalPools')) {
+            activityId = config.trackIRI
+        }
+
+        let str = `activityId=${activityId}&stateId=${stateId}&agent={${agent}}`
+
+        let url = `${XAPI.data.endpoint}activities/state?${str}`
+
+        return url
+    }
+
+    static async getState(stateId) {
+        console.log(`%c...getting state for: \n${stateId}`, 'color:gray;')
+        if (!App.testMode) {
+            let url = XAPI.getURL(stateId)
+            let res = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            })
+
+            if (res.ok) {
+                let data = await res.json()
+                return data
+            } else {
+                let fakeResponse = new Promise((resolve, reject) => {
+                    resolve({
+                        id: stateId,
+                        isFake: true,
+                    })
+                })
+                return fakeResponse
+            }
+        } else {
+            let fakeResponse = new Promise((resolve, reject) => {
+                resolve({
+                    id: stateId,
+                    isFake: true,
+                })
+            })
+            return fakeResponse
+        }
+    }
+
+    static async getAllStates() {
+        let items = []
+
+        items.push(XAPI.getState(App.course.iri))
+
+        if ('globalPools' in config && config.globalPools.length > 0) {
+            items.push(XAPI.getState(App.course.data.trackIRI + '/globalPools'))
+        }
+
+        App.currentInteractions.forEach((i) => {
+            items.push(XAPI.getState(i.iri))
+            if (i.data.type === 'test') {
+                i.data.iterables.forEach((q) => {
+                    items.push(XAPI.getState(`${i.iri}/${q.id}`))
+                })
+            }
+        })
+
+        return await Promise.allSettled(items)
+    }
+
+    static async postState(stateId, obj) {
+        console.log(`State to be posted for\n${stateId}`)
+        console.log(obj)
+        if (!App.testMode) {
+            let url = XAPI.getURL(stateId)
+            let res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                body: JSON.stringify(obj),
+            })
+            console.log(`%cState posted: ${res.ok}`, 'color:gray;')
+            return Promise.resolve(res.ok)
+        }
+    }
+
+    static async deleteState(stateId) {
+        if (!App.testMode) {
+            let url = XAPI.getURL(stateId)
+            let res = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+            })
+            console.log(
+                `%c${stateId} \nstate deleted: ${res.ok}`,
+                'color:gray;'
+            )
+            return Promise.resolve(res.ok)
+        }
+    }
+
+    static deleteAllStates(clearGlobalPools = false) {
+        let deleted = []
+
+        deleted.push(XAPI.deleteState(App.course.iri))
+
+        if (clearGlobalPools) {
+            deleted.push(
+                XAPI.deleteState(App.course.data.trackIRI + '/globalPools')
+            )
+        }
+
+        App.currentInteractions.forEach((i) => {
+            deleted.push(XAPI.deleteState(i.iri))
+            if (i.data.type === 'test') {
+                // надо ли чистить остальные объекты
+                i.data.iterables.forEach((q) => {
+                    deleted.push(XAPI.deleteState(`${i.iri}/${q.id}`))
+                })
+            }
+        })
+
+        Promise.allSettled(deleted).then(() =>
+            console.log(
+                '%cALL STATES CLEARED',
+                'font-weight:bold;color:red;font-size:18px;'
+            )
+        )
+    }
+
+    static async getData() {
+        if (!App.testMode) {
+            if (
+                window.location.search.includes('xAPILaunchService') &&
+                window.location.search.includes('xAPILaunchKey')
+            ) {
+                console.log(
+                    '%cxAPI Launch found',
+                    'color:lightblue;font-size:16px;font-weight: bold;'
+                )
+
+                let queryParams = XAPI.parseQuery(window.location.search)
+                const response = await fetch(
+                    queryParams.xAPILaunchService +
+                        'launch/' +
+                        queryParams.xAPILaunchKey,
+                    {
+                        method: 'POST',
+                    }
+                )
+
+                return await response.json()
+            } else {
+                let queryParams = XAPI.parseQuery(window.location.search)
+                let context = {}
+                if (queryParams.context) {
+                    context = JSON.parse(queryParams.context)
+                }
+                let data = {
+                    endpoint: queryParams.endpoint,
+                    auth: queryParams.auth,
+                    actor: JSON.parse(queryParams.actor),
+                    registration: queryParams.registration,
+                    context: context,
+                }
+
+                if (Array.isArray(data.actor.account)) {
+                    data.actor.account = data.actor.account[0]
+                }
+
+                if (Array.isArray(data.actor.name)) {
+                    data.actor.name = data.actor.name[0]
+                }
+
+                if (
+                    data.actor.account &&
+                    data.actor.account.accountServiceHomePage
+                ) {
+                    data.actor.account.homePage =
+                        data.actor.account.accountServiceHomePage
+                    data.actor.account.name = data.actor.account.accountName
+                    delete data.actor.account.accountServiceHomePage
+                    delete data.actor.account.accountName
+                }
+
+                return new Promise((resolve, reject) => resolve(data))
+            }
+        } else {
+            return new Promise((resolve, reject) =>
+                resolve({
+                    actor: 'Unknown',
+                })
+            )
+        }
+    }
+
+    static parseQuery(queryString) {
+        let query = {}
+        let pairs = (
+            queryString[0] === '?' ? queryString.substr(1) : queryString
+        ).split('&')
+
+        pairs.forEach((pair) => {
+            let [key, value] = pair.split('=')
+            query[decodeURIComponent(key)] = decodeURIComponent(value || '')
+        })
+
+        return query
+    }
+
+    static async sendStatement(stmt) {
+        console.log(
+            `%c...sending statement: ${stmt.verb.display['en-US']}`,
+            'color:gray;'
+        )
+        console.log(stmt)
+        if (!App.testMode) {
+            const response = await fetch(XAPI.data.endpoint + 'statements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    Authorization: XAPI.data.auth,
+                    'X-Experience-API-Version': '1.0.3',
+                },
+                body: JSON.stringify(stmt),
+            })
+
+            const result = await response.json()
+            return Promise.resolve(result)
+        }
+    }
+}
+
+window.addEventListener('load', function () {
     window.App = App
     window.XAPI = XAPI
     App.init()

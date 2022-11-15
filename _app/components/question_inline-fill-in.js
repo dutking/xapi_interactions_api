@@ -650,8 +650,8 @@ export class QuestionInlineFillIn extends HTMLElement {
         // for statements only ->
 
         if (this.parent.data?.counter && this.parent.data.counter != '') {
-            const subHeader = this.shadowRoot.querySelector('.subHeader')
-            const counter = this.shadowRoot.querySelector('.counter')
+            let subHeader = this.shadowRoot.querySelector('.subHeader')
+            let counter = this.shadowRoot.querySelector('.counter')
             counter.innerHTML = AuxFunctions.parseText(
                 parent.data.counter,
                 this
@@ -668,8 +668,7 @@ export class QuestionInlineFillIn extends HTMLElement {
         }
 
         if (this.data.help.length !== 0 && this.data.help[0] !== '') {
-            const tipsContainer =
-                this.shadowRoot.querySelector('.tipsContainer')
+            let tipsContainer = this.shadowRoot.querySelector('.tipsContainer')
             tipsContainer.classList.remove('off')
             this.tipBtn = this.shadowRoot.querySelector('.tipBtn')
             this.tipBtn.dataset.tipnum = 1
@@ -677,11 +676,11 @@ export class QuestionInlineFillIn extends HTMLElement {
                 this.data.help.length === 1
                     ? 'Показать подсказку'
                     : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`
-            // дописать логику показа подсказок
+            //дописать логику показа подсказок
             this.tipBtn.addEventListener('click', () => {
-                const currentTip = Number(this.tipBtn.dataset.tipnum)
+                let currentTip = Number(this.tipBtn.dataset.tipnum)
                 if (currentTip === 1) {
-                    const pp = document.createElement('popup-unit')
+                    let pp = document.createElement('popup-unit')
                     pp.init(
                         `tips_for_${that.data.id}`,
                         'Подсказки',
@@ -691,10 +690,8 @@ export class QuestionInlineFillIn extends HTMLElement {
                     )
                     pp.showPopup()
                 } else {
-                    const pp = document.querySelector(
-                        `#tips_for_${this.data.id}`
-                    )
-                    const tips = this.data.help
+                    let pp = document.querySelector(`#tips_for_${that.data.id}`)
+                    let tips = this.data.help
                         .filter((t, i) => i < currentTip)
                         .map(
                             (h, i) =>
@@ -706,7 +703,7 @@ export class QuestionInlineFillIn extends HTMLElement {
                     pp.updateContent('Подсказки', tips)
                     pp.showPopup()
                 }
-                const nextTip =
+                let nextTip =
                     currentTip + 1 > this.data.help.length
                         ? this.data.help.length
                         : currentTip + 1
@@ -718,13 +715,13 @@ export class QuestionInlineFillIn extends HTMLElement {
             })
         }
 
-        const taskContainer = this.shadowRoot.querySelector('.taskContainer')
+        let taskContainer = this.shadowRoot.querySelector('.taskContainer')
 
         taskContainer.innerHTML = this.questionHTML
 
-        const cssVars = window.getComputedStyle(document.documentElement)
+        let cssVars = window.getComputedStyle(document.documentElement)
 
-        const size = cssVars.getPropertyValue('--font-size')
+        let size = cssVars.getPropertyValue('--font-size')
         document.documentElement.style.setProperty('--dimension', size)
 
         if (this.submitMode === 'all_at_once') {
@@ -747,10 +744,10 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     getTextWidth(txt) {
-        const text = document.createElement('span')
+        let text = document.createElement('span')
         document.body.appendChild(text)
 
-        const cssVars = window.getComputedStyle(document.documentElement)
+        let cssVars = window.getComputedStyle(document.documentElement)
 
         text.style.fontFamily = cssVars.getPropertyValue(
             '--font-family-primary'
@@ -764,31 +761,31 @@ export class QuestionInlineFillIn extends HTMLElement {
         text.style.whiteSpace = 'no-wrap'
         text.innerHTML = txt
 
-        const width = Math.ceil(text.clientWidth)
+        let width = Math.ceil(text.clientWidth)
 
         document.body.removeChild(text)
         return width
     }
 
     get taskStrings() {
-        const taskRegex = /\[.*?\]/g
+        let taskRegex = /\[.*?\]/g
 
         return this.data.question.match(taskRegex)
     }
 
     get questionHTML() {
         let parsedQuestion = this.data.question
-        const tasks = this.taskStrings
-        const parsedTasks = tasks
+        let tasks = this.taskStrings
+        let parsedTasks = tasks
             .map((t) => t.slice(1, -1))
             .map((t) => `<span class="task">${t}</span>`)
 
         for (let i = 0; i < tasks.length; i++) {
             parsedQuestion = parsedQuestion.replace(tasks[i], parsedTasks[i])
         }
-        const asteriskRegex = /\(\*\)/g
+        let asteriskRegex = /\(\*\)/g
 
-        const asteriskReplacer = inputBoxTemplate.content
+        let asteriskReplacer = inputBoxTemplate.content
             .cloneNode(true)
             .querySelector('span').outerHTML
 
@@ -798,10 +795,10 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     setButtons() {
-        const continueBtn = this.shadowRoot.querySelector('.continueBtn')
-        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
         Object.keys(this.parent.data.buttons).forEach((k) => {
-            const btn = this.shadowRoot.querySelector(`.${k}Btn`)
+            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
             if (btn) {
                 btn.innerHTML = this.parent.data.buttons[k].initial
                 if (this.parent.data.buttons[k].icon === true) {
@@ -811,7 +808,7 @@ export class QuestionInlineFillIn extends HTMLElement {
         })
 
         if (this.index + 1 === this.amountOfQuestions) {
-            const continueBtn = this.shadowRoot.querySelector('.continueBtn')
+            let continueBtn = this.shadowRoot.querySelector('.continueBtn')
             continueBtn.classList.add('continueLastBtn')
             continueBtn.innerHTML = this.parent.data.buttons.continue.last
         }
@@ -832,21 +829,23 @@ export class QuestionInlineFillIn extends HTMLElement {
     /* <- SETTING GRID */
 
     get currentStylesheets() {
-        return Array.from(document.styleSheets).filter(
-            (ss) =>
+        return Array.from(document.styleSheets).filter((ss) => {
+            return (
                 ss.href !== null &&
                 (ss.href.includes('_app/custom.css') ||
                     ss.href.includes('_app/style.css'))
-        )
+            )
+        })
     }
 
     getCSSPropertyValue(selector, property) {
-        const applicableStylesheets = this.currentStylesheets.filter(
-            (ss) =>
+        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
+            return (
                 Array.from(ss.cssRules).filter((rule) =>
                     rule?.selectorText?.endsWith(selector)
                 ).length > 0
-        )
+            )
+        })
 
         let stylesheet
         if (applicableStylesheets.length > 1) {
@@ -862,7 +861,7 @@ export class QuestionInlineFillIn extends HTMLElement {
             )[0]
         }
 
-        const selectors = Array.from(stylesheet.cssRules).filter((rule) =>
+        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
             String(rule.selectorText).endsWith(selector)
         )
 
@@ -881,8 +880,8 @@ export class QuestionInlineFillIn extends HTMLElement {
         // style.getPropertyValue(property)
         // style.setProperty(property)
 
-        const propertyValue = style.getPropertyValue(property)
-        return {style, propertyValue}
+        let propertyValue = style.getPropertyValue(property)
+        return {style: style, propertyValue: propertyValue}
     }
 
     get globalTestGridAreas() {
@@ -904,25 +903,27 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     setGridTemplateAreas() {
-        const questionContainer =
+        let questionContainer =
             this.shadowRoot.querySelector('.questionContainer')
-        const currentAreas = Array.from(questionContainer.children)
+        let currentAreas = Array.from(questionContainer.children)
             .map((element) => {
                 if (!element.className.includes('off')) {
                     return element.className.split(' ')[0]
+                } else {
+                    return ''
                 }
-                return ''
             })
             .filter((i) => i !== '')
 
-        const currentAreasString = this.globalTestGridAreas
+        let currentAreasString = this.globalTestGridAreas
             .map((unit) => {
-                const subunits = unit.split(' ')
+                let subunits = unit.split(' ')
 
                 if (subunits.every((u) => currentAreas.includes(u))) {
                     return `"${unit}"`
+                } else {
+                    return ''
                 }
-                return ''
             })
             .filter((unit) => unit !== '')
             .join(' ')
@@ -956,10 +957,10 @@ export class QuestionInlineFillIn extends HTMLElement {
 
     restoreAnswers() {
         if ('exactUserAnswer' in this.state) {
-            const textarea = this.shadowRoot.querySelector('textarea')
+            let textarea = this.shadowRoot.querySelector('textarea')
             textarea.value = this.state.exactUserAnswer
 
-            const submitBtn = this.shadowRoot.querySelector('.submitBtn')
+            let submitBtn = this.shadowRoot.querySelector('.submitBtn')
             if (this.checked) {
                 submitBtn.disabled = false
             }
@@ -967,7 +968,7 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     get checked() {
-        const inputs = Array.from(
+        let inputs = Array.from(
             this.shadowRoot.querySelectorAll('input[type="text"]')
         ).map((i) => i.value)
 
@@ -975,8 +976,8 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     hideBoxes() {
-        const inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-        const values = this.exactUserAnswer.flat()
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        let values = this.exactUserAnswer.flat()
         inputs.forEach((i, index) =>
             i.style.setProperty(
                 '--input-width',
@@ -986,27 +987,27 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     setListeners() {
-        const that = this
+        let that = this
         // Disable/enable submitBtn on textarea changes.
 
-        const inputs = Array.from(
+        let inputs = Array.from(
             this.shadowRoot.querySelectorAll('input[type=text]')
         )
 
-        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
-        const continueBtn = this.shadowRoot.querySelector('.continueBtn')
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
 
-        const cssVars = window.getComputedStyle(document.documentElement)
+        let cssVars = window.getComputedStyle(document.documentElement)
 
         inputs.forEach((i) => {
             i.addEventListener('input', (e) => {
-                const parent = e.target.parentElement
+                let parent = e.target.parentElement
                 if (e.target.value.length === 0) {
                     parent.classList.add('empty')
                 } else {
                     parent.classList.remove('empty')
                 }
-                const width =
+                let width =
                     e.target.value.length > 0
                         ? this.getTextWidth(e.target.value) + 14
                         : cssVars
@@ -1071,7 +1072,7 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     get correctInputs() {
-        const taskRegex = /\(.*?\)/g
+        let taskRegex = /\(.*?\)/g
         return this.data.answers[0].text
             .split('</>')
             .map((str) => str.match(taskRegex))
@@ -1107,12 +1108,12 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     checkAnswer() {
-        const that = this
+        let that = this
         if (this.checked) {
             that.completed = true
             this.status = 'completed'
 
-            const answerFeedback =
+            let answerFeedback =
                 this.shadowRoot.querySelector('.answerFeedback')
 
             if (this.parent.data?.buttons?.submit?.completed) {
@@ -1150,7 +1151,7 @@ export class QuestionInlineFillIn extends HTMLElement {
             'color:red;font-weigth:bold;font-size:16px;'
         )
         try {
-            const data = {
+            let data = {
                 initialData: this.data,
                 state: this.state,
                 status: this.status,
@@ -1222,8 +1223,8 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     markQuestionCorrectness() {
-        const question = this.shadowRoot.querySelector('.questionContainer')
-        const marker = question.querySelector('.subHeader .correctnessMarker')
+        let question = this.shadowRoot.querySelector('.questionContainer')
+        let marker = question.querySelector('.subHeader .correctnessMarker')
         marker.classList.remove('off')
 
         if (this.result) {
@@ -1236,26 +1237,25 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     showCorrectAnswers() {
-        const that = this
-        const input = this.shadowRoot.querySelector('textarea')
+        let that = this
+        let input = this.shadowRoot.querySelector('textarea')
 
         if (this.result) {
             input.classList.add('correct')
         } else {
             input.classList.add('incorrect')
-            const correctResponse = that.data.answers.filter(
-                (a) => a.correct
-            )[0].text
-            const feedback = this.shadowRoot.querySelector('.answerFeedback')
+            let correctResponse = that.data.answers.filter((a) => a.correct)[0]
+                .text
+            let feedback = this.shadowRoot.querySelector('.answerFeedback')
             feedback.classList.remove('off')
-            const node = document.createElement('p')
+            let node = document.createElement('p')
             node.innerText = `Ваш ответ: ${this.exactUserAnswer}. Возможный верный ответ: ${correctResponse}`
             feedback.append(node)
         }
     }
 
     markResponsesCorrectness() {
-        const input = this.shadowRoot.querySelector('textarea')
+        let input = this.shadowRoot.querySelector('textarea')
 
         if (this.result) {
             input.classList.add('correct')
@@ -1265,7 +1265,7 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     showFeedback() {
-        const feedback = this.shadowRoot.querySelector('.questionFeedback')
+        let feedback = this.shadowRoot.querySelector('.questionFeedback')
         feedback.scrollIntoView()
 
         if (
@@ -1299,11 +1299,11 @@ export class QuestionInlineFillIn extends HTMLElement {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {
-                        const answer = this.data.answers.filter(
+                        let answer = this.data.answers.filter(
                             (ans) => ans.id === a[0]
                         )[0]
 
-                        const answerFeedback = this.shadowRoot.querySelector(
+                        let answerFeedback = this.shadowRoot.querySelector(
                             `.answerFeedback[data-id='${a[0]}']`
                         )
                         if (answer.feedback.length > 0) {
@@ -1317,12 +1317,12 @@ export class QuestionInlineFillIn extends HTMLElement {
                 this.userAnswer
                     .filter((a) => a[1] === true)
                     .forEach((a) => {
-                        const answer = this.data.answers.filter(
+                        let answer = this.data.answers.filter(
                             (ans) => ans.id === a[0]
                         )[0]
 
                         if (answer.feedback.length > 0) {
-                            const aFeedback = document.createElement('div')
+                            let aFeedback = document.createElement('div')
                             aFeedback.classList.add('answerFeedback')
                             aFeedback.innerHTML = AuxFunctions.parseText(
                                 answer.feedback,
@@ -1338,7 +1338,7 @@ export class QuestionInlineFillIn extends HTMLElement {
 
         if (this.result) {
             if (this.data.feedback.correct) {
-                const qFeedback = document.createElement('div')
+                let qFeedback = document.createElement('div')
                 qFeedback.innerHTML = AuxFunctions.parseText(
                     this.data.feedback.correct,
                     this
@@ -1350,7 +1350,7 @@ export class QuestionInlineFillIn extends HTMLElement {
                 .classList.add('correct')
         } else {
             if (this.data.feedback.incorrect) {
-                const qFeedback = document.createElement('div')
+                let qFeedback = document.createElement('div')
                 qFeedback.innerHTML = AuxFunctions.parseText(
                     this.data.feedback.incorrect,
                     this
@@ -1367,18 +1367,18 @@ export class QuestionInlineFillIn extends HTMLElement {
             this.data.showPoolsInFeedback === true &&
             this.userPoolsResult.length > 0
         ) {
-            const poolsContainer = document.createElement('div')
+            let poolsContainer = document.createElement('div')
             poolsContainer.classList.add('poolsContainer')
 
             this.userPoolsResult.forEach((r) => {
-                const poolContainer = document.createElement('div')
+                let poolContainer = document.createElement('div')
                 poolContainer.classList.add('poolContainer')
 
-                const pool = new Pool()
+                let pool = new Pool()
                 pool.init(r.id)
                 poolContainer.append(pool)
 
-                const userPoolResult = document.createElement('div')
+                let userPoolResult = document.createElement('div')
                 userPoolResult.classList.add('userPoolResult')
                 userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
                 poolContainer.append(userPoolResult)
@@ -1399,15 +1399,14 @@ export class QuestionInlineFillIn extends HTMLElement {
 
         this.setGridTemplateAreas()
 
-        // show NEXT button
+        //show NEXT button
         if (
             this.parent.data.displayMode === 'one_instead_another' /* ||
             this.parent.data.displayMode === 'one_by_one' */
         ) {
             if (this.hasFeedback) {
-                const continueBtn =
-                    this.shadowRoot.querySelector('.continueBtn')
-                const submitBtn = this.shadowRoot.querySelector('.submitBtn')
+                let continueBtn = this.shadowRoot.querySelector('.continueBtn')
+                let submitBtn = this.shadowRoot.querySelector('.submitBtn')
                 submitBtn.classList.add('off')
                 if (
                     this.parent.data.displayMode === 'one_instead_another' /* ||
@@ -1439,7 +1438,7 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     get userPoolsResult() {
-        const that = this
+        let that = this
         if (this.userAnswer) {
             return that.userAnswer
                 .filter((a) => a[1] === true)
@@ -1452,10 +1451,10 @@ export class QuestionInlineFillIn extends HTMLElement {
                 .reduce((accum, unit) => {
                     if (unit && unit.length > 0) {
                         unit.forEach((item) => {
-                            const pool = accum.filter((i) => i.id === item.id)
+                            let pool = accum.filter((i) => i.id === item.id)
 
                             if (pool.length === 0) {
-                                accum.push({...item})
+                                accum.push(Object.assign({}, item))
                             } else {
                                 pool[0].value = pool[0].value + item.value
                             }
@@ -1463,13 +1462,14 @@ export class QuestionInlineFillIn extends HTMLElement {
                     }
                     return accum
                 }, [])
+        } else {
+            return []
         }
-        return []
     }
 
     emitEvent(eventName) {
-        const that = this
-        const event = new CustomEvent(eventName, {
+        let that = this
+        let event = new CustomEvent(eventName, {
             bubbles: true,
             composed: true,
             detail: {
@@ -1481,8 +1481,8 @@ export class QuestionInlineFillIn extends HTMLElement {
     }
 
     disableElements() {
-        const inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-        const submitBtn = this.shadowRoot.querySelector('.submitBtn')
+        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
+        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
 
         if (this.parent.data?.buttons?.submit?.completed) {
             submitBtn.innerHTML = this.parent.data.buttons.submit.completed

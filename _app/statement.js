@@ -2,7 +2,6 @@ import {scoringFunctions} from './scoringFunctions.js'
 import {statementFunctions} from './statementFunctions.js'
 import {AuxFunctions} from './auxFunctions.js'
 import {YTVideo} from './components/ytvideo.js'
-
 export class Statement {
     constructor(obj, verb, extraData = {}) {
         this.obj = obj
@@ -13,12 +12,12 @@ export class Statement {
 
     get id() {
         return {
-            id: ADL.ruuid(), // replace with crypto.randomUUID() when better browser support
+            id: ADL.ruuid(), //replace with crypto.randomUUID() when better browser support
         }
     }
 
     get object() {
-        const object = {
+        let object = {
             object: {
                 id: '',
                 definition: {},
@@ -153,7 +152,7 @@ export class Statement {
     }
 
     get context() {
-        const object = {
+        let object = {
             context: {
                 registration: XAPI.data.registration,
                 contextActivities: {
@@ -279,7 +278,7 @@ export class Statement {
     }
 
     get result() {
-        const object = {
+        let object = {
             result: {},
         }
 
@@ -297,7 +296,7 @@ export class Statement {
 
         if (this.verbString === 'passed' || this.verbString === 'failed') {
             Object.assign(object.result, {
-                success: this.verbString === 'passed',
+                success: this.verbString === 'passed' ? true : false,
                 score: {
                     raw: this.obj.score,
                     scaled: (1 / this.obj.maxPossibleScore) * this.obj.score,
@@ -420,7 +419,7 @@ export class Statement {
     }
 
     get metricScore() {
-        const result = {
+        let result = {
             changed: 0,
             raw: 0,
         }
@@ -429,9 +428,9 @@ export class Statement {
             result.changed = this.obj.processedScores[0]
             result.raw = this.obj.processedScores[0]
         } else if (this.obj.processedScores.length > 1) {
-            const lastValue =
+            let lastValue =
                 this.obj.processedScores[this.obj.processedScores.length - 1]
-            const maxValue = Math.max(...this.obj.processedScores.slice(0, -1))
+            let maxValue = Math.max(...this.obj.processedScores.slice(0, -1))
             if (lastValue >= maxValue) {
                 result.changed = lastValue - maxValue
                 result.raw = lastValue
@@ -445,13 +444,15 @@ export class Statement {
 
     get choices() {
         if (this.obj.data.type === 'mc' || this.obj.data.type === 'mr') {
-            return this.obj.data.answers.map((a) => ({
-                id: a.id,
-                description: {
-                    'en-US': AuxFunctions.clearFromTags(a.text),
-                    'ru-RU': AuxFunctions.clearFromTags(a.text),
-                },
-            }))
+            return this.obj.data.answers.map((a) => {
+                return {
+                    id: a.id,
+                    description: {
+                        'en-US': AuxFunctions.clearFromTags(a.text),
+                        'ru-RU': AuxFunctions.clearFromTags(a.text),
+                    },
+                }
+            })
         }
     }
 
@@ -467,8 +468,7 @@ export class Statement {
                     .map((a) => a.id)
                     .join('[,]'),
             ]
-        }
-        if (this.obj.data.type === 'range') {
+        } else if (this.obj.data.type === 'range') {
             if (this.obj.data.answers.length > 0) {
                 return this.obj.data.answers
                     .filter((a) => {
@@ -477,22 +477,22 @@ export class Statement {
                         }
                     })
                     .map((a) => a.id)
+            } else {
+                let arr = []
+                for (
+                    let i = this.obj.data.range[0];
+                    i <= this.obj.data.range[1];
+                    i++
+                ) {
+                    arr.push(i.toString())
+                }
+                return arr
             }
-            const arr = []
-            for (
-                let i = this.obj.data.range[0];
-                i <= this.obj.data.range[1];
-                i++
-            ) {
-                arr.push(i.toString())
-            }
-            return arr
-        }
-        if (
+        } else if (
             this.obj.data.type === 'fill-in' ||
             this.obj.data.type === 'long-fill-in'
         ) {
-            const arr = []
+            let arr = []
             this.obj.data.answers.forEach((a) =>
                 arr.push(AuxFunctions.clearFromTags(a.text))
             )
@@ -515,14 +515,12 @@ export class Statement {
     get interactionType() {
         if (this.obj.data.type === 'mc' || this.obj.data.type === 'mr') {
             return 'choice'
-        }
-        if (
+        } else if (
             this.obj.data.type === 'range' ||
             this.obj.data.type === 'fill-in'
         ) {
             return 'fill-in'
-        }
-        if (this.obj.data.type === 'long-fill-in') {
+        } else if (this.obj.data.type === 'long-fill-in') {
             return 'long-fill-in'
         }
     }
@@ -534,15 +532,16 @@ export class Statement {
     }
 
     get statement() {
-        const finalStatement = {
-            ...this.id,
-            ...this.actor,
-            ...this.verb,
-            ...this.object,
-            ...this.context,
-            ...this.timestamp,
-            ...this.result,
-        }
+        let finalStatement = Object.assign(
+            {},
+            this.id,
+            this.actor,
+            this.verb,
+            this.object,
+            this.context,
+            this.timestamp,
+            this.result
+        )
 
         if (
             this.verbString === 'interacted' ||
