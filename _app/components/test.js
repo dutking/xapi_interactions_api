@@ -436,7 +436,7 @@ export class Test extends HTMLElement {
         this.attempt = 0
         this.questionsToTake = []
         this.state = stateData
-        this.completed = false
+        this.completed = false // TO DO rewrite to check children to be completed
         this.scores = []
         /* this.processedScores = []; */
         this.questionsOrder = []
@@ -446,7 +446,7 @@ export class Test extends HTMLElement {
 
         placeholder.appendChild(this)
 
-        if (!('noState' in this.state)) {
+        if (this.state.stateExists) {
             this.resumed = true
             this.attempt = this.state.attempt
             this.completed = this.state.completed
@@ -1825,7 +1825,7 @@ export class Test extends HTMLElement {
     }
 
     get score() {
-        return this.scores[this.scores.length - 1]
+        return this.scores.at(-1) || 0
     }
     get processedScore() {
         return this.processedScores[this.processedScores.length - 1]

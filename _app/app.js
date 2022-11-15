@@ -18,16 +18,29 @@ export class App {
 
     static async init() {
         App.checkTestMode()
-
         App.postedStates = []
         App.sentStatements = []
         App.container = document.querySelector('body')
 
         XAPI.data = await XAPI.getData()
-        const courseState = await XAPI.getState(App.course.iri)
-        const course = new Course(coursestate)
-        
-        // App.createCourseObject(courseState)
+    
+        App.createCourse()
+        .then(() => App.setGlobalPools())
+        .then(() => App.setIntersectionObserver())
+        .then(() => App.setListeners())
+        .then(() => {
+            App.setPopups()
+            App.setSidebar()
+            App.setUserFeedback()
+        })
+        .catch(e => console.error(e))
+    }
+
+    static async createCourse(){
+        const courseState = await XAPI.getState(`${config.trackIRI}/${config.id}`)
+        App.course = new Course(courseState)
+        App.course.init()
+
         App.sentStatements.push(
             XAPI.sendStatement(new Statement(App.course, 'launched').statement)
         )
@@ -36,6 +49,10 @@ export class App {
             'color:lightblue;font-size:18px;font-weight:bold;'
         )
 
+        return Promise.resolve()
+    }
+
+    static async setGlobalPools() {
         const globalPoolsData = await XAPI.getState(
             `${config.trackIRI}/globalPools`
         )
@@ -53,7 +70,7 @@ export class App {
             })
         } else if (
             !contextData &&
-            !('noState' in globalPoolsData) &&
+            !(globalPoolsData.stateExists) &&
             !('errorId' in globalPoolsData)
         ) {
             App.course.data.globalPools = globalPoolsData.globalPools || []
@@ -63,70 +80,7 @@ export class App {
             App.recalculateGlobalPools()
         }
 
-        App.setPopups()
-        App.setListeners()
-        App.setIntersectionObserver()
-        App.createCourse()
-        App.setSidebar()
-        App.setUserFeedback()
-
-        /* XAPI.getData()
-            .then((data) => (XAPI.data = data))
-            .then(() => {
-                
-                App.postedStates = []
-                App.sentStatements = []
-                App.container = document.querySelector('body');
-                App.placeholders = document.querySelectorAll('.placeholder');
-
-                App.completedInteractions = new Set();
-                App.currentInteractions = new Set();
-                App.course = {};
-                App.course.iri = `${config.trackIRI}/${config.id}`
-
-            })
-            .then(() => XAPI.getState(App.course.iri))
-            .then((data) => {
-                App.createCourseObject(data);
-                console.log(
-                    `%cCourse ${App.course.data.nameRus} is launched.`,
-                    'color:lightblue;font-size:18px;font-weight:bold;'
-                );
-                App.sentStatements.push(XAPI.sendStatement(
-                    new Statement(App.course, 'launched').statement
-                ));
-            })
-            .then(() => XAPI.getState(`${config.trackIRI}/globalPools`))
-            .then((data) => {
-                let contextData = null
-                if('globalMetrics' in config && config.globalMetrics.length > 0) {
-                    contextData =
-                    XAPI.data.context?.contextActivities?.grouping?.[0]?.definition?.extensions?.[config.globalMetrics[0].metricExtension];
-                }
-                
-                if (contextData) {
-                    App.course.data.globalPools.forEach((p) => {
-                        let pool = contextData.filter((d) => d.id === p.id)[0];
-                        p.value.initial = pool.score;
-                    });
-                } else if (
-                    !contextData &&
-                    !('noState' in data) &&
-                    !('errorId' in data)
-                ) {
-                    App.course.data.globalPools = data.globalPools || [];
-                }
-
-                if('globalPools' in config && config.globalPools.length > 0) {
-                    App.recalculateGlobalPools();
-                }
-                
-                App.setPopups()
-                App.setListeners();
-                App.createCourse();
-                App.setSidebar();
-            })
-            .then(() => App.setIntersectionObserver()); */
+        return Promise.resolve()
     }
 
     static setUserFeedback() {
@@ -188,63 +142,17 @@ export class App {
         }
     }
 
-    static createCourseObject(state = {}) {
-        console.log(
-            '%cCOURSE STATE',
-            'font-size:18px;font-weight:bold;color:lightblue;'
-        )
-        if (state?.date) {
-            console.log(`%cResumed from ${state.date}`, 'color:gray;')
-            Object.assign(App.course, {
-                data: config,
-                startTime: new Date(),
-                result: state.result,
-                passed: state.passed,
-                completed: state.completed,
-                scores: state.scores,
-                score: state.score,
-                pools: state.pools,
-                maxPossibleScore: 0,
-                maxRequiredScore: 0,
-                attempt: state.attempt,
-                state: state,
-            })
-            App.course.attempt++
-        } else {
-            console.log('%cNewly started', 'color:gray;')
-            Object.assign(App.course, {
-                data: config,
-                startTime: new Date(),
-                result: false,
-                passed: false,
-                completed: false,
-                scores: [],
-                score: 0,
-                pools: config?.pools?.items ? config.pools.items : [],
-                maxPossibleScore: 0,
-                maxRequiredScore: 0,
-                attempt: 0,
-                state: {
-                    completed: false,
-                    passed: false,
-                    result: false,
-                    scores: [],
-                    pools: [],
-                    metricsData: [],
-                    attempt: 0,
-                    date: [],
-                    duration: [],
-                },
-            })
-        }
-
-        if (
-            App.course.data?.pools?.global &&
-            App.course.data.pools.global === true
-        ) {
-            // rewrite local pools data with global data
-            App.getGlobalPools()
-        }
+    static emitEvent(eventName) {
+        let that = this
+        let event = new CustomEvent(eventName, {
+            bubbles: true,
+            composed: true,
+            detail: {
+                obj: that,
+            },
+        })
+        console.log(`Event "${eventName}" was dispatched by ${that.data.id}`)
+        this.dispatchEvent(event)
     }
 
     static async setState() {
@@ -267,8 +175,8 @@ export class App {
         App.course.state.attempt = App.course.attempt
         App.course.state.processedScores = App.course.processedScores
 
-        if ('noState' in App.course.state) {
-            delete App.course.state.noState
+        if ('stateExists' in App.course.state) {
+            delete App.course.state.stateExists
         }
 
         console.log(
@@ -301,116 +209,6 @@ export class App {
         }
     }
 
-    static async createCourse() {
-        const results = await Promise.allSettled(
-            config.interactions.map((interaction, index) =>
-                XAPI.getState(`${App.course.iri}/${interaction.id}`)
-            )
-        )
-
-        const states = results.map((result) => result.value)
-        console.log(states)
-
-        states.forEach((state, index) => {
-            const interaction = config.interactions[index]
-
-            console.group('STATE FOR: ' + state.id)
-            if ('noState' in state) {
-                console.log('%cFake state recieved:', 'color:orange;')
-            } else {
-                console.log('%cState recieved:', 'color:green;')
-            }
-            console.log(state)
-            console.groupEnd()
-
-            let taskElement = document.createElement(`${interaction.type}-unit`)
-
-            console.log(
-                `%c${interaction.type}: ${interaction.id} completed/status -> ${state.completed}/${state.status}`,
-                'color:orange;font-weight:bold;font-size:16px;'
-            )
-
-            taskElement.init(
-                App.placeholders[index],
-                interaction,
-                state,
-                App.course
-            )
-
-            if (interaction.evaluated) {
-                App.currentInteractions.add(taskElement)
-            }
-
-            if (interaction.type === 'chapter') {
-                App.currentChapters.push(taskElement)
-            }
-
-            if (interaction.type === 'longread') {
-                App.observerLongread.observe(taskElement)
-            } else if (interaction.type === 'chapter') {
-                App.observerChapter.observe(taskElement)
-            } else {
-                App.observer.observe(taskElement)
-            }
-
-            if ('completed' in state && state.completed === true) {
-                App.completedInteractions.add(taskElement)
-            }
-        })
-
-        /* let states = config.interactions.map((interaction, index) => {
-      return XAPI.getState(`${App.course.iri}/${interaction.id}`).then(
-        (state) => {
-          console.group("STATE FOR: " + state.id);
-          if ("noState" in state) {
-            console.log("%cFake state recieved:", "color:orange;");
-          } else {
-            console.log("%cState recieved:", "color:green;");
-          }
-          console.log(state);
-          console.groupEnd();
-
-          let taskElement = document.createElement(`${interaction.type}-unit`);
-
-          console.log(
-            `%c${App.course.iri}/${interaction.id} -> ${state.completed}`,
-            "color:orange;font-weight:bold;"
-          );
-          taskElement.init(
-            App.placeholders[index],
-            interaction,
-            state,
-            App.course
-          );
-
-          if (interaction.evaluated) {
-            App.currentInteractions.add(taskElement);
-          }
-
-          if (interaction.type === "longread") {
-            setTimeout(() => {
-              App.observerLongread.observe(taskElement);
-            }, 2000);
-          } else {
-            App.observer.observe(taskElement);
-          }
-
-          if ("completed" in state && state.completed === true) {
-            App.completedInteractions.add(taskElement);
-          }
-        }
-      );
-    }); */
-
-        Promise.allSettled(states).then((results) => {
-            App.getMaxPossibleScore()
-            App.getMaxRequiredScore()
-            App.getPassingScore()
-            // App.getScore(); // надо ли пересчитывать при resume
-            // addYTVideoScript();
-        })
-    }
-
     static logCurrentTestsData() {
         App.currentInteractions.forEach((i) => {
             if (i instanceof Test) {
@@ -418,33 +216,6 @@ export class App {
             }
         })
     }
-
-    static getMaxPossibleScore() {
-        App.currentInteractions.forEach((i) => {
-            App.course.maxPossibleScore += Number(i.weight)
-        })
-    }
-
-    static getMaxRequiredScore() {
-        Array.from(App.currentInteractions)
-            .filter((i) => i.data.requiredState !== 'none')
-            .forEach((i) => {
-                App.course.maxRequiredScore += Number(i.weight)
-            })
-    }
-
-    static getPassingScore() {
-        if (App.course.data.passingScore === 'max') {
-            App.course.passingScore = App.course.maxRequiredScore
-        } else if (Number(App.course.data.passingScore)) {
-            App.course.passingScore = Number(App.course.data.passingScore)
-        }
-    }
-
-    /* static isInViewport(elem) {
-        let bounding = elem.getBoundingClientRect();
-        return bounding.top - 50 <= window.innerHeight;
-    } */
 
     static setIntersectionObserver() {
         let options = {
@@ -577,29 +348,7 @@ export class App {
             .catch((e) => console.log(e))
     }
 
-    static getScore() {
-        let score = 0
-        App.completedInteractions.forEach((i) => {
-            if (i.result) {
-                score += Number(i.weight)
-            }
-        })
-        App.course.scores.push(score)
-        App.course.score = score
-
-        if (App.course.data?.scoringFunction) {
-            App.course.processedScores = scoringFunctions[
-                App.course.data.scoringFunction
-            ](App.course)
-        } else {
-            App.course.processedScores = Array.from(App.course.scores)
-        }
-
-        console.log(`Course score is ${App.course.score}`)
-    }
-
     static async finishCourse() {
-        App.checkCourseCompleted()
         let statements = []
         if (App.course.completed) {
             console.log(
@@ -659,39 +408,21 @@ export class App {
         }
     }
 
-    static checkCourseCompleted() {
-        if (
-            App.completedInteractions.size >=
-            config.interactions.filter((i) => i.requiredState !== 'none').length
-        ) {
-            App.course.completed = true
-        }
-    }
-
     static setListeners() {
         /* App.container.addEventListener('get_state', (e) => {
             let state = XAPI.getState(e.detail.obj.iri)
         }) */
 
         App.container.addEventListener('completed', (e) => {
-            App.completedInteractions.add(e.detail.obj)
-            if (
-                'evaluated' in e.detail.obj.data &&
-                e.detail.obj.data.evaluated === true
-            ) {
                 App.sentStatements.push(
                     XAPI.sendStatement(
                         new Statement(e.detail.obj, 'completed').statement
                     )
                 )
-            } else {
-                console.log(
-                    `%c${e.detail.obj.iri} is not evaluated. No statement was sent.`,
-                    'color:red;'
-                )
-            }
 
-            App.checkCourseCompleted()
+                if (App.course.completed) {
+                    App.course.finishCourse()
+                }
         })
 
         App.container.addEventListener('state_changed', (e) => {

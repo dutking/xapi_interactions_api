@@ -27,37 +27,35 @@ export class XAPI {
     }
 
     static async getState(stateId) {
+        let state = {
+            id: stateId,
+            stateExists: false,
+        }
         console.log(`%c...getting state for: \n${stateId}`, 'color:gray;')
+
         if (!App.testMode) {
             const url = XAPI.getURL(stateId)
-            const res = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    Authorization: XAPI.data.auth,
-                    'X-Experience-API-Version': '1.0.3',
-                    'Content-Type': 'application/json; charset=utf-8',
-                },
-            })
-
-            if (res.ok) {
-                const data = await res.json()
-                return data
-            }
-            const fakeResponse = new Promise((resolve, reject) => {
-                resolve({
-                    id: stateId,
-                    noState: true,
+            try {maxRequiredScore
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: XAPI.data.auth,
+                        'X-Experience-API-Version': '1.0.3',
+                        'Content-Type': 'application/json; charset=utf-8',
+                    },
                 })
-            })
-            return fakeResponse
+    
+                if (res.ok) {
+                    const data = await res.json()
+                    state.stateExists = true
+                    state = {...state, ...data}
+                }
+            } catch (e) {
+                console.error(e)
+            }
         }
-        const fakeResponse = new Promise((resolve, reject) => {
-            resolve({
-                id: stateId,
-                noState: true,
-            })
-        })
-        return fakeResponse
+
+        return Promise.resolve(state) 
     }
 
     static async getAllStates() {

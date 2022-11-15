@@ -1562,7 +1562,7 @@ export class QuestionFillIn extends HTMLElement {
                 obj: that,
             },
         })
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
+        console.log(`Event "${eventName}" was dispatched by ${that.data.id}`)
         this.dispatchEvent(event)
     }
 

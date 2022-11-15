@@ -235,9 +235,7 @@ export class Feedback extends HTMLElement {
         this.evaluatedObjectID = evaluatedObjectID // string
         this.amountOfRatingItems = amountOfRatingItems // number
         this.commentPlaceholderText = commentPlaceholderText // string
-        this.evaluatedObject = Array.from(
-            window.App.currentInteractions
-        ).filter((i) => i.data.id === evaluatedObjectID)[0]
+        this.evaluatedObject = [...window.App.course.currentInteractions].filter((i) => i.data.id === evaluatedObjectID)[0]
         this.submitBtn.disabled = false
     }
 

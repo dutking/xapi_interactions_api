@@ -282,6 +282,7 @@ export class PopupOpener extends HTMLElement {
     connectedCallback() {
         this.text = this.dataset.text || ''
         this.ref = this.dataset.ref || `pp_${window.crypto.randomUUID()}`
+        this.content = this.dataset.content || ''
 
         if (!document.querySelector(`#${this.ref}`)) {
             let popup = document.createElement('popup-unit')
