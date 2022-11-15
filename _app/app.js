@@ -406,7 +406,7 @@ export class App {
       );
     }); */
 
-        Promise.allSettled(states).then((results) => {
+        Promise.allSettled(states).then((res) => {
             App.getMaxPossibleScore()
             App.getMaxRequiredScore()
             App.getPassingScore()
