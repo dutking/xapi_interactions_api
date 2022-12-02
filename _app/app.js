@@ -131,7 +131,7 @@ export class App {
     }
 
     static checkTestMode() {
-        if (window.location.search === '') {
+        if (window.location.search === '' || !window.location.search.includes('XAPI') || !window.location.search.includes('actor')) {
             console.log(
                 '%cCourse launched in the test mode.',
                 'font-weight:bold; color: red; font-size: 18px;'
