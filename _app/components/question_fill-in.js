@@ -376,6 +376,20 @@ strong {
             border-radius: var(--tipsContainer-border-radius);
         }
 
+        .questionContainer .tipsContainer .tipBtn {
+            padding: 0;
+            background: transparent;
+            color: black;
+            font-style: italic;
+            text-decoration: underline;
+            transition: all 300ms linear;
+            border-width: 0;
+        }
+
+        .questionContainer .tipsContainer .tipBtn:hover {
+            text-decoration: none;
+        }
+
         .questionContainer .tipsContainer .tipText {
             display: grid;
             grid-template-columns: var(--tipText-grid-template-columns);
