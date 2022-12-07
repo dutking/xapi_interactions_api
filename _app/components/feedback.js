@@ -230,11 +230,12 @@ export class Feedback extends HTMLElement {
         this.classList.add('off')
     }
 
-    init(evaluatedObjectID, amountOfRatingItems, commentPlaceholderText) {
+    init(evaluatedObjectID, amountOfRatingItems, commentPlaceholderText, alternativeObjectName = undefined) {
         console.log('INIT')
         this.evaluatedObjectID = evaluatedObjectID // string
         this.amountOfRatingItems = amountOfRatingItems // number
         this.commentPlaceholderText = commentPlaceholderText // string
+        this.alternativeObjectName = alternativeObjectName
         this.evaluatedObject = [...window.App.course.currentInteractions].filter((i) => i.data.id === evaluatedObjectID)[0]
         this.submitBtn.disabled = false
     }
@@ -248,7 +249,7 @@ export class Feedback extends HTMLElement {
         console.log('SET RATING')
         this.ratingContainer.classList.remove('off')
         let header = document.createElement('header')
-        header.innerHTML = `Оцените ${this.evaluatedObject.data.nameRus} от 1 до ${this.amountOfRatingItems}`
+        header.innerHTML = `Оцените ${this.alternativeObjectName ? this.alternativeObjectName : this.evaluatedObject.data.nameRus} от 1 до ${this.amountOfRatingItems}`
         this.ratingContainer.append(header)
 
         for (let i = 0; i < this.amountOfRatingItems; i++) {
