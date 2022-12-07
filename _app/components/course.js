@@ -91,7 +91,7 @@ export class Course {
 
         console.log(`Course state changed due to: ${msg}`)
 
-        // TO DO: decide how to send it
+        // TO DO: change state form within app when state of interactions changes
     }
 
     async finishCourse() {
@@ -206,6 +206,6 @@ export class Course {
     }
     
     get resumed() {
-        return this.state.stateExists
+        return this.state.stateExists && this.data.resume === true
     }
 }
