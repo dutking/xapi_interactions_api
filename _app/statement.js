@@ -322,11 +322,11 @@ export class Statement {
 
         if (this.verbString === 'commented') {
             Object.assign(object.result, {
-                response: {
-                    title: this.obj.comment,
-                    text: this.obj.comment,
-                    tag: this.obj.comment,
-                },
+                response: `{
+                    title: ${this.obj.comment},
+                    text: ${this.obj.comment},
+                    tag: ${this.obj.comment},
+                }`,
             })
         }
 
