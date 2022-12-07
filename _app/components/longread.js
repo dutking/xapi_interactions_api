@@ -117,6 +117,7 @@ export class Longread extends HTMLElement {
         this.completed = false
         this.score = 0
         this.startTime = new Date()
+        this.data.description = this.data.nameRus // for statements
         this.setButtons()
         this.emitEvent('interacted')
         this.setListeners()
@@ -127,6 +128,8 @@ export class Longread extends HTMLElement {
 
         this.placeholder.append(this)
         this.placeholder.classList.add(this.data.structure[0])
+
+        
     }
 
     setButtons() {
