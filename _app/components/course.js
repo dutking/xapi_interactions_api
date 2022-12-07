@@ -1,3 +1,4 @@
+import { App } from '../app.js'
 import {Statement} from '../statement.js'
 import {XAPI} from '../xapi.js'
 
@@ -79,28 +80,52 @@ export class Course {
         this.pools = this.state.pools
     }
 
-    setState(msg) {
-        this.state.date = new Date()
-        this.state.startTime = this.startTime
-        this.state.completed = this.completed
-        this.state.status = this.status
-        this.state.scores = this.scores
-        this.state.passed = this.passed
-        this.state.pools = this.pools
-        this.state.duration = this.duration
+    async setState(msg) {
+        const newState = {}
+        newState.date = new Date()
+        newState.startTime = this.startTime
+        newState.completed = this.completed
+        newState.status = this.status
+        newState.scores = this.scores
+        newState.passed = this.passed
+        newState.pools = this.pools
+        newState.duration = this.duration
 
-        console.log(`Course state changed due to: ${msg}`)
-
-        // TO DO: change state form within app when state of interactions changes
+        try {
+            console.log(`Course state changed due to: ${msg}`)
+            return await XAPI.postState(this.iri, newState)
+        } catch (e) {
+            console.error(e)
+            return Promise.reject(e)
+        }
     }
 
-    async finishCourse() {
+    calculateMetrics() {
+        if(this.data?.metrics?.lengh > 0){
+            return Promise.all(this.data.metrics.map(metric => App.handleMetric(metric)))
+        }
+    }
+
+    finishCourse(){
+        this.logCourseStatus()
+        this.setState()
+        .then(() => this.sendCompletionStatements())
+        .then(() => this.sendExitStatments())
+        .catch((e) => console.log(e))
+    }
+
+    async sendExitStatments() {
+        try{
+        return await Promise.all([...this.currentInteractions, ...this.currentChapters, this].map(item => XAPI.sendStatement(new Statement(item, 'exited').statement)))
+        } catch (e) {
+            console.error(e)
+            return Promise.reject(e)
+        }
+    }
+
+    async sendCompletionStatements() {
         const statements = []
         if(this.completed) {
-            console.log(
-                '%cCOURSE COMPLETED',
-                'color:green;font-size:18px;font-weight:bold;'
-            )
             statements.push(
                 XAPI.sendStatement(
                     new Statement(App.course, 'completed').statement
@@ -108,40 +133,38 @@ export class Course {
             )
 
             if (this.passed) {
-                console.log(
-                    '%cCOURSE PASSED',
-                    'color:green;font-size:18px;font-weight:bold;'
-                )
                 statements.push(
                     XAPI.sendStatement(
                         new Statement(App.course, 'passed').statement
                     )
                 )
             } else {
-                console.log(
-                    '%cCOURSE FAILED',
-                    'color:red;font-size:18px;font-weight:bold;'
-                )
                 statements.push(
                     XAPI.sendStatement(
                         new Statement(App.course, 'failed').statement
                     )
                 )
             }
-        } else {
-            console.log(
-                '%cCOURSE INCOMPLETE',
-                'color:red;font-size:18px;font-weight:bold;'
-            )
         }
 
         try {
-            let statementsSent = await Promise.all(statements)
-            return statementsSent
+            return await Promise.all(statements)
         } catch (e) {
             console.error(`Sending final statements failed`, e)
-            return Promise.reject()
+            return Promise.reject(e)
         }
+    }
+
+    logCourseStatus(){
+        console.group('%cCOURSE STATUS:', 'font-size:18px;font-weight:bold;')
+        if (this.completed) {
+            console.log('%ccompleted', 'font-size:16px;font-weight:bold;color:green;')
+            this.passed ? console.log('%cpassed', 'font-size:16px;font-weight:bold;color:green;') : console.log('%cfailed', 'font-size:16px;font-weight:bold;color:red;')
+            console.log(`with score ${this.lastScore} out of ${this.maxPossibleScore}`)
+        } else {
+            console.log('%cincomplete', 'font-size:16px;font-weight:bold;color:red;')
+        }
+        console.groupEnd()
     }
 
     get completedIntractions () {

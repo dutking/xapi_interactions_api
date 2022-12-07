@@ -26,7 +26,7 @@ export class App {
     
         App.createCourse()
         .then(() => App.setGlobalPools())
-        .then(() => App.setIntersectionObserver())
+        .then(() => App.createIntersectionObservers())
         .then(() => App.setListeners())
         .then(() => {
             App.setPopups()
@@ -155,58 +155,20 @@ export class App {
         this.dispatchEvent(event)
     }
 
-    static async setState() {
-        App.course.state.date = new Date()
-        App.course.state.duration = moment
-            .duration(
-                Math.round(
-                    (App.course.state.date - App.course.startTime) / 1000
-                ),
-                'seconds'
-            )
-            .toISOString()
-        App.course.state.id = App.course.iri
-        App.course.state.completed = App.course.completed
-        App.course.state.passed = App.course.passed
-        App.course.state.result = App.course.result
-        App.course.state.scores = App.course.scores
-        App.course.state.score = App.course.score
-        /*         App.course.state.pools = App.course.pools; */
-        App.course.state.attempt = App.course.attempt
-        App.course.state.processedScores = App.course.processedScores
-
-        if ('stateExists' in App.course.state) {
-            delete App.course.state.stateExists
-        }
-
-        console.log(
-            '%c...posting course state',
-            'font-size: 18px; color: lightblue; font-weight: bold;'
-        )
-        App.postedStates.push(XAPI.postState(App.course.iri, App.course.state))
-
-        if (App.course.data?.metrics && App.course.data.metrics.length > 0) {
+    static handleMetric(metric) {
             console.log(
                 '%c...posting metrics',
                 'font-size: 18px; color: lightblue; font-weight: bold;'
             )
-            let currentMetric = config.globalMetrics.filter((metric) =>
-                App.course.data.metrics.includes(metric.iri)
-            )[0]
+            const [currentMetric] = config.globalMetrics.filter((globalMetric) =>
+                metric.includes(globalMetric.iri)
+            )
 
-            let statements = []
-            statements.push(
-                XAPI.sendStatement(
+            return XAPI.sendStatement(
                     new Statement(App.course, 'calculated', {
                         metric: currentMetric,
                     }).statement
                 )
-            )
-
-            return Promise.all([...App.postedStates, ...statements])
-        } else {
-            return Promise.all(App.postedStates)
-        }
     }
 
     static logCurrentTestsData() {
@@ -217,7 +179,7 @@ export class App {
         })
     }
 
-    static setIntersectionObserver() {
+    static createIntersectionObservers() {
         let options = {
             root: null,
             rootMargin: '100px',
@@ -327,9 +289,13 @@ export class App {
         }, 3000)
     }
 
+    static async exitInteractions() {
+        
+    }
+
     static exitCourse() {
-        App.finishCourse()
-            .then((resp) => App.setState())
+        App.course.setState().then(() => App.course.finishCourse())
+
             .then((resp) => {
                 let statements = Array.from(App.currentInteractions).map(
                     (i) => {
