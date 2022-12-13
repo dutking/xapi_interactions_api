@@ -8,6 +8,9 @@ import {ChartHTML} from './chart_html.js'
 import {scoringFunctions} from '../scoringFunctions.js'
 import {AuxFunctions} from '../auxFunctions.js'
 import {Pool} from './pool.js'
+import {Statement} from '../statement.js'
+import {XAPI} from '../xapi.js'
+import {CUSTOM_EVENTS, SUPPORTED_VERBS} from '../enums.js'
 
 let testTemplate = document.createElement('template')
 testTemplate.innerHTML = `
@@ -1934,13 +1937,17 @@ export class Test extends HTMLElement {
             'color:green;font-weight:bold;font-size:16px;'
         )
 
-        if (this.result) {
-            this.emitEvent('completed')
-            this.emitEvent('passed')
-        } else {
-            this.emitEvent('completed')
-            this.emitEvent('failed')
-        }
+        //this.emitEvent('completed')
+        XAPI.sendStatement(new Statement(this, SUPPORTED_VERBS.COMPLETED).statement)
+        .then(() => {
+            if (this.result) {
+                //this.emitEvent('passed')
+                return XAPI.sendStatement(new Statement(this, SUPPORTED_VERBS.PASSED).statement)
+            } else {
+                //this.emitEvent('failed')
+                return XAPI.sendStatement(new Statement(this, SUPPORTED_VERBS.FAILED).statement)
+            }
+        }).then(() => this.parent.proceedCourse())
 
         console.log(
             `%cTest "${this.data.id}" status: ${this.status}`,

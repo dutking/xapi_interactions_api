@@ -1,31 +1,67 @@
 import { App } from '../app.js'
 import {Statement} from '../statement.js'
 import {XAPI} from '../xapi.js'
+import {STATUS, SUPPORTED_VERBS, INTERACTION_TYPES} from '../enums.js'
 
 export class Course {
+    #status
     constructor (state) {
         this.data = config
         this.state = state
         this.placeholders = document.querySelectorAll('.placeholder')
         this.completedInteractions = new Set()
         this.currentInteractions = new Set()
-        this.currentChapters = []
+        this.currentChapters = [] // to have access to order to check completion
         this.iri = `${this.data.trackIRI}/${this.data.id}`
         this.startTime = new Date()
-        this.status = 'initial'
+        this.#status = STATUS.INITIAL
         this.scores = []
         this.pools = config?.pools?.items ? config.pools.items : []
         this.metricsData = []
+        this.attempt = 0
     }
 
     init() {
         if (this.resumed) this.restoreFromState()
-        this.setInteractions().then(() => this.setObservers)
+        this.setInteractions()
+        .then(() => this.setObservers)
+    }
+
+    get status() {
+        return this.#status
+    }
+
+    set status(value) {
+        switch(value){
+            case STATUS.IN_PROGRESS: {
+                if (this.status === STATUS.INITIAL) this.#status === value
+            }
+            break;
+            case STATUS.COMPLETED: {
+                if (this.status === STATUS.IN_PROGRESS) this.#status === value
+            }
+            break;
+            default:
+                break;
+        }
+    }
+
+    proceedCourse(reason) {
+        // reasons
+        // 1. any interaction state changed to IN_PROGRESS (only once) - if course status is INITIAL
+        // 2. any interaction state changed to COMPLETED (affects score)
+        // 3. pools change
+
+        this.setState()
+
+        if (this.completed) {
+            this.status = STATUS.COMPLETED
+        }
     }
 
     async setInteractions() {
         const statesResults = await Promise.allSettled(
-            config.interactions.map((interaction, index) =>
+            config.interactions.map((interaction) =>
                 XAPI.getState(`${App.course.iri}/${interaction.id}`)
             )
         )
@@ -78,18 +114,18 @@ export class Course {
         this.status = this.state.status
         this.scores = this.state.scores
         this.pools = this.state.pools
+        this.attempt = this.state.attempt
     }
 
     async setState(msg) {
         const newState = {}
-        newState.date = new Date()
-        newState.startTime = this.startTime
-        newState.completed = this.completed
+        newState.date = new Date() 
+        newState.startTime = this.startTime // if we need to restore it for an attempt - methodological
         newState.status = this.status
         newState.scores = this.scores
-        newState.passed = this.passed
         newState.pools = this.pools
-        newState.duration = this.duration
+        newState.duration = this.duration // if we need to restore it for an attempt - methodological 
+        newState.attempt = this.attempt
 
         try {
             console.log(`Course state changed due to: ${msg}`)
@@ -107,16 +143,21 @@ export class Course {
     }
 
     finishCourse(){
+        this.scores.at(this.attempt) = this.currentScore
         this.logCourseStatus()
+        if(this.status = STATUS.COMPLETED){
+            this.attempt++
+        }
         this.setState()
         .then(() => this.sendCompletionStatements())
         .then(() => this.sendExitStatments())
+        .then(() => this.navigateTo('/back/', 3000))
         .catch((e) => console.log(e))
     }
 
     async sendExitStatments() {
         try{
-        return await Promise.all([...this.currentInteractions, ...this.currentChapters, this].map(item => XAPI.sendStatement(new Statement(item, 'exited').statement)))
+        return await Promise.all([...this.currentInteractions, this].map(item => XAPI.sendStatement(new Statement(item, 'exited').statement)))
         } catch (e) {
             console.error(e)
             return Promise.reject(e)
@@ -153,6 +194,22 @@ export class Course {
             console.error(`Sending final statements failed`, e)
             return Promise.reject(e)
         }
+    }
+
+    static navigateTo(location, timeout) {
+        console.log(
+            `%cNavigating to ${location} in ${timeout}ms`,
+            'color:lightblue; font-weight: bold; font-size: 18px;'
+        )
+        setTimeout(() => {
+            ;(function () {
+                if (window.top) {
+                    return window.top
+                }
+                return window.parent
+            })().location = location
+            return false
+        }, timeout)
     }
 
     logCourseStatus(){
@@ -231,4 +288,5 @@ export class Course {
     get resumed() {
         return this.state.stateExists && this.data.resume === true
     }
+    
 }

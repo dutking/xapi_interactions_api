@@ -290,7 +290,7 @@ export class Feedback extends HTMLElement {
         })
 
         this.submitBtn.addEventListener('click', (e) => {
-            this.emitEvent('feedbackSubmitted')
+            this.emitEvent('feedback_submitted')
             e.target.innerHTML = 'Отправлено'
             e.target.disabled = true
 
@@ -344,13 +344,14 @@ export class Feedback extends HTMLElement {
         this.dispatchEvent(event)
     }
 
-    show(evaluatedObjectID, amountOfRatingItems, commentPlaceholderText) {
+    show(evaluatedObjectID, amountOfRatingItems, commentPlaceholderText, alternativeObjectName = undefined) {
         if (amountOfRatingItems || commentPlaceholderText) {
             this.clearContent()
             this.init(
                 evaluatedObjectID,
                 amountOfRatingItems,
-                commentPlaceholderText
+                commentPlaceholderText,
+                alternativeObjectName
             )
             this.setContent()
             this.setCurrentListeners()

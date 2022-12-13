@@ -18,9 +18,6 @@ export class App {
 
     static async init() {
         App.checkTestMode()
-        App.postedStates = []
-        App.sentStatements = []
-        App.container = document.querySelector('body')
 
         XAPI.data = await XAPI.getData()
     
@@ -38,14 +35,13 @@ export class App {
 
     static async createCourse(){
         const courseState = await XAPI.getState(`${config.trackIRI}/${config.id}`)
-        App.course = new Course(courseState)
-        App.course.init()
+        window._course = new Course(courseState)
+        window._course.init()
 
-        App.sentStatements.push(
-            XAPI.sendStatement(new Statement(App.course, 'launched').statement)
-        )
+        XAPI.sendStatement(new Statement(window._course, 'launched').statement)
+
         console.log(
-            `%cCourse ${App.course.data.nameRus} is launched.`,
+            `%cCourse ${window._course.data.nameRus} is launched.`,
             'color:lightblue;font-size:18px;font-weight:bold;'
         )
 
@@ -124,11 +120,7 @@ export class App {
         }
     }
 
-    static processMetric(metric, obj) {
-        if ('statementFunction' in metric) {
-            statementFunctions[metric.statementFunction](metric, obj)
-        }
-    }
+    
 
     static checkTestMode() {
         if (window.location.search === '' || !window.location.search.includes('XAPI') || !window.location.search.includes('actor')) {
@@ -169,6 +161,12 @@ export class App {
                         metric: currentMetric,
                     }).statement
                 )
+    }
+
+    static processMetric(metric, obj) {
+        if ('statementFunction' in metric) {
+            statementFunctions[metric.statementFunction](metric, obj)
+        }
     }
 
     static logCurrentTestsData() {
@@ -289,9 +287,6 @@ export class App {
         }, 3000)
     }
 
-    static async exitInteractions() {
-        
-    }
 
     static exitCourse() {
         App.course.setState().then(() => App.course.finishCourse())
@@ -611,7 +606,7 @@ export class App {
             App.exitCourse()
         })
 
-        App.container.addEventListener('feedbackSubmitted', (e) => {
+        App.container.addEventListener('feedback_submitted', (e) => {
             if (e.detail.obj.amountOfRatingItems) {
                 App.sentStatements.push(
                     XAPI.sendStatement(
