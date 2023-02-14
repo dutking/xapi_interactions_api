@@ -1,4 +1,5 @@
 import {QuestionMC} from './question_mc.js'
+import {QuestionMCnew} from './question_mcnew.js'
 import {QuestionMR} from './question_mr.js'
 import {QuestionRange} from './question_range.js'
 import {QuestionFillIn} from './question_fill-in.js'
@@ -10,7 +11,7 @@ import {AuxFunctions} from '../auxFunctions.js'
 import {Pool} from './pool.js'
 import {Statement} from '../statement.js'
 import {XAPI} from '../xapi.js'
-import {CUSTOM_EVENTS, SUPPORTED_VERBS} from '../enums.js'
+import {EVENTS, VERBS} from '../enums.js'
 
 let testTemplate = document.createElement('template')
 testTemplate.innerHTML = `
@@ -481,6 +482,10 @@ export class Test extends HTMLElement {
             this.setGridTemplateAreas()
             //this.logTestData()
         })
+    }
+
+    proceed(event, emitter){
+
     }
 
     logTestData() {
@@ -1066,6 +1071,7 @@ export class Test extends HTMLElement {
 
     async createQuestion(id) {
         let question = this.data.iterables.filter((q) => q.id === id)[0]
+        console.log(question.type)
         let questionElement = document.createElement(
             `question-${question.type}`
         )
@@ -1076,7 +1082,7 @@ export class Test extends HTMLElement {
 
         let qState = await window.XAPI.getState(this.iri + '/' + id)
 
-        questionElement.setFields(
+        questionElement.init(
             question,
             this.questionsOrder.indexOf(id),
             this,
@@ -1938,14 +1944,14 @@ export class Test extends HTMLElement {
         )
 
         //this.emitEvent('completed')
-        XAPI.sendStatement(new Statement(this, SUPPORTED_VERBS.COMPLETED).statement)
+        XAPI.sendStatement(new Statement(this, VERBS.COMPLETED).statement)
         .then(() => {
             if (this.result) {
                 //this.emitEvent('passed')
-                return XAPI.sendStatement(new Statement(this, SUPPORTED_VERBS.PASSED).statement)
+                return XAPI.sendStatement(new Statement(this, VERBS.PASSED).statement)
             } else {
                 //this.emitEvent('failed')
-                return XAPI.sendStatement(new Statement(this, SUPPORTED_VERBS.FAILED).statement)
+                return XAPI.sendStatement(new Statement(this, VERBS.FAILED).statement)
             }
         }).then(() => this.parent.proceedCourse())
 

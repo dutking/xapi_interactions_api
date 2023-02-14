@@ -1,4 +1,9 @@
+import {Question} from './question.js'
+import {Statement} from '../statement.js'
+import {XAPI} from '../xapi.js'
+import {STATUSES, SUPPORTED_VERBS, INTERACTION_TYPES, EVENTS, DISPLAY_MODES} from '../enums.js'
 import {AuxFunctions} from '../auxFunctions.js'
+import {Pool} from './pool.js'
 
 const answerTemplateRange = document.createElement('template')
 answerTemplateRange.innerHTML = `
@@ -793,50 +798,12 @@ strong {
 </div>
 `
 
-export class QuestionRange extends HTMLElement {
+export class QuestionRange extends Question {
     constructor() {
         super()
         this.attachShadow({mode: 'open'})
 
         this.shadowRoot.appendChild(templateRange.content.cloneNode(true))
-
-        this.completed = false
-        this.result = false
-        this.status = 'initial'
-        this.score = 0
-        this.state = {}
-    }
-
-    get iri() {
-        return `${this.parent.iri}/${this.data.id}`
-    }
-
-    get amountOfQuestions() {
-        return this.parent.amountOfQuestions
-    }
-
-    get submitMode() {
-        return this.parent.data.submitMode
-    }
-
-    get displayMode() {
-        return this.parent.data.displayMode
-    }
-
-    get attemptsPerTest() {
-        return this.parent.data.attemptsPerTest
-    }
-
-    get passingScore() {
-        return this.parent.data.passingScore
-    }
-
-    get resume() {
-        return (
-            this.parent.resumed === true &&
-            this.parent.data.resume.resume === true &&
-            this.parent.status !== 'initial'
-        )
     }
 
     setFields(data, index, parent, state) {
@@ -1153,13 +1120,13 @@ export class QuestionRange extends HTMLElement {
                 this.state.exactUserAnswer
 
             let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-            if (this.checked) {
+            if (this.answerIsGiven) {
                 submitBtn.disabled = false
             }
         }
     }
 
-    get checked() {
+    get answerIsGiven() {
         let value = this.shadowRoot.querySelector('input').value
 
         if (value.length > 0) {
@@ -1196,7 +1163,7 @@ export class QuestionRange extends HTMLElement {
         })
 
         // submitBtn action
-        submitBtn.addEventListener('click', this.checkAnswer.bind(this))
+        submitBtn.addEventListener('click', this.submitAnswer.bind(this))
 
         // continueBtn action
         continueBtn.addEventListener('click', (e) => {
@@ -1212,43 +1179,25 @@ export class QuestionRange extends HTMLElement {
         return input.value
     }
 
-    checkAnswer() {
-        let that = this
+    get result() {
+        if(this.status === STATUSES.COMPLETED){
+            if (
+                this.data.answers.length === 1 &&
+                this.data.answers[0].text === ''
+            ) {
+                return true
+            } 
+            const checkedAnswers = this.data.answers.forEach((a) => {
+                    if (a.text.toString() === that.exactUserAnswer.toString()) {
+                        return a.correct
+                    }
+                })
 
-        that.completed = true
-        this.status = 'completed'
-
-        if (
-            this.data.answers.length === 1 &&
-            this.data.answers[0].text === ''
-        ) {
-            this.result = this.data.answers[0].correct
-            this.score = this.data.answers[0].weight
-        } else {
-            this.data.answers.forEach((a) => {
-                if (a.text.toString() === that.exactUserAnswer.toString()) {
-                    that.result = a.correct
-                    that.score = a.weight
-                }
-            })
+            return checkedAnswers.some(answer => answer === true)
+            
         }
 
-        console.log(`Question ${this.data.id} answered. Result: ${this.result}`)
-
-        if (this.parent.data?.buttons?.submit?.completed) {
-            this.shadowRoot.querySelector('.submitBtn').innerHTML =
-                this.parent.data.buttons.submit.completed
-        }
-
-        this.disableElements()
-
-        if ('noState' in this.state) {
-            delete this.state.noState
-        }
-
-        that.emitEvent('answered')
-        that.setState('question completed')
-        that.showFeedback()
+        return undefined
     }
 
     logQuestionData() {
@@ -1277,24 +1226,16 @@ export class QuestionRange extends HTMLElement {
     }
 
     get userAnswer() {
-        let that = this
-        if (
-            that.data.answers.length === 1 &&
-            that.data.answers[0].text === ''
-        ) {
-            return [[that.data.answers[0].id, true]]
-        } else {
-            let answers = that.data.answers.filter((a) => {
+        if (this.isOpenQuestion) return [[`${this.data.id}a1`, true]]
+
+        const answers = this.data.answers.filter((a) => {
                 a.text.toLowerCase().trim() ===
                     that.exactUserAnswer.toLowerCase().trim()
             })
 
-            if (answers.length > 0) {
-                return [[answers[0].id, true]]
-            } else {
-                return undefined
-            }
-        }
+        if (answers.length > 0) return [[answers[0].id, true]]
+
+        return undefined
     }
 
     setState(msg = '') {

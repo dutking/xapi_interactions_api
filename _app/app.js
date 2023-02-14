@@ -35,13 +35,13 @@ export class App {
 
     static async createCourse(){
         const courseState = await XAPI.getState(`${config.trackIRI}/${config.id}`)
-        window._course = new Course(courseState)
-        window._course.init()
+        window.Course = new Course(courseState)
+        window.Course.init()
 
-        XAPI.sendStatement(new Statement(window._course, 'launched').statement)
+        XAPI.sendStatement(new Statement(window.Course, 'launched').statement)
 
         console.log(
-            `%cCourse ${window._course.data.nameRus} is launched.`,
+            `%cCourse ${window.Course.data.nameRus} is launched.`,
             'color:lightblue;font-size:18px;font-weight:bold;'
         )
 
@@ -60,7 +60,7 @@ export class App {
         }
 
         if (contextData) {
-            App.course.data.globalPools.forEach((p) => {
+            window.Course.data.globalPools.forEach((p) => {
                 let pool = contextData.filter((d) => d.id === p.id)[0]
                 p.value.initial = pool.score
             })
@@ -69,7 +69,7 @@ export class App {
             !(globalPoolsData.stateExists) &&
             !('errorId' in globalPoolsData)
         ) {
-            App.course.data.globalPools = globalPoolsData.globalPools || []
+            window.Course.data.globalPools = globalPoolsData.globalPools || []
         }
 
         if ('globalPools' in config && config.globalPools.length > 0) {
@@ -99,23 +99,23 @@ export class App {
         let sidebar = document.querySelector('.sidebar')
         if (sidebar) {
             let sb = document.createElement('sidebar-unit')
-            App.course.sidebar = sb
+            window.Course.sidebar = sb
             sb.init(sidebar, {
-                globalPools: App.course.data.globalPools,
+                globalPools: window.Course.data.globalPools,
             })
         }
     }
 
     static recalculateGlobalPools() {
-        if ('globalPools' in App.course.data) {
-            App.course.data.globalPools.forEach((p) => {
+        if ('globalPools' in window.Course.data) {
+            window.Course.data.globalPools.forEach((p) => {
                 if ('scoringFunction' in p && p.scoringFunction !== '') {
                     scoringFunctions[p.scoringFunction](p)
                 }
             })
 
-            if ('sidebar' in App.course) {
-                App.course.sidebar.updatePools()
+            if ('sidebar' in window.Course) {
+                window.Course.sidebar.updatePools()
             }
         }
     }
@@ -157,7 +157,7 @@ export class App {
             )
 
             return XAPI.sendStatement(
-                    new Statement(App.course, 'calculated', {
+                    new Statement(window.Course, 'calculated', {
                         metric: currentMetric,
                     }).statement
                 )
@@ -289,7 +289,7 @@ export class App {
 
 
     static exitCourse() {
-        App.course.setState().then(() => App.course.finishCourse())
+        window.Course.setState().then(() => window.Course.finishCourse())
 
             .then((resp) => {
                 let statements = Array.from(App.currentInteractions).map(
@@ -302,7 +302,7 @@ export class App {
             })
             .then((resp) =>
                 XAPI.sendStatement(
-                    new Statement(App.course, 'exited').statement
+                    new Statement(window.Course, 'exited').statement
                 )
             )
             .then((resp) => App.returnToTrack())
@@ -311,41 +311,41 @@ export class App {
 
     static async finishCourse() {
         let statements = []
-        if (App.course.completed) {
+        if (window.Course.completed) {
             console.log(
                 '%cCOURSE COMPLETED',
                 'color:green;font-size:18px;font-weight:bold;'
             )
             statements.push(
                 XAPI.sendStatement(
-                    new Statement(App.course, 'completed').statement
+                    new Statement(window.Course, 'completed').statement
                 )
             )
 
             App.getScore()
 
-            if (App.course.score >= App.course.passingScore) {
-                App.course.result = true
-                App.course.passed = true
+            if (window.Course.score >= window.Course.passingScore) {
+                window.Course.result = true
+                window.Course.passed = true
                 console.log(
                     '%cCOURSE PASSED',
                     'color:green;font-size:18px;font-weight:bold;'
                 )
                 statements.push(
                     XAPI.sendStatement(
-                        new Statement(App.course, 'passed').statement
+                        new Statement(window.Course, 'passed').statement
                     )
                 )
             } else {
-                App.course.result = false
-                App.course.passed = false
+                window.Course.result = false
+                window.Course.passed = false
                 console.log(
                     '%cCOURSE FAILED',
                     'color:red;font-size:18px;font-weight:bold;'
                 )
                 statements.push(
                     XAPI.sendStatement(
-                        new Statement(App.course, 'failed').statement
+                        new Statement(window.Course, 'failed').statement
                     )
                 )
             }
@@ -381,13 +381,13 @@ export class App {
                     )
                 )
 
-                if (App.course.completed) {
-                    App.course.finishCourse()
+                if (window.Course.completed) {
+                    window.Course.finishCourse()
                 }
         })
 
         App.container.addEventListener('state_changed', (e) => {
-            if (e.detail.obj.iri.startsWith(App.course.data.trackIRI)) {
+            if (e.detail.obj.iri.startsWith(window.Course.data.trackIRI)) {
                 App.postedStates.push(
                     XAPI.postState(e.detail.obj.iri, e.detail.obj.state)
                 )
@@ -398,12 +398,12 @@ export class App {
                 e.detail.obj.tagName !== 'TEST-UNIT' &&
                 'userPoolsResult' in e.detail.obj &&
                 e.detail.obj.userPoolsResult.length > 0 &&
-                'globalPools' in App.course.data &&
+                'globalPools' in window.Course.data &&
                 e.detail.obj.status === 'completed'
             ) {
                 let globalPoolsUpdated = false
                 e.detail.obj.userPoolsResult.forEach((p) => {
-                    let globalPool = App.course.data.globalPools.filter(
+                    let globalPool = window.Course.data.globalPools.filter(
                         (gp) => gp.id === p.id
                     )[0]
                     if (globalPool) {
@@ -416,7 +416,7 @@ export class App {
                     App.recalculateGlobalPools()
                     App.postedStates.push(
                         XAPI.postState(`${config.trackIRI}/globalPools`, {
-                            globalPools: App.course.data.globalPools,
+                            globalPools: window.Course.data.globalPools,
                         })
                     )
                 }
@@ -638,7 +638,7 @@ export class App {
     }
 
     static getIds() {
-        let data = App.course.data.interactions.map((i) => {
+        let data = window.Course.data.interactions.map((i) => {
             return [i.structure[1], i.iri]
         })
         console.table(data)

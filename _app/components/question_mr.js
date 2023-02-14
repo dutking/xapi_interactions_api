@@ -1,3 +1,7 @@
+import {Question} from './question.js'
+import {Statement} from '../statement.js'
+import {XAPI} from '../xapi.js'
+import {STATUSES, SUPPORTED_VERBS, INTERACTION_TYPES, EVENTS, DISPLAY_MODES} from '../enums.js'
 import {AuxFunctions} from '../auxFunctions.js'
 import {Pool} from './pool.js'
 
@@ -865,57 +869,18 @@ strong {
 </div>
 `
 
-export class QuestionMR extends HTMLElement {
+export class QuestionMR extends Question {
     constructor() {
         super()
         this.attachShadow({mode: 'open'})
 
         this.shadowRoot.appendChild(templateMR.content.cloneNode(true))
-
-        this.completed = false
-        this.result = false
-        this.status = 'initial'
-        this.score = 0
-        this.state = {}
         this.answersOrder = new Set()
-    }
-
-    get iri() {
-        return `${this.parent.iri}/${this.data.id}`
-    }
-
-    get amountOfQuestions() {
-        return this.parent.amountOfQuestions
-    }
-
-    get submitMode() {
-        return this.parent.data.submitMode
-    }
-
-    get displayMode() {
-        return this.parent.data.displayMode
-    }
-
-    get attemptsPerTest() {
-        return this.parent.data.attemptsPerTest
-    }
-
-    get passingScore() {
-        return this.parent.data.passingScore
-    }
-
-    get resume() {
-        return (
-            this.parent.resumed === true &&
-            this.parent.data.resume.resume === true &&
-            this.parent.status !== 'initial'
-        )
     }
 
     setFields(data, index, parent, state) {
         this.parent = parent
         this.data = data
-        this.score = 0
         this.index = index
         this.data.evaluated = parent.data.evaluated
 
@@ -1300,7 +1265,7 @@ export class QuestionMR extends HTMLElement {
             })
 
             let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-            if (this.checked) {
+            if (this.answerIsGiven) {
                 submitBtn.disabled = false
             }
         }
@@ -1335,7 +1300,7 @@ export class QuestionMR extends HTMLElement {
         return result
     }
 
-    get checked() {
+    get answerIsGiven() {
         let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
         let checkedItems = inputs.filter((input) => input.checked).length
 
@@ -1385,7 +1350,7 @@ export class QuestionMR extends HTMLElement {
                 if (this.data?.subtype === 'order') {
                     that.setAnswersOrder(e.target.id)
                 }
-                if (that.checked) {
+                if (that.answerIsGiven) {
                     submitBtn.disabled = false
                     if (that.status === 'initial') {
                         that.status = 'inProgress'
@@ -1399,7 +1364,7 @@ export class QuestionMR extends HTMLElement {
         })
 
         // submitBtn action
-        submitBtn.addEventListener('click', this.checkAnswer.bind(this))
+        submitBtn.addEventListener('click', this.submitAnswer.bind(this))
 
         // continueBtn action
         continueBtn.addEventListener('click', (e) => {
@@ -1429,55 +1394,25 @@ export class QuestionMR extends HTMLElement {
             })
         }
 
+        // TODO: move ORDER question to a separate component
+
         return inputs.map((i) => {
             return [i.id, i.checked]
         })
     }
 
-    checkAnswer() {
-        let that = this
-
-        this.completed = true
-        this.status = 'completed'
-
-        this.userAnswer
-            .filter((a) => a[1] === true)
-            .forEach((a) => {
-                let answer = this.data.answers.filter(
-                    (ans) => ans.id === a[0]
-                )[0]
-
-                that.score = that.score + Number(answer.weight)
+    get result() {
+        if(this.status === STATUSES.COMPLETED){
+            const answerCorrectness = this.userAnswer.map((userAns) => {
+                const [answer] = this.data.answers.filter((ans) => ans.id === userAns[0])
+                const isCorrect = answer.correct === userAns[1]
+                return [answer.id, isCorrect]
             })
-
-        if (this.parent.data?.buttons?.submit?.completed) {
-            this.shadowRoot.querySelector('.submitBtn').innerHTML =
-                this.parent.data.buttons.submit.completed
+    
+            return answerCorrectness.every((a) => a[1] === true)
         }
 
-        let answerCorrectness = this.userAnswer.map((a) => {
-            let answer = this.data.answers.filter((ans) => ans.id === a[0])[0]
-            let isCorrect = answer.correct === a[1]
-            return [answer.id, isCorrect]
-        })
-
-        if (answerCorrectness.some((a) => a[1] === false)) {
-            this.result = false
-        } else {
-            this.result = true
-        }
-
-        console.log(`Question ${this.data.id} answered. Result: ${this.result}`)
-
-        this.disableElements()
-
-        if ('noState' in this.state) {
-            delete this.state.noState
-        }
-
-        that.emitEvent('answered')
-        that.setState('question completed')
-        that.showFeedback()
+        return undefined
     }
 
     logQuestionData() {
@@ -1541,7 +1476,6 @@ export class QuestionMR extends HTMLElement {
         this.state.exactUserAnswer = this.exactUserAnswer
         this.state.userPoolsResult = this.userPoolsResult
         this.state.completed = this.completed
-        this.state.score = this.score
 
         if ('noState' in this.state) {
             delete this.state.noState

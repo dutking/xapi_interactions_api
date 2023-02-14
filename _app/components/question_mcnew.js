@@ -5,35 +5,8 @@ import {STATUSES, SUPPORTED_VERBS, INTERACTION_TYPES, EVENTS, DISPLAY_MODES} fro
 import {AuxFunctions} from '../auxFunctions.js'
 import {Pool} from './pool.js'
 
-const answerTemplateMC = document.createElement('template')
-answerTemplateMC.innerHTML = `
-        <div class='answerContainer'>
-            <div>
-                <input type='radio'/>
-                <label><span class='inputMarker'></span><span class='text'></span></label>
-                <div class='answerFeedback off'></div>
-            </div>
-        </div>
-`
-
-const answerTemplateMCImage = document.createElement('template')
-answerTemplateMCImage.innerHTML = `
-        <div class='answerContainer'>
-            <div>
-                <input type='radio'/>
-                <label>
-                    <span class='imageContainer'>
-                        <img src='' alt='picture' class='img'>
-                    </span>
-                    <span class='text'></span>
-                </label>
-                <div class='answerFeedback off'></div>
-            </div>
-        </div>
-`
-
-const templateMC = document.createElement('template')
-templateMC.innerHTML = `
+const questionTemplate = document.createElement('template')
+questionTemplate.innerHTML = `
 <style>
     * {
         margin: 0;
@@ -928,7 +901,7 @@ templateMC.innerHTML = `
     </div>
     <div class='questionFeedback off'></div>
     <div class='buttonsContainer'>
-        <button type='button' class='submitBtn btn invisible' disabled></button>
+        <button type='button' class='submitBtn btn' disabled></button>
         <button type='button' class='continueBtn btn off'></button>
         <button type='button' class='tryAgainBtn btn off'></button>
     </div>
@@ -942,629 +915,88 @@ templateMC.innerHTML = `
 // - in question settings?
 // apply only when submitMode=each
 
-export class QuestionMC extends Question {
+export class QuestionMCnew extends Question {
     constructor() {
         super()
         this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(templateMC.content.cloneNode(true))
+        this.shadowRoot.appendChild(questionTemplate.content.cloneNode(true))
     }
 
-    setFields(data, index, parent, state) {
-        this.parent = parent
-        this.data = data
-        this.index = index
-        this.data.evaluated = parent.data.evaluated // !unused - to be removed
+    get answerTemplate(){
+        const answerTemplate = document.createElement('template')
+        answerTemplate.innerHTML = `
+                <div class='answerContainer'>
+                    <div>
+                        <input type='radio'/>
+                        <label><span class='inputMarker'></span><span class='text'></span></label>
+                        <div class='answerFeedback off'></div>
+                    </div>
+                </div>
+        `
+        return answerTemplate
+    }
 
-        this.state = state
-
-        // <- for statements only 
-        // TODO: improve in Statement
-
-        let question = ''
-        if (parent.data?.commonQuestion !== '') {
-            question = `${parent.data.commonQuestion} ${data.question}`
-        } else {
-            question = data.question
-        }
-
-        this.data.description =
-            data.story !== ''
-                ? AuxFunctions.clearFromTags(data.story)
-                : AuxFunctions.clearFromTags(question)
-        this.data.nameRus = question
-
-        // for statements only ->
-
+    restoreAnswersState() {
         let that = this
-
-        // adding subtype as a class
-        // TODO: decide if subclases still needed
-        this.questionContainer =
-            this.shadowRoot.querySelector('.questionContainer')
-
-        if (this.data.subtype !== '') {
-            let classes = this.data.subtype.split(' ')
-            classes.forEach((c) => {
-                that.classList.add(c)
-                that.questionContainer.classList.add(c)
-            })
-        }
-
-        if (this.parent.data?.counter && this.parent.data.counter != '') {
-            let subHeader = this.shadowRoot.querySelector('.subHeader')
-            let counter = this.shadowRoot.querySelector('.counter')
-            counter.innerHTML = AuxFunctions.parseText(
-                parent.data.counter,
-                this
-            )
-            counter.classList.remove('off')
-            subHeader.classList.remove('off')
-        }
-
-        if (this.data.story.length > 0) {
-            let story = this.shadowRoot.querySelector('.story')
-            story.innerHTML = this.data.story
-            story.classList.remove('off')
-        }
-
-        if (this.data.instruction !== ' ') {
-            this.shadowRoot.querySelector('.instruction').innerHTML =
-                AuxFunctions.parseText(this.data.instruction, this)
-        } else {
-            this.shadowRoot.querySelector('.instruction').classList.add('off')
-        }
-
-        this.shadowRoot.querySelector('.questionText').innerHTML =
-            this.data.question
-
-
-        // TODO: rename HELP to TIPS
-        if (this.data.help.length !== 0 && this.data.help[0] !== '') {
-            let tipsContainer = this.shadowRoot.querySelector('.tipsContainer')
-            tipsContainer.classList.remove('off')
-            this.tipBtn = this.shadowRoot.querySelector('.tipBtn')
-            this.tipBtn.dataset.tipnum = 1
-            this.tipBtn.innerHTML =
-                this.data.help.length === 1
-                    ? 'Показать подсказку'
-                    : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`
-            //дописать логику показа подсказок
-            this.tipBtn.addEventListener('click', () => {
-                let currentTip = Number(this.tipBtn.dataset.tipnum)
-                if (currentTip === 1) {
-                    let pp = document.createElement('popup-unit')
-                    pp.init(
-                        `tips_for_${that.data.id}`,
-                        'Подсказки',
-                        `<div class='tip'><p class='tipHeader'>Подсказка 1:</p><p>${
-                            this.data.help[currentTip - 1]
-                        }</p></div>`
-                    )
-                    pp.showPopup()
-                } else {
-                    let pp = document.querySelector(`#tips_for_${that.data.id}`)
-                    let tips = this.data.help
-                        .filter((t, i) => i < currentTip)
-                        .map(
-                            (h, i) =>
-                                `<div class='tip'><p class='tipHeader'>Подсказка ${
-                                    i + 1
-                                }:</p><p>${h}</p></div>`
-                        )
-                        .join('')
-                    pp.updateContent('Подсказки', tips)
-                    pp.showPopup()
-                }
-                let nextTip =
-                    currentTip + 1 > this.data.help.length
-                        ? this.data.help.length
-                        : currentTip + 1
-                this.tipBtn.dataset.tipnum = nextTip
-                this.tipBtn.innerHTML =
-                    this.data.help.length === 1
-                        ? 'Показать подсказку'
-                        : `Показать подсказку ${this.tipBtn.dataset.tipnum} из ${this.data.help.length}`
-            })
-        }
-
-        let answers = this.shadowRoot.querySelector('.answersContainer')
-
-        let answersData = this.data.answers
-
-        if (this.data.shuffle) {
-            answersData = AuxFunctions.shuffleArray(this.data.answers)
-        }
-
-        answersData.forEach((a, i) => {
-            let newAnswer
-
-            if (that.data?.subtype !== '') {
-                let classes = that.data.subtype.split(' ')
-                classes.forEach((c) => answers.classList.add(c))
-
-                if (that.data.subtype.includes('image')) {
-                    newAnswer = answerTemplateMCImage.content.cloneNode(true)
-                    let img = newAnswer.querySelector('img')
-
-                    let folder = this.data.id.split('_').slice(0, 2).join('_')
-
-                    img.setAttribute('src', `./_app/img/${folder}/${a.id}.svg`)
-
-                    setTimeout(() => {
-                        if (img.naturalWidth === 0) {
-                            img.setAttribute(
-                                'src',
-                                `./_app/img/${folder}/${a.id}.png`
-                            )
-                        }
-                    }, 1000)
-
-                    if (that.data.subtype.includes('zoom')) {
-                        const popup = document.createElement('popup-unit')
-                        popup.init(
-                            `pp_${a.id}`,
-                            a.text,
-                            `<img width='100%' src="./_app/img/${folder}/${a.id}_large.svg">`
-                        )
-                        img.addEventListener('click', () => {
-                            popup.showPopup()
-                            let img = popup.shadowRoot.querySelector('img')
-                            if (img.naturalWidth === 0) {
-                                img.setAttribute(
-                                    'src',
-                                    `./_app/img/${folder}/${a.id}_large.png`
-                                )
-                            }
-                        })
-                    }
-                } else {
-                    newAnswer = answerTemplateMC.content.cloneNode(true)
-                }
-            } else {
-                newAnswer = answerTemplateMC.content.cloneNode(true)
-            }
-
-            answers.appendChild(newAnswer)
-
-            newAnswer = Array.from(answers.children)[i]
-
-            // TO DO ON CLICK
-            /* if(that.data?.subtype === 'imagePlus'){
-                    try {
-                        let svg = await fetch(`./_app/img/${folder}/${a.id}_large.svg`, { method: 'HEAD' })
-                        
-                        if (svg.ok) {
-                            img.addEventListener('click', () => {
-                                let pp = document.createElement('popup-unit')
-                                pp.init(`<img src="./_app/img/${folder}/${a.id}_large.svg" style="min-width:200px;">`, a.text)
-                            })
-                        } else {
-                            img.addEventListener('click', () => {
-                                let pp = document.createElement('popup-unit')
-                                pp.init(`<img src="./_app/img/${folder}/${a.id}_large.png" style="min-width:200px;">`, a.text)
-                            })
-                        }
-                    } catch (e) {
-                        console.log(e)
-                    }
-                } */
-
-            newAnswer.setAttribute('data-id', a.id)
-            newAnswer.querySelector('input').setAttribute('id', a.id)
-            newAnswer.querySelector('input').setAttribute('name', that.data.id)
-            newAnswer.querySelector('label').setAttribute('for', a.id)
-            newAnswer.querySelector('label span.text').innerHTML = a.text
-            let feedback = newAnswer.querySelector('.answerFeedback')
-            feedback.dataset.id = a.id
-
-            // TODO: move to likert
-            if (i % 2 === 1) {
-                newAnswer.classList.add('even')
-            } else {
-                newAnswer.classList.add('odd')
-            }
-        })
-
-        //TODO: create separate likert component
-        if (this.data.subtype === 'likert') {
-            Array.from(this.shadowRoot.styleSheets[0].cssRules)
-                .filter(
-                    (rule) =>
-                        rule.selectorText ===
-                        '.questionContainer.likert .answersContainer'
+        if (this.state.userResponse) {
+            this.inputs.forEach((input) => {
+                let currentAnswer = this.state.userResponse.filter(
+                    (response) => response.id === input.id
                 )[0]
-                .style.setProperty(
-                    '--answersContainer-grid-template-columns',
-                    `repeat(${this.data.answers.length}, 1fr)`
-                )
-
-            if (this.index % 2 === 1) {
-                this.questionContainer.classList.add('even')
-            } else {
-                this.questionContainer.classList.add('odd')
-            }
-
-            this.shadowRoot.querySelector('.instruction').classList.add('off')
-
-            Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(
-                (i) => i.classList.add('off')
-            )
-            /* if(this.index > 0){
-                Array.from(this.shadowRoot.querySelectorAll('span.text')).forEach(i => i.classList.add('off'))
-            } */
-        }
-
-        if (this.submitMode === 'all_at_once') {
-            this.shadowRoot.querySelector('.submitBtn').classList.add('off')
-        }
-        this.setButtons()
-        this.setGridTemplateAreas()
-        this.emitEvent('created')
-        this.setListeners()
-        if (!('noState' in this.state)) {
-            if (this.resume === true) {
-                if (!('status' in this.state)) {
-                    // to handle old version without states
-                    this.state.status = 'completed'
-                }
-                this.restoreState()
-            }
-        }
-    }
-
-    setButtons() {
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-        Object.keys(this.parent.data.buttons).forEach((k) => {
-            let btn = this.shadowRoot.querySelector(`.${k}Btn`)
-            if (btn) {
-                btn.innerHTML = this.parent.data.buttons[k].initial
-                if (this.parent.data.buttons[k].icon === true) {
-                    btn.classList.add('icon')
-                }
-            }
-        })
-
-        if (this.index + 1 === this.amountOfQuestions) {
-            continueBtn.classList.add('continueLastBtn')
-            continueBtn.innerHTML = this.parent.data.buttons.continue.last
-        }
-
-        if (this.status === 'completed' && this.displayMode === 'one_by_one') {
-            continueBtn.classList.add('off')
-        }
-
-        if (this.submitMode === 'all_at_once') {
-            this.shadowRoot
-                .querySelector('.buttonsContainer')
-                .classList.add('off')
-        }
-
-        submitBtn.classList.remove('invisible')
-    }
-
-    /* get globalTestGridAreas() {
-        return getComputedStyle(document.documentElement)
-            .getPropertyValue('--questionContainer-grid-template-areas')
-            .trim()
-            .replaceAll('"', '')
-            .replaceAll('  ', ' ')
-            .split(' ');
-    } */
-
-    /* <- SETTING GRID */
-
-    get currentStylesheets() {
-        return Array.from(document.styleSheets).filter((ss) => {
-            return (
-                ss.href !== null &&
-                (ss.href.includes('_app/custom.css') ||
-                    ss.href.includes('_app/style.css'))
-            )
-        })
-    }
-
-    getCSSPropertyValue(selector, property) {
-        let applicableStylesheets = this.currentStylesheets.filter((ss) => {
-            return (
-                Array.from(ss.cssRules).filter((rule) =>
-                    rule?.selectorText?.endsWith(selector)
-                ).length > 0
-            )
-        })
-
-        let stylesheet
-        if (applicableStylesheets.length > 1) {
-            stylesheet = applicableStylesheets.filter((ss) =>
-                ss.href.includes('_app/custom.css')
-            )[0]
-        } else if (applicableStylesheets.length === 1) {
-            stylesheet = applicableStylesheets[0]
-        } else if (applicableStylesheets.length === 0) {
-            console.log('selector not found. using style.css')
-            stylesheet = this.currentStylesheets.filter((ss) =>
-                ss.href.includes('_app/style.css')
-            )[0]
-        }
-
-        let selectors = Array.from(stylesheet.cssRules).filter((rule) =>
-            String(rule.selectorText).endsWith(selector)
-        )
-
-        let style
-        if (selectors.length === 1) {
-            style = selectors[0].style
-        } else if (selectors.length === 0) {
-            console.log('selector not found. using ":root"')
-            style = Array.from(stylesheet.cssRules).filter((rule) =>
-                String(rule.selectorText).endsWith(':root')
-            )[0].style
-        } else {
-            console.error('found more than one selector')
-        }
-
-        // style.getPropertyValue(property)
-        // style.setProperty(property)
-
-        let propertyValue = style.getPropertyValue(property)
-        return {style: style, propertyValue: propertyValue}
-    }
-
-    get globalTestGridAreas() {
-        if (this.data.subtype.includes('image')) {
-            return this.getCSSPropertyValue(
-                '.image',
-                '--questionContainer-grid-template-areas'
-            )
-                .propertyValue.trim()
-                .split('" "')
-                .map((i) => i.replaceAll('"', ''))
-        }
-
-        return getComputedStyle(document.documentElement)
-            .getPropertyValue('--questionContainer-grid-template-areas')
-            .trim()
-            .split('" "')
-            .map((i) => i.replaceAll('"', ''))
-    }
-
-    setGridTemplateAreas() {
-        let questionContainer =
-            this.shadowRoot.querySelector('.questionContainer')
-        let currentAreas = Array.from(questionContainer.children)
-            .map((element) => {
-                if (!element.className.includes('off')) {
-                    return element.className.split(' ')[0]
-                } else {
-                    return ''
-                }
-            })
-            .filter((i) => i !== '')
-
-        /* console.log(`CURRENT AREAS FOR ${this.data.id}: ${currentAreas}`)
-        console.log(
-            `GLOBAL AREAS FOR ${this.data.id}: ${this.globalTestGridAreas}`
-        ) */
-
-        let currentAreasString = this.globalTestGridAreas
-            .map((unit) => {
-                let subunits = unit.split(' ')
-
-                if (subunits.every((u) => currentAreas.includes(u))) {
-                    return `"${unit}"`
-                } else {
-                    return ''
-                }
-            })
-            .filter((unit) => unit !== '')
-            .join(' ')
-
-        /* console.log(
-            `currentAreasString for ${this.data.id}: ${currentAreasString}`
-        ) */
-
-        Array.from(this.shadowRoot.styleSheets[0].cssRules)
-            .filter((rule) => rule.selectorText === '.questionContainer')[0]
-            .style.setProperty(
-                '--this-questionContainer-grid-template-areas',
-                currentAreasString
-            )
-    }
-
-    /* SETTING GRID -> */
-
-    setState(msg = '') {
-        console.log(
-            `%c...setting question ${this.data.id} state due to: ${msg}`,
-            'color:#4AACDA;font-weight:bold;'
-        )
-        this.state.date = new Date()
-        this.state.status = this.status
-        this.state.result = this.result
-        this.state.userAnswer = this.userAnswer
-        this.state.exactUserAnswer = this.exactUserAnswer
-        this.state.userPoolsResult = this.userPoolsResult
-        this.state.completed = this.completed
-        this.state.score = this.score
-
-        if ('noState' in this.state) {
-            delete this.state.noState
-        }
-
-        this.emitEvent('state_changed')
-    }
-
-    restoreState() {
-        this.status = this.state.status
-        if (this.status === 'inProgress') {
-            this.restoreAnswers()
-        } else if (this.status === 'completed') {
-            this.completed = true
-            this.result = this.state.result
-            this.restoreAnswers()
-            this.disableElements()
-            this.showFeedback()
-        }
-    }
-
-    restoreAnswers() {
-        let that = this
-        if ('userAnswer' in this.state) {
-            let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-
-            inputs.forEach((i) => {
-                let currentAnswer = that.state.userAnswer.filter(
-                    (a) => a[0] === i.id
-                )[0]
-                if (currentAnswer[1] === true) {
-                    i.checked = true
+                if (currentAnswer.filled === true) {
+                    input.checked = true
                 }
             })
 
-            let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-            if (this.answerIsGiven) {
-                submitBtn.disabled = false
+            if (this.responseIsGiven) {
+                this.submitBtn.disabled = false
             }
         }
     }
 
-    get answerIsGiven() {
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-        let checkedItems = inputs.filter((input) => input.checked).length
+    get responseIsGiven() {
+        let respondedItems = this.inputs.filter((input) => input.checked).length 
 
-        if (checkedItems === 1) {
+        if (respondedItems === 1) {
             return true
         }
         return false
     }
 
-    setListeners() {
-        let that = this
-        // Disable/enable submitBtn on inputs' changes.
-
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-        let continueBtn = this.shadowRoot.querySelector('.continueBtn')
-
-        inputs.forEach((i) => {
-            i.addEventListener('change', (e) => {
-                if (that.answerIsGiven) {
-                    submitBtn.disabled = false
-                    if (that.status === 'initial') {
-                        that.status = 'inProgress'
-                    }
-                } else {
-                    submitBtn.disabled = true
-                }
-                that.setState('user input')
-                that.emitEvent('questionInProgress')
-            })
+    get userResponse() {
+        return this.inputs.map((input) => {
+            return {id: input.id, filled: input.checked}
         })
-
-        // submitBtn action
-        submitBtn.addEventListener('click', this.submitAnswer.bind(this))
-
-        // continueBtn action
-        continueBtn.addEventListener('click', (e) => {
-            if (that.displayMode === 'one_by_one') {
-                e.target.classList.add('off')
-            }
-            that.emitEvent('continue')
-        })
-    }
-
-    get userAnswer() {
-        let that = this
-        let inputs = Array.from(that.shadowRoot.querySelectorAll('input'))
-        return inputs.map((i) => {
-            return [i.id, i.checked]
-        })
-    }
-
-    logQuestionData() {
-        console.log(
-            `%cQuestion data for ${this.data.id}`,
-            'color:red;font-weigth:bold;font-size:16px;'
-        )
-        try {
-            let data = {
-                initialData: this.data,
-                state: this.state,
-                status: this.status,
-                result: this.result,
-                userAnswer: this.userAnswer,
-                exactUserAnswer: this.exactUserAnswer,
-                userPoolsResult: this.userPoolsResult,
-                completed: this.completed,
-                score: this.score,
-                hasPools: this.hasPools,
-                hasFeedback: this.hasFeedback,
-            }
-            console.log(data)
-        } catch (e) {
-            console.log(e)
-        }
     }
 
     get result() {
         if(this.status === STATUSES.COMPLETED){
-            const answerCorrectness = this.userAnswer.map((userAns) => {
-                const [answer] = this.data.answers.filter((ans) => ans.id === userAns[0])
-                const isCorrect = answer.correct === userAns[1]
-                return [answer.id, isCorrect]
+            const answerCorrectness = this.userResponse.map((userAns) => {
+                const [answer] = this.data.answers.filter((ans) => ans.id === userAns.id)
+                return answer.correct === userAns.filled
             })
     
-            return answerCorrectness.every((a) => a[1] === true)
+            return answerCorrectness.every((a) => a === true)
         }
 
         return undefined
     }
 
-    get exactUserAnswer() {
-        let exactUserAnswer = []
+    get exactUserResponse() {
+        let exactUserResponse = []
 
-        this.userAnswer
-            .filter((a) => a[1] === true)
-            .forEach((a) => {
-                let answer = this.data.answers.filter(
-                    (ans) => ans.id === a[0]
-                )[0]
+        this.userResponse
+            .filter((response) => response.filled === true)
+            .forEach((response) => {
+                let [answer] = this.data.answers.filter(
+                    (ans) => ans.id === response.id
+                )
 
-                exactUserAnswer.push(AuxFunctions.clearFromTags(answer.text))
+                exactUserResponse.push(AuxFunctions.clearFromTags(answer.text))
             })
 
-        return exactUserAnswer.map((a, ind) => `${ind + 1}) ${a}`).join('   ')
-    }
-
-    get hasPools() {
-        return this.data.answers.filter((a) => a.pools.length > 0).length > 0
-    }
-
-    get hasFeedback() {
-        if (this.data.showPoolsInFeedback) {
-            return true
-        }
-
-        if (this.data?.feedback?.correct && this.data.feedback.correct !== '') {
-            return true
-        }
-
-        if (
-            this.data?.feedback?.incorrect &&
-            this.data.feedback.incorrect !== ''
-        ) {
-            return true
-        }
-
-        if (
-            this.data.answers.filter((a) => a.feedback !== '').length > 0 &&
-            this.parent.data.fedback.answersFeedbackMode === 'question'
-        ) {
-            return true
-        }
-
-        return false
+        return exactUserResponse.map((reponse, index) => `${index + 1}) ${response}`).join('   ')
     }
 
     markQuestionCorrectness() {
@@ -1607,216 +1039,6 @@ export class QuestionMC extends Question {
         })
     }
 
-    showFeedback() {
-        let feedback = this.shadowRoot.querySelector('.questionFeedback')
-        feedback.scrollIntoView()
-
-        // ! delete hideElements - rarely usable
-        /* if (
-            this.parent.data?.questionsSettings?.feedback?.hideElements &&
-            this.parent.data.questionsSettings.feedback.hideElements.length > 0
-        ) {
-            this.parent.data.questionsSettings.feedback.hideElements.forEach(
-                (element) => {
-                    this.shadowRoot
-                        .querySelector(`${element}`)
-                        .classList.add('off')
-                }
-            )
-        } */
-
-        // process answers feedbacks
-        if ('answersFeedbackMode' in this.parent.data.feedback) {
-            if (this.parent.data.feedback.answersFeedbackMode === 'answer') {
-                this.userAnswer
-                    .filter((a) => a[1] === true)
-                    .forEach((a) => {
-                        let answer = this.data.answers.filter(
-                            (ans) => ans.id === a[0]
-                        )[0]
-
-                        let answerFeedback = this.shadowRoot.querySelector(
-                            `.answerFeedback[data-id='${a[0]}']`
-                        )
-                        if (answer.feedback.length > 0) {
-                            answerFeedback.innerHTML = answer.feedback
-                            answerFeedback.classList.remove('off')
-                        }
-                    })
-            } else if (
-                this.parent.data.feedback.answersFeedbackMode === 'question'
-            ) {
-                this.userAnswer
-                    .filter((a) => a[1] === true)
-                    .forEach((a) => {
-                        let answer = this.data.answers.filter(
-                            (ans) => ans.id === a[0]
-                        )[0]
-
-                        if (answer.feedback.length > 0) {
-                            let aFeedback = document.createElement('div')
-                            aFeedback.classList.add('answerFeedback')
-                            aFeedback.innerHTML = AuxFunctions.parseText(
-                                answer.feedback,
-                                answer
-                            )
-                            feedback.append(aFeedback)
-                        }
-                    })
-            }
-        }
-
-        // process question feedback
-
-        if (this.result) {
-            if (this.data.feedback.correct) {
-                let qFeedback = document.createElement('div')
-                qFeedback.innerHTML = AuxFunctions.parseText(
-                    this.data.feedback.correct,
-                    this
-                )
-                feedback.append(qFeedback)
-            }
-            this.shadowRoot
-                .querySelector('.questionContainer')
-                .classList.add('correct')
-        } else {
-            if (this.data.feedback.incorrect) {
-                let qFeedback = document.createElement('div')
-                qFeedback.innerHTML = AuxFunctions.parseText(
-                    this.data.feedback.incorrect,
-                    this
-                )
-                feedback.append(qFeedback)
-            }
-            this.shadowRoot
-                .querySelector('.questionContainer')
-                .classList.add('incorrect')
-        }
-
-        // show pools
-        if (
-            this.data.showPoolsInFeedback === true &&
-            this.userPoolsResult.length > 0
-        ) {
-            let poolsContainer = document.createElement('div')
-            poolsContainer.classList.add('poolsContainer')
-
-            this.userPoolsResult.forEach((r) => {
-                let poolContainer = document.createElement('div')
-                poolContainer.classList.add('poolContainer')
-
-                let pool = new Pool()
-                pool.init(r.id)
-                poolContainer.append(pool)
-
-                let userPoolResult = document.createElement('div')
-                userPoolResult.classList.add('userPoolResult')
-                userPoolResult.innerText = r.value > 0 ? `+${r.value}` : r.value
-                poolContainer.append(userPoolResult)
-
-                poolsContainer.append(poolContainer)
-            })
-
-            feedback.prepend(poolsContainer)
-        }
-
-        // show feedback
-        if (this.hasFeedback) {
-            feedback.classList.remove('off')
-        } else {
-            feedback.classList.add('off')
-        }
-
-        this.setGridTemplateAreas()
-
-        //show NEXT button
-        if (
-            this.parent.data.displayMode === 'one_instead_another' /* ||
-            this.parent.data.displayMode === 'one_by_one' */
-        ) {
-            if (this.hasFeedback) {
-                let continueBtn = this.shadowRoot.querySelector('.continueBtn')
-                let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-                submitBtn.classList.add('off')
-                if (
-                    this.parent.data.displayMode === 'one_instead_another' /* ||
-                    this.parent.data.displayMode === 'one_by_one' */
-                ) {
-                    continueBtn.classList.remove('off')
-                }
-                /* if (
-                    this.parent.data.displayMode === 'one_by_one' &&
-                    this.index < this.parent.lastQuestionIndex
-                ) {
-                    continueBtn.classList.add('off');
-                } */
-            } else {
-                this.emitEvent('continue')
-            }
-        } else if (
-            this.parent.data.displayMode === 'all_at_once' ||
-            this.parent.data.displayMode === 'one_by_one'
-        ) {
-            if (this.parent.data.submitMode === 'each') {
-                this.emitEvent('continue')
-            }
-        }
-    }
-
-    get userPoolsResult() {
-        let that = this
-        return that.userAnswer
-            .filter((a) => a[1] === true)
-            .map((a) => a[0])
-            .map(
-                (id) =>
-                    that.data.answers.filter((ans) => ans.id === id)[0].pools
-            )
-            .reduce((accum, unit) => {
-                if (unit && unit.length > 0) {
-                    unit.forEach((item) => {
-                        let pool = accum.filter((i) => i.id === item.id)
-
-                        if (pool.length === 0) {
-                            accum.push(Object.assign({}, item))
-                        } else {
-                            pool[0].value = pool[0].value + item.value
-                        }
-                    })
-                }
-                return accum
-            }, [])
-    }
-
-    emitEvent(eventName) {
-        let that = this
-        let event = new CustomEvent(eventName, {
-            bubbles: true,
-            composed: true,
-            detail: {
-                obj: that,
-            },
-        })
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
-        this.dispatchEvent(event)
-    }
-
-    disableElements() {
-        let inputs = Array.from(this.shadowRoot.querySelectorAll('input'))
-        let labels = Array.from(this.shadowRoot.querySelectorAll('label'))
-        let submitBtn = this.shadowRoot.querySelector('.submitBtn')
-
-        if (this.parent.data?.buttons?.submit?.completed) {
-            submitBtn.innerHTML = this.parent.data.buttons.submit.completed
-        }
-
-        inputs.forEach((i) => (i.disabled = true))
-
-        labels.forEach((l) => l.classList.add('inactive'))
-
-        submitBtn.disabled = true
-    }
 }
 
-window.customElements.define('question-mc', QuestionMC)
+window.customElements.define('question-mcnew', QuestionMCnew)

@@ -1,7 +1,7 @@
 import { App } from '../app.js'
 import {Statement} from '../statement.js'
 import {XAPI} from '../xapi.js'
-import {STATUS, SUPPORTED_VERBS, INTERACTION_TYPES} from '../enums.js'
+import {STATUSES, SUPPORTED_VERBS, INTERACTION_TYPES, EVENTS} from '../enums.js'
 
 export class Course {
     #status
@@ -14,7 +14,7 @@ export class Course {
         this.currentChapters = [] // to have access to order to check completion
         this.iri = `${this.data.trackIRI}/${this.data.id}`
         this.startTime = new Date()
-        this.#status = STATUS.INITIAL
+        this.#status = STATUSES.INITIAL
         this.scores = []
         this.pools = config?.pools?.items ? config.pools.items : []
         this.metricsData = []
@@ -33,12 +33,12 @@ export class Course {
 
     set status(value) {
         switch(value){
-            case STATUS.IN_PROGRESS: {
-                if (this.status === STATUS.INITIAL) this.#status === value
+            case STATUSES.IN_PROGRESS: {
+                if (this.status === STATUSES.INITIAL) this.#status === value
             }
             break;
             case STATUS.COMPLETED: {
-                if (this.status === STATUS.IN_PROGRESS) this.#status === value
+                if (this.status === STATUSES.IN_PROGRESS) this.#status === value
             }
             break;
             default:
@@ -46,23 +46,34 @@ export class Course {
         }
     }
 
-    proceedCourse(reason) {
-        // reasons
+    proceed(event, emitter) {
+        // activated by interactions by their state changes to check new course state/status 
+        // events
         // 1. any interaction state changed to IN_PROGRESS (only once) - if course status is INITIAL
         // 2. any interaction state changed to COMPLETED (affects score)
         // 3. pools change
 
         this.setState()
 
-        if (this.completed) {
-            this.status = STATUS.COMPLETED
+        switch(event){
+            case EVENTS.COMPLETED: {
+                if (this.completed) {
+                    this.status = STATUSES.COMPLETED
+                }
+            }
+            break;
+            case EVENTS.STATE_CHANGED: {
+                this.setState()
+            }
+            break;
         }
+
     }
 
     async setInteractions() {
         const statesResults = await Promise.allSettled(
             config.interactions.map((interaction) =>
-                XAPI.getState(`${App.course.iri}/${interaction.id}`)
+                XAPI.getState(`${window.Course.iri}/${interaction.id}`)
             )
         )
 
@@ -145,7 +156,7 @@ export class Course {
     finishCourse(){
         this.scores.at(this.attempt) = this.currentScore
         this.logCourseStatus()
-        if(this.status = STATUS.COMPLETED){
+        if(this.status = STATUSES.COMPLETED){
             this.attempt++
         }
         this.setState()
@@ -169,20 +180,20 @@ export class Course {
         if(this.completed) {
             statements.push(
                 XAPI.sendStatement(
-                    new Statement(App.course, 'completed').statement
+                    new Statement(window.Course, 'completed').statement
                 )
             )
 
             if (this.passed) {
                 statements.push(
                     XAPI.sendStatement(
-                        new Statement(App.course, 'passed').statement
+                        new Statement(window.Course, 'passed').statement
                     )
                 )
             } else {
                 statements.push(
                     XAPI.sendStatement(
-                        new Statement(App.course, 'failed').statement
+                        new Statement(window.Course, 'failed').statement
                     )
                 )
             }

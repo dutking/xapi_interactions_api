@@ -1,4 +1,6 @@
 import {AuxFunctions} from '../auxFunctions.js'
+import {XAPI} from '../xapi.js'
+import {VERBS} from '../enums.js'
 
 const commentItemTemplate = document.createElement('template')
 commentItemTemplate.innerHTML = `
@@ -290,20 +292,32 @@ export class Feedback extends HTMLElement {
         })
 
         this.submitBtn.addEventListener('click', (e) => {
-            this.emitEvent('feedback_submitted')
             e.target.innerHTML = 'Отправлено'
             e.target.disabled = true
 
+            // TODO: define obj.comments and obj.rating on evaluated objects
             if (this.amountOfRatingItems) {
                 let inputs = Array.from(
                     this.ratingContainer.querySelectorAll('input')
                 )
                 inputs.forEach((input) => (input.disabled = true))
+                this.evaluatedObject.rating = this.rating
+                XAPI.sendStatement(
+                    new Statement(this.evaluatedObject, VERBS.RATED).statement
+                )
             }
 
             if (this.commentPlaceholderText) {
                 let textarea = this.shadowRoot.querySelector('textarea')
                 textarea.disabled = true
+                if('comments' in this.evaluatedObject) {
+                    this.evaluatedObject.comments.push(AuxFunctions.parseText(this.comment))
+                } else {
+                    this.evaluatedObject.comments = [AuxFunctions.parseText(this.comment)]
+                }
+                XAPI.sendStatement(
+                    new Statement(this.evaluatedObject, VERBS.COMMENTED).statement
+                )
             }
         })
     }
@@ -329,19 +343,6 @@ export class Feedback extends HTMLElement {
                 this.comment = e.target.value
             })
         }
-    }
-
-    emitEvent(eventName) {
-        let that = this
-        let event = new CustomEvent(eventName, {
-            bubbles: true,
-            composed: true,
-            detail: {
-                obj: that,
-            },
-        })
-        console.log(`Event "${eventName}" was dispatched by ${this.data.id}`)
-        this.dispatchEvent(event)
     }
 
     show(evaluatedObjectID, amountOfRatingItems, commentPlaceholderText, alternativeObjectName = undefined) {

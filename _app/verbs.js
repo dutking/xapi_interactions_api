@@ -1,4 +1,4 @@
-const verbs = {
+export const verbObjects = {
     abandoned: {
         id: 'https://w3id.org/xapi/adl/verbs/abandoned',
         display: {
